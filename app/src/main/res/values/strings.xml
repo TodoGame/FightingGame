@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">TestGame</string>
+    <string name="sign_up">Sign up</string>
+    <string name="log_in">Log in</string>
+    <string name="password">Password</string>
+    <string name="username">UserName</string>
+    <string name="attack">Attack</string>
+    <string name="guard">Guard</string>
+    <string name="skill">Skill</string>
+    <string name="escape">Escape</string>
+    <string name="health">Health</string>
 </resources>

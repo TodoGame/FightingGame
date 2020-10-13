@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".locations.LocationsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="223dp"
+            android:layout_height="73dp"
+            android:text="Locations"
+            android:textSize="50sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="25dp" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:text="МатМех"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="150dp" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ПМ-ПУ"
+            app:layout_constraintStart_toStartOf="@+id/button3"
+            tools:layout_editor_absoluteY="220dp" />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ФизФак"
+            app:layout_constraintStart_toStartOf="@+id/button4"
+            tools:layout_editor_absoluteY="298dp" />
+
+        <Button
+            android:id="@+id/button6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ХимФак"
+            app:layout_constraintStart_toStartOf="@+id/button5"
+            tools:layout_editor_absoluteY="385dp" />
+
+        <Button
+            android:id="@+id/button7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Button"
+            app:layout_constraintStart_toStartOf="@+id/button6"
+            tools:layout_editor_absoluteY="482dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
