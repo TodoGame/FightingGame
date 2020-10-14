@@ -1,0 +1,12 @@
+POST {{host}}/login
+Content-Type: application/json
+
+{
+  "name": "username",
+  "password": "password"
+}
+
+###
+
+GET {{host}}/me
+Authorization: Bearer {{auth_token}}
