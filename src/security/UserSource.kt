@@ -1,14 +1,12 @@
 package com.somegame.security
 
 import com.somegame.user.User
-import io.ktor.auth.*
 
-class UserSource {
-    private val users = listOf(User("username", "password")).associateBy { it.username }.toMutableMap()
-
+object UserSource {
+    private val users = listOf<User>().associateBy { it.username }.toMutableMap()
     fun findUserByUsername(username: String): User? = users[username]
 
-    fun findUserByCredentials(credentials: UserPasswordCredential): User? = findUserByUsername(credentials.name)
+    fun findUserByCredentials(credentials: UserLoginCredentials): User? = findUserByUsername(credentials.username)
 
     fun registerUser(user: User) {
         if (users[user.username] == null) {
