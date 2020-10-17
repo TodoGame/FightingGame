@@ -1,9 +1,6 @@
-package com.example.android.marsrealestate.network
-
-import com.squareup.moshi.Json
+package com.example.testgame.network
 
 data class UserProperty(
-        val id: String,
-        @Json(name = "img_src") val imgSrcUrl: String,
         val username: String,
-        val password: Double)
+        val name: String
+)

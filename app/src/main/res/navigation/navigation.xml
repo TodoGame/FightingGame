@@ -3,27 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/registerEntranceFragment2">
+    app:startDestination="@id/registerEntranceFragment">
     <fragment
-        android:id="@+id/registerEntranceFragment2"
+        android:id="@+id/registerEntranceFragment"
         android:name="com.example.testgame.registerEntrance.RegisterEntranceFragment"
         android:label="RegisterEntranceFragment"
         tools:layout="@layout/register_entrance_fragment">
         <action
-            android:id="@+id/action_registerEntranceFragment2_to_userCreateFragment2"
-            app:destination="@id/userCreateFragment2" />
+            android:id="@+id/action_registerEntranceFragment_to_userCreateFragment"
+            app:destination="@id/userCreateFragment" />
         <action
-            android:id="@+id/action_registerEntranceFragment2_to_mainScreenFragment2"
-            app:destination="@id/mainScreenFragment2"
+            android:id="@+id/action_registerEntranceFragment_to_mainScreenFragment"
+            app:destination="@id/mainScreenFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/userCreateFragment2"
+        android:id="@+id/userCreateFragment"
         android:name="com.example.testgame.userCreate.UserCreateFragment"
         android:label="user_create_fragment"
-        tools:layout="@layout/user_create_fragment" />
+        tools:layout="@layout/user_create_fragment" >
+        <action
+            android:id="@+id/action_userCreateFragment_to_registerEntranceFragment"
+            app:destination="@id/registerEntranceFragment" />
+    </fragment>
     <fragment
-        android:id="@+id/mainScreenFragment2"
+        android:id="@+id/mainScreenFragment"
         android:name="com.example.testgame.mainScreen.MainScreenFragment"
         android:label="main_screen_fragment"
         tools:layout="@layout/main_screen_fragment" />

@@ -9,4 +9,5 @@
     <string name="skill">Skill</string>
     <string name="escape">Escape</string>
     <string name="health">Health</string>
+    <string name="user">User</string>
 </resources>
