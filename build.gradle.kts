@@ -8,6 +8,7 @@ val logback_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.4.10"
+    kotlin("plugin.serialization") version "1.4.10"
 }
 
 group = "com.somegame"
@@ -33,6 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-auth-jwt:$ktor_version")
     implementation("io.ktor:ktor-jackson:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

@@ -8,4 +8,7 @@ data class User(
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var password: String,
     var name: String,
-) : Principal
+) : Principal {
+
+    override fun toString() = "User(username=$username)"
+}

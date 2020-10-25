@@ -12,6 +12,7 @@ import io.ktor.http.cio.websocket.*
 import java.time.*
 import io.ktor.auth.*
 import com.fasterxml.jackson.databind.*
+import com.somegame.match.MatchRouting.match
 import com.somegame.security.JwtConfig
 import com.somegame.security.UserSource
 import com.somegame.security.security
@@ -60,6 +61,7 @@ fun Application.module(testing: Boolean = false) {
 
         security()
         user()
+        match()
     }
 }
 
