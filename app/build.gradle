@@ -14,7 +14,13 @@ android {
         versionCode 1
         versionName "1.0"
 
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    dexOptions {
+        jumboMode true
+        javaMaxHeapSize "4g"
     }
 
     compileOptions {
@@ -32,6 +38,9 @@ android {
     buildFeatures {
         dataBinding true
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
@@ -43,13 +52,19 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
 
+    // Implementations for multidex
+    implementation 'androidx.multidex:multidex:2.0.1'
+
+    // Implementations block for using preferences (for data storage)
+    implementation 'androidx.preference:preference:1.1.1'
 
     // Implementations block for design
     implementation "com.google.android.material:material:$version_material"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
 
-    // Implementations block for navigation
+    // Implementations block for entrance_navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
 
@@ -65,7 +80,7 @@ dependencies {
     implementation "com.squareup.moshi:moshi:$version_moshi"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
     implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
-
+    // Implementations block for internet connection coroutines use
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_kotlin_coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_kotlin_coroutines"
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$version_retrofit_coroutines_adapter"

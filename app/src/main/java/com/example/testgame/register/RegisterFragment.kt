@@ -1,4 +1,4 @@
-package com.example.testgame.userCreate
+package com.example.testgame.register
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,22 +11,22 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import com.example.testgame.R
-import com.example.testgame.databinding.UserCreateFragmentBinding
+import com.example.testgame.databinding.FragmentRegisterBinding
 
-class UserCreateFragment : Fragment() {
+class RegisterFragment : Fragment() {
 
-    private lateinit var viewModel: UserCreateViewModel
+    private lateinit var viewModel: RegisterViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val binding: UserCreateFragmentBinding = DataBindingUtil.inflate(
+        val binding: FragmentRegisterBinding = DataBindingUtil.inflate(
             inflater,
-            R.layout.user_create_fragment,
+            R.layout.fragment_register,
             container,
             false)
 
-        viewModel = ViewModelProvider(this).get(UserCreateViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java)
 
         binding.viewModel = viewModel
 
@@ -53,7 +53,7 @@ class UserCreateFragment : Fragment() {
         viewModel.signUpCompleted.observe(viewLifecycleOwner, Observer { isCalled ->
             if (isCalled) {
                 viewModel.onSignUpConfirm()
-                val action = UserCreateFragmentDirections.actionUserCreateFragmentToRegisterEntranceFragment()
+                val action = RegisterFragmentDirections.actionRegisterFragmentToLoginFragment()
                 NavHostFragment.findNavController(this).navigate(action)
             }
         })

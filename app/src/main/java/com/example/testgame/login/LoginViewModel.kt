@@ -1,4 +1,4 @@
-package com.example.testgame.registerEntrance
+package com.example.testgame.login
 
 import android.util.Log
 import androidx.databinding.*
@@ -7,12 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.testgame.network.SecurityApi
 import com.example.testgame.network.securityService.LoginData
-import com.example.testgame.registerEntrance.validator.InputResponse
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.NullPointerException
 
-class RegisterEntranceViewModel : ViewModel() {
+class LoginViewModel : ViewModel() {
 
     val username = ObservableField<String>("")
     val password = ObservableField<String>("")
@@ -25,6 +24,10 @@ class RegisterEntranceViewModel : ViewModel() {
     val passwordInputErrorHint: LiveData<String>
         get() = _passwordInputErrorHint
 
+    private var _token = String()
+    val token: String
+        get() = _token
+
     private val _loginCompleted = MutableLiveData<Boolean>(false)
     val loginCompleted: LiveData<Boolean>
         get() = _loginCompleted
@@ -33,7 +36,11 @@ class RegisterEntranceViewModel : ViewModel() {
     val signUpCalled: LiveData<Boolean>
         get() = _signUpCalled
 
-    private val _errorIsCalled = MutableLiveData<Boolean>(false)
+    private var _errorString = String()
+    val errorString: String
+        get() = _errorString
+
+    private var _errorIsCalled = MutableLiveData<Boolean>(false)
     val errorIsCalled: LiveData<Boolean>
         get() = _errorIsCalled
 
@@ -43,9 +50,11 @@ class RegisterEntranceViewModel : ViewModel() {
     fun logIn() {
         if (username.get() == "" || password.get() == "") {
             if (username.get() == "") {
+                println("Empty username called")
                 _usernameInputErrorHint.value = "Please enter the username"
             }
             if (password.get() == "") {
+                println("Empty password called")
                 _passwordInputErrorHint.value = "Please enter the password"
             }
             return
@@ -60,13 +69,16 @@ class RegisterEntranceViewModel : ViewModel() {
             try {
                 val answer = loginDeferred.await()
                 if (answer.isSuccessful) {
-                    val token = answer.headers().get("Authorization")
-                    TODO("Save token to the cache")
+                    val headerToken = answer.headers().get("Authorization")
+                    if (headerToken != null) {
+                        _token = headerToken
+                    } else {
+                        _errorString = "Wrong token response"
+                        _errorIsCalled.value = true
+                    }
                     _loginCompleted.value = true
                 }
             } catch (exception: NullPointerException) {
-                _errorIsCalled.value = true
-            } catch (exception: Exception) {
                 _errorIsCalled.value = true
             }
         }
@@ -88,8 +100,12 @@ class RegisterEntranceViewModel : ViewModel() {
         _loginCompleted.value = false
     }
 
+    fun onErrorDisplayed() {
+        _errorIsCalled.value = false
+    }
+
     override fun onCleared() {
         super.onCleared()
-        Log.i("RegisterEntranceVModel", "View model destroyed")
+        Log.i("LoginVModel", "View model destroyed")
     }
 }

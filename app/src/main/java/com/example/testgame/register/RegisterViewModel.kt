@@ -1,4 +1,4 @@
-package com.example.testgame.userCreate
+package com.example.testgame.register
 
 import android.util.Log
 import androidx.databinding.ObservableField
@@ -10,7 +10,7 @@ import com.example.testgame.network.securityService.RegisterData
 import kotlinx.coroutines.*
 import java.lang.NullPointerException
 
-class UserCreateViewModel : ViewModel() {
+class RegisterViewModel : ViewModel() {
 
     val username = ObservableField<String>("")
     val password = ObservableField<String>("")

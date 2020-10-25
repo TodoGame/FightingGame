@@ -1,4 +1,4 @@
-package com.example.testgame.network
+package com.example.testgame.network.securityService
 
 data class UserProperty(
         val username: String,
