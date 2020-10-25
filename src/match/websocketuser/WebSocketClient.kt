@@ -21,7 +21,6 @@ class WebSocketClient(val user: User, private val session: WebSocketServerSessio
 
     suspend fun disconnect() {
         session.close(CloseReason(CloseReason.Codes.NORMAL, "Match ended"))
-        handleDisconnect()
     }
 
     fun handleDisconnect() {

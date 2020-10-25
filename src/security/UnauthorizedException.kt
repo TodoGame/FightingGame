@@ -1,3 +1,3 @@
 package com.somegame.security
 
-class UnauthorizedException : Exception()
+class UnauthorizedException(override val message: String? = null) : Exception()

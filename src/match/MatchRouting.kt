@@ -1,18 +1,21 @@
 package com.somegame.match
 
+import com.somegame.match.matchmaking.Match
 import com.somegame.match.matchmaking.Matchmaker
 import com.somegame.match.matchmaking.Player
 import com.somegame.match.matchmaking.PlayerService
 import com.somegame.match.messages.Message
 import com.somegame.match.messages.PlayerAction
 import com.somegame.match.websocketuser.WebSocketClientService
+import com.somegame.security.JwtConfig
 import com.somegame.security.UnauthorizedException
-import com.somegame.user.User
-import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.cancel
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -26,23 +29,29 @@ object MatchRouting {
                 send(Frame.Text(string))
             }
         }
-        authenticate {
-            webSocket("match/findGame") {
-                val client = tryConnectClient(this)
-                MatchLogger.logClientRegister(client)
-                startFindingMatch(client)
-                try {
-                    var player = PlayerService.getPlayer(client.username)
-                    for (frame in incoming) {
-                        if (player == null) {
-                            player = PlayerService.getPlayer(client.username)
-                        } else {
-                            handleFrame(player, frame)
-                        }
+        webSocket("match/findGame") {
+            val client = try {
+                tryConnectClient(this)
+            } catch (e: UnauthorizedException) {
+                close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
+                return@webSocket
+            } catch (e: WebSocketClientService.UserAlreadyConnected) {
+                close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "User already connected"))
+                return@webSocket
+            }
+            startFindingMatch(client)
+            var player = PlayerService.getPlayer(client.username)
+            try {
+                for (frame in incoming) {
+                    if (player == null) {
+                        player = PlayerService.getPlayer(client.username)
                     }
-                } finally {
-                    handleDisconnect(client)
+                    if (player != null) {
+                        handleFrame(player, frame)
+                    }
                 }
+            } finally {
+                handleDisconnect(client)
             }
         }
     }
@@ -54,30 +63,28 @@ object MatchRouting {
 
 
     private fun tryConnectClient(session: WebSocketServerSession): WebSocketClient {
-        val user = session.call.principal<User>()
-        if (user == null) {
-            session.call.response.status(HttpStatusCode.Unauthorized)
-            throw UnauthorizedException()
-        }
+        val user = JwtConfig.authorizeWebSocketUser(session)
         MatchLogger.logUserConnect(user)
-        return try {
-            WebSocketClientService.connect(user, session)
-        } catch (e: WebSocketClientService.UserAlreadyConnected) {
-            throw PlayerAlreadyConnected()
-        }
-
+        return WebSocketClientService.connect(user, session)
     }
 
     private suspend fun handleFrame(player: Player, frame: Frame) {
         if (frame is Frame.Text) {
             val string = frame.readText()
-            val action = Json.decodeFromString<PlayerAction>(string)
-            MatchLogger.logActionReceive(player, action)
-            player.doAction(action)
+            try {
+                val action = Json.decodeFromString<PlayerAction>(string)
+                MatchLogger.logActionReceive(player, action)
+                player.doAction(action)
+            } catch (e: SerializationException) {
+                MatchLogger.logCouldNotParseFrame(e)
+            } catch (e: Match.IllegalAction) {
+                MatchLogger.logIllegalAction(e)
+            }
         }
     }
 
     private suspend fun handleDisconnect(client: WebSocketClient) {
+        println("handleDisconnect fired for ${client.username}")
         val player = PlayerService.getPlayer(client.username)
         if (player != null) {
             player.handleDisconnect()
@@ -85,6 +92,4 @@ object MatchRouting {
             client.handleDisconnect()
         }
     }
-
-    class PlayerAlreadyConnected : IllegalArgumentException()
 }

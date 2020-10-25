@@ -4,8 +4,8 @@ import com.somegame.match.matchmaking.Match
 import com.somegame.match.matchmaking.Player
 import com.somegame.match.messages.Message
 import com.somegame.match.messages.PlayerAction
-import com.somegame.match.websocketuser.WebSocketClientService
 import com.somegame.user.User
+import kotlinx.serialization.SerializationException
 import match.websocketuser.WebSocketClient
 
 object MatchLogger {
@@ -53,5 +53,11 @@ object MatchLogger {
         println("Action $action received from $player")
     }
 
+    fun logCouldNotParseFrame(e: SerializationException) {
+        println("Could not parsed incoming frame: $e")
+    }
 
+    fun logIllegalAction(e: Match.IllegalAction) {
+        println("Received illegal action at current state $e")
+    }
 }

@@ -1,8 +1,10 @@
 package com.somegame.match.matchmaking
 
 import com.somegame.match.messages.MatchEnded
+import com.somegame.match.messages.MatchStarted
 import com.somegame.match.messages.PlayerAction
 import com.somegame.match.messages.TurnStarted
+import kotlinx.serialization.Serializable
 import match.websocketuser.WebSocketClient
 import kotlin.math.max
 
@@ -11,13 +13,17 @@ class Player(private val client: WebSocketClient, private val match: Match) {
     val username = client.username
 
     var isActive = false
-    private var health = 100
+    private var health = 15
 
     val isAlive
         get() = health > 0
 
     fun changeIsActive() {
         isActive = !isActive
+    }
+
+    suspend fun onMatchStart() {
+        client.sendMessage(MatchStarted(match.playersUsernames))
     }
 
     suspend fun onTurnStart(matchSnapshot: Match.MatchSnapshot) {
@@ -52,6 +58,7 @@ class Player(private val client: WebSocketClient, private val match: Match) {
 
     fun getSnapshot() = PlayerSnapshot(username, isActive, health)
 
+    @Serializable
     data class PlayerSnapshot(val username: String, val isActive: Boolean, val health: Int)
 
     override fun toString() = "Player(username=$username)"

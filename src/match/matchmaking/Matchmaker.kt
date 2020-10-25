@@ -19,9 +19,11 @@ object Matchmaker {
     }
 
     private fun makeMatch(usernames: List<String>): Match {
-        val clients = usernames.map { WebSocketClientService.getPlayer(it) }
+        val clients = usernames.map { WebSocketClientService.getClient(it) }
         val match = Match()
-        val players = clients.map { PlayerService.makePlayer(it, match) }
+        for (client in clients) {
+            PlayerService.makePlayer(client, match)
+        }
         return match
     }
 

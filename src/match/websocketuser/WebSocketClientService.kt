@@ -23,7 +23,7 @@ object WebSocketClientService {
         MatchLogger.logClientClear(user.username)
     }
 
-    fun getPlayer(username: String): WebSocketClient {
+    fun getClient(username: String): WebSocketClient {
         return clients[username] ?: throw PlayerNotFound(username)
     }
 
