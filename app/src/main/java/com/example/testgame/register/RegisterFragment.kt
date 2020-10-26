@@ -34,26 +34,33 @@ class RegisterFragment : Fragment() {
 
         viewModel.usernameInputErrorHint.observe(viewLifecycleOwner, Observer { hint ->
             binding.usernameInputLayout.error = hint
+            binding.usernameInput.error = hint
         })
 
         viewModel.passwordInputErrorHint.observe(viewLifecycleOwner, Observer { hint ->
             binding.passwordInputLayout.error = hint
+            binding.passwordInput.error = hint
         })
 
         viewModel.userInputErrorHint.observe(viewLifecycleOwner, Observer { hint ->
             binding.userInputLayout.error = hint
+            binding.userInput.error = hint
         })
 
         viewModel.errorIsCalled.observe(viewLifecycleOwner, Observer { isCalled ->
             if (isCalled) {
-                Toast.makeText(this.activity, "Error", Toast.LENGTH_SHORT).show()
+                val errorString = viewModel.errorString
+                Toast.makeText(this.activity, errorString, Toast.LENGTH_SHORT).show()
             }
         })
 
         viewModel.signUpCompleted.observe(viewLifecycleOwner, Observer { isCalled ->
             if (isCalled) {
                 viewModel.onSignUpConfirm()
-                val action = RegisterFragmentDirections.actionRegisterFragmentToLoginFragment()
+                val action = RegisterFragmentDirections.actionRegisterFragmentToLoginFragment(
+                    viewModel.username.get(),
+                    viewModel.password.get()
+                )
                 NavHostFragment.findNavController(this).navigate(action)
             }
         })

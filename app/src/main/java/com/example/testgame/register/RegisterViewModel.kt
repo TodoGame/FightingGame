@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.testgame.network.SecurityApi
 import com.example.testgame.network.securityService.RegisterData
+import com.example.testgame.network.securityService.UserProperty
 import kotlinx.coroutines.*
 import java.lang.NullPointerException
 
@@ -32,12 +33,17 @@ class RegisterViewModel : ViewModel() {
     val signUpCompleted: LiveData<Boolean>
         get() = _signUpCompleted
 
+    private lateinit var _userResponseString: UserProperty
+    val userResponseString: UserProperty
+        get() = _userResponseString
+
+    private var _errorString = String()
+    val errorString: String
+        get() = _errorString
+
     private val _errorIsCalled = MutableLiveData<Boolean>(false)
     val errorIsCalled: LiveData<Boolean>
         get() = _errorIsCalled
-
-//    private var viewModelJob = Job()
-//    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
 
     fun signUp() {
         if (username.get() == "" || password.get() == "" || user.get() == "") {
@@ -53,28 +59,38 @@ class RegisterViewModel : ViewModel() {
             return
         }
         GlobalScope.launch {
-            val registerDeferred = SecurityApi.RETROFIT_SERVICE.register(
-                RegisterData(
-                    username.get()!!,
-                    password.get()!!,
-                    user.get()!!
-                )
-            )
             try {
+                val registerDeferred = SecurityApi.RETROFIT_SERVICE.register(
+                    RegisterData(
+                        username.get()!!,
+                        password.get()!!,
+                        user.get()!!
+                    )
+                )
                 val answer = registerDeferred.await()
                 if (answer.isSuccessful) {
-                    _signUpCompleted.value = true
+                    val headerToken = answer.headers().get("Authorization")
+                    if (headerToken != null) {
+                        _signUpCompleted.value = true
+                    } else {
+                        callError("Wrong token response")
+                    }
+                } else {
+                    callError("Bad request")
                 }
             } catch (exception: NullPointerException) {
-                _errorIsCalled.value = true
-            } catch (exception: Exception) {
-                _errorIsCalled.value = true
+                callError("Some data missed")
             }
         }
     }
 
     fun onSignUpConfirm() {
         _signUpCompleted.value = false
+    }
+
+    private fun callError(message: String) {
+        _errorString = message
+        _errorIsCalled.value = true
     }
 
     override fun onCleared() {

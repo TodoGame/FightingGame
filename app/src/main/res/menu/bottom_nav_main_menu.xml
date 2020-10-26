@@ -2,23 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/homeFragment"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_fight"
-        android:icon="@drawable/ic_settings_black_24dp"
+        android:id="@+id/locationsFragment"
+        android:icon="@drawable/ic_fight_black_24dp"
         android:title="@string/fight" />
 
     <item
-        android:id="@+id/navigation_shop"
+        android:id="@+id/shopFragment"
         android:icon="@drawable/ic_shop_black_24dp"
         android:title="@string/shop" />
 
     <item
-        android:id="@+id/navigation_settings"
-        android:icon="@drawable/ic_shop_black_24dp"
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/settings" />
 
 </menu>

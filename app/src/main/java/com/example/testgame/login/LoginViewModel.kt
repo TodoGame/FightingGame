@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.testgame.network.SecurityApi
 import com.example.testgame.network.securityService.LoginData
+import com.example.testgame.network.securityService.UserProperty
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.NullPointerException
@@ -28,6 +29,10 @@ class LoginViewModel : ViewModel() {
     val token: String
         get() = _token
 
+    private lateinit var _user: UserProperty
+    val user: UserProperty
+        get() = _user
+
     private val _loginCompleted = MutableLiveData<Boolean>(false)
     val loginCompleted: LiveData<Boolean>
         get() = _loginCompleted
@@ -44,9 +49,6 @@ class LoginViewModel : ViewModel() {
     val errorIsCalled: LiveData<Boolean>
         get() = _errorIsCalled
 
-//    private var viewModelJob = Job()
-//    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
-
     fun logIn() {
         if (username.get() == "" || password.get() == "") {
             if (username.get() == "") {
@@ -60,36 +62,39 @@ class LoginViewModel : ViewModel() {
             return
         }
         GlobalScope.launch {
-            val loginDeferred = SecurityApi.RETROFIT_SERVICE.login(
-                LoginData(
-                    username.get()!!,
-                    password.get()!!
-                )
-            )
             try {
+                val loginDeferred = SecurityApi.RETROFIT_SERVICE.login(
+                    LoginData(
+                        username.get()!!,
+                        password.get()!!
+                    )
+                )
                 val answer = loginDeferred.await()
                 if (answer.isSuccessful) {
                     val headerToken = answer.headers().get("Authorization")
                     if (headerToken != null) {
+                        _user = answer.body()!!
                         _token = headerToken
+                        _loginCompleted.value = true
                     } else {
-                        _errorString = "Wrong token response"
-                        _errorIsCalled.value = true
+                        callError("Wrong token response")
                     }
-                    _loginCompleted.value = true
+                } else {
+                    callError("Bad request")
                 }
-            } catch (exception: NullPointerException) {
-                _errorIsCalled.value = true
+            } catch (e: NullPointerException) {
+                callError("Some data missed")
             }
         }
     }
 
     fun signUp() {
-        _passwordInputErrorHint.value = ""
-        _usernameInputErrorHint.value = ""
-        _usernameInputErrorHint.value = ""
-        _passwordInputErrorHint.value = ""
         _signUpCalled.value = true
+    }
+
+    private fun callError(message: String) {
+        _errorString = message
+        _errorIsCalled.value = true
     }
 
     fun onSignUpConfirm() {

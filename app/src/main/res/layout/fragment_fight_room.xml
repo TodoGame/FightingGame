@@ -69,7 +69,7 @@
 
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="100dp"
+                android:layout_width="71dp"
                 android:layout_height="33dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/health"
@@ -78,5 +78,17 @@
                 tools:layout_editor_absoluteX="171dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ScrollView
+            android:layout_width="409dp"
+            android:layout_height="510dp"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
