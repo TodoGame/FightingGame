@@ -3,7 +3,9 @@ package com.somegame.security
 import com.somegame.user.User
 
 object UserSource {
-    private val users = listOf<User>().associateBy { it.username }.toMutableMap()
+    val user1 = User("user1", "pass1", "User1")
+    val user2 = User("user2", "pass2", "User2")
+    private val users = listOf<User>(user1, user2).associateBy { it.username }.toMutableMap()
     fun findUserByUsername(username: String): User? = users[username]
 
     fun findUserByCredentials(credentials: UserLoginCredentials): User? = findUserByUsername(credentials.username)

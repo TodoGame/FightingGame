@@ -1,6 +1,5 @@
-package com.somegame.match.messages
+package match
 
-import com.somegame.match.matchmaking.Match
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -16,4 +15,4 @@ data class MatchEnded(val winner: String) : Message()
 data class PlayerAction(val target: String, val attacker: String) : Message()
 
 @Serializable
-data class TurnStarted(val matchSnapshot: Match.MatchSnapshot) : Message()
+data class TurnStarted(val matchSnapshot: MatchSnapshot) : Message()

@@ -2,10 +2,11 @@ package com.somegame.match
 
 import com.somegame.match.matchmaking.Match
 import com.somegame.match.matchmaking.Player
-import com.somegame.match.messages.Message
-import com.somegame.match.messages.PlayerAction
 import com.somegame.user.User
 import kotlinx.serialization.SerializationException
+import match.MatchSnapshot
+import match.Message
+import match.PlayerAction
 import match.websocketuser.WebSocketClient
 
 object MatchLogger {
@@ -41,7 +42,7 @@ object MatchLogger {
         println("Match $match started. Active player: $activePlayer")
     }
 
-    fun logTurnStart(snapshot: Match.MatchSnapshot) {
+    fun logTurnStart(snapshot: MatchSnapshot) {
         println("Turn started with current $snapshot")
     }
 

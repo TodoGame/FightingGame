@@ -1,8 +1,8 @@
 package com.somegame.match.matchmaking
 
 import com.somegame.match.MatchLogger
-import com.somegame.match.messages.PlayerAction
-import kotlinx.serialization.Serializable
+import match.MatchSnapshot
+import match.PlayerAction
 import java.util.concurrent.atomic.AtomicInteger
 
 class Match {
@@ -100,9 +100,6 @@ class Match {
     private fun getSnapshot() = MatchSnapshot(players.map { it.getSnapshot() })
 
     override fun toString() = "Match(users=${players.map { it.username }})"
-
-    @Serializable
-    data class MatchSnapshot(val players: List<Player.PlayerSnapshot>)
 
     class IllegalAction(action: PlayerAction) : IllegalStateException(action.toString())
 }
