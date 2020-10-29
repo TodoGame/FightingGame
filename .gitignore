@@ -5,4 +5,4 @@
 *.iml
 *.ipr
 *.iws
-src/http/http-client.private.env.json
+local.properties
