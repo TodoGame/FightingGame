@@ -1,2 +1,2 @@
 rootProject.name = "FightingGame"
-include("android", "server", "shared")
+include("server", "shared", "android", "android:app")

@@ -9,10 +9,8 @@ plugins {
     application
     kotlin("jvm") version "1.4.10"
     kotlin("plugin.serialization") version "1.4.10"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
-
-group = "com.somegame"
-version = "0.0.1"
 
 application {
     mainClassName = "io.ktor.server.netty.EngineMain"
@@ -37,6 +35,16 @@ dependencies {
     implementation("io.ktor:ktor-jackson:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes(
+                mapOf(
+                        "Main-Class" to application.mainClassName
+                )
+        )
+    }
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
