@@ -1,5 +1,6 @@
 package com.somegame.security
 
+import security.UserLoginCredentials
 import user.User
 
 object UserSource {

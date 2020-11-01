@@ -44,7 +44,7 @@ class FightViewModel : ViewModel() {
         }
     }
 
-    fun confirmRoomEntrance() {
+    fun onRoomEntranceConfirm() {
         _isMatchStarted.value = false
     }
 

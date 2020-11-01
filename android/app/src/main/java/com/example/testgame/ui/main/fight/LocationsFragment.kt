@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainFightLocationsBinding
+import com.example.testgame.ui.entrance.register.RegisterFragmentDirections
 
 class LocationsFragment : Fragment() {
 
@@ -33,8 +35,10 @@ class LocationsFragment : Fragment() {
 
         viewModel.isMatchStarted.observe(viewLifecycleOwner, Observer { isMatchStarted ->
             if (isMatchStarted) {
-                viewModel.confirmRoomEntrance()
+                viewModel.onRoomEntranceConfirm()
             }
+            val action = LocationsFragmentDirections.actionLocationsFragmentToFightFragment()
+            NavHostFragment.findNavController(this).navigate(action)
         })
 
         return binding.root
