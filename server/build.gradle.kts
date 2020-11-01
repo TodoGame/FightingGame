@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ktor_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
+val ktor_version = "1.4.1"
+val kotlin_version = "1.4.10"
+val logback_version = "1.2.1"
 
 plugins {
     application
@@ -37,15 +37,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
 }
 
-tasks.withType<Jar> {
-    manifest {
-        attributes(
-                mapOf(
-                        "Main-Class" to application.mainClassName
-                )
-        )
-    }
-}
+//tasks.withType<Jar> {
+//    manifest {
+//        attributes(
+//                mapOf(
+//                        "Main-Class" to application.mainClassName
+//                )
+//        )
+//    }
+//}
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
 kotlin.sourceSets["test"].kotlin.srcDirs("test")
