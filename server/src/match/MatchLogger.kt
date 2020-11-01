@@ -2,7 +2,7 @@ package com.somegame.match
 
 import com.somegame.match.matchmaking.Match
 import com.somegame.match.matchmaking.Player
-import com.somegame.user.User
+import user.User
 import kotlinx.serialization.SerializationException
 import match.MatchSnapshot
 import match.Message

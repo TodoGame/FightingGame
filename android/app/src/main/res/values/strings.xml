@@ -13,13 +13,16 @@
     <string name="escape">Escape</string>
     <string name="health">Health</string>
     <string name="user">User</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Fight</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="shop">Shop</string>
     <string name="fight">Fight</string>
     <string name="settings">Settings</string>
+
+    <string name="mm">MM</string>
+
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>

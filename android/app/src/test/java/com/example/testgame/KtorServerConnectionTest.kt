@@ -1,10 +1,11 @@
 package com.example.testgame
 
 import com.example.testgame.network.SecurityApi
-import com.example.testgame.network.securityService.ChangePasswordData
-import com.example.testgame.network.securityService.LoginData
-import com.example.testgame.network.securityService.RegisterData
+import security.ChangePasswordData
+import security.LoginData
+import security.RegisterData
 import kotlinx.coroutines.runBlocking
+import match.PlayerSnapshot
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -23,9 +24,15 @@ class KtorServerConnectionTest {
 
     @Test
     fun shouldThrowConnectException() {
+        val userProperty = PlayerSnapshot
         assertThrows(ConnectException::class.java) {
             runBlocking {
-                val answerDeferred = SecurityApi.RETROFIT_SERVICE.login(LoginData(testUsername, testUserPassword))
+                val answerDeferred = SecurityApi.RETROFIT_SERVICE.login(
+                    LoginData(
+                        testUsername,
+                        testUserPassword
+                    )
+                )
                 val answer = answerDeferred.await()
             }
         }
@@ -56,7 +63,12 @@ class KtorServerConnectionTest {
     @Test
     fun shouldLoginNewUser() {
         runBlocking {
-            val answerDeferred = SecurityApi.RETROFIT_SERVICE.login(LoginData(testUsername, testUserPassword))
+            val answerDeferred = SecurityApi.RETROFIT_SERVICE.login(
+                LoginData(
+                    testUsername,
+                    testUserPassword
+                )
+            )
             val answer = answerDeferred.await()
             if (answer.isSuccessful) {
                 println("User logined")
@@ -74,14 +86,22 @@ class KtorServerConnectionTest {
         var token = ""
 
         runBlocking {
-            val loginAnswerDeferred = SecurityApi.RETROFIT_SERVICE.login(LoginData(testUsername, testUserPassword))
+            val loginAnswerDeferred = SecurityApi.RETROFIT_SERVICE.login(
+                LoginData(
+                    testUsername,
+                    testUserPassword
+                )
+            )
             val loginAnswer = loginAnswerDeferred.await()
             if (loginAnswer.isSuccessful) {
                 println("User logined")
                 assertTrue(loginAnswer.headers().names().contains("Authorization"))
                 token = loginAnswer.headers().get("Authorization") ?: ""
                 val changeAnswerDeferred = SecurityApi.RETROFIT_SERVICE.changePassword(
-                    ChangePasswordData(testUserPassword, testNewUserPassword),
+                    ChangePasswordData(
+                        testUserPassword,
+                        testNewUserPassword
+                    ),
                     mapOf("Authorization" to token)
                 )
                 val changeAnswer = changeAnswerDeferred.await()

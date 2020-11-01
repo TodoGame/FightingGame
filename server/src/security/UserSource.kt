@@ -1,6 +1,6 @@
 package com.somegame.security
 
-import com.somegame.user.User
+import user.User
 
 object UserSource {
     val user1 = User("user1", "pass1", "User1")

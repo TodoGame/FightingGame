@@ -4,8 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
-import com.somegame.user.User
-import io.ktor.auth.jwt.*
+import user.User
 import io.ktor.websocket.*
 
 object JwtConfig {

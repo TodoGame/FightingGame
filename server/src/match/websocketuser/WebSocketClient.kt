@@ -3,7 +3,7 @@ package match.websocketuser
 import com.somegame.match.MatchLogger
 import com.somegame.match.matchmaking.Matchmaker
 import com.somegame.match.websocketuser.WebSocketClientService
-import com.somegame.user.User
+import user.User
 import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.*
 import kotlinx.serialization.encodeToString

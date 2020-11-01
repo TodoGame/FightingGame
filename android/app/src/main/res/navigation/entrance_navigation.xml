@@ -6,9 +6,9 @@
     app:startDestination="@id/loginFragment">
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.testgame.login.LoginFragment"
+        android:name="com.example.testgame.ui.entrance.login.LoginFragment"
         android:label="Login"
-        tools:layout="@layout/fragment_login">
+        tools:layout="@layout/fragment_entrance_login">
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment"
@@ -24,9 +24,9 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.testgame.register.RegisterFragment"
+        android:name="com.example.testgame.ui.entrance.register.RegisterFragment"
         android:label="Register"
-        tools:layout="@layout/fragment_register">
+        tools:layout="@layout/fragment_entrance_register">
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
             app:destination="@id/loginFragment" />

@@ -18,7 +18,7 @@ import match.PlayerAction
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val isTokenAlive: Boolean
+        var isTokenAlive = true
         runBlocking {
 //            val isTokenALive = isTokenValid()
             isTokenAlive = true
