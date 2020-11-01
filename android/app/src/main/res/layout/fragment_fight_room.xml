@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fight.FightFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="219dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="157dp"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="155dp"
+                    android:layout_height="53dp"
+                    android:text="@string/attack"
+                    app:layout_constraintBottom_toTopOf="@+id/button11"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/button11"
+                    android:layout_width="155dp"
+                    android:layout_height="54dp"
+                    android:text="@string/guard"
+                    app:layout_constraintBottom_toTopOf="@+id/button12"
+                    app:layout_constraintTop_toBottomOf="@+id/button"
+                    tools:layout_editor_absoluteX="1dp" />
+
+                <Button
+                    android:id="@+id/button12"
+                    android:layout_width="155dp"
+                    android:layout_height="53dp"
+                    android:text="@string/skill"
+                    app:layout_constraintBottom_toTopOf="@+id/button13"
+                    app:layout_constraintTop_toBottomOf="@+id/button11"
+                    tools:layout_editor_absoluteX="1dp" />
+
+                <Button
+                    android:id="@+id/button13"
+                    android:layout_width="155dp"
+                    android:layout_height="54dp"
+                    android:text="@string/escape"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/button12"
+                    tools:layout_editor_absoluteX="1dp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="175dp"
+                android:layout_height="48dp"
+                tools:layout_editor_absoluteX="171dp"
+                tools:layout_editor_absoluteY="59dp" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="71dp"
+                android:layout_height="33dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/health"
+                android:textSize="24sp"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="171dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ScrollView
+            android:layout_width="409dp"
+            android:layout_height="510dp"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

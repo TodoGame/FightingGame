@@ -1,7 +1,7 @@
 package com.somegame.match.websocketuser
 
 import com.somegame.match.MatchLogger
-import user.User
+import com.somegame.user.User
 import io.ktor.websocket.*
 import match.websocketuser.WebSocketClient
 

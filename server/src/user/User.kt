@@ -1,4 +1,4 @@
-package user
+package com.somegame.user
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.auth.*

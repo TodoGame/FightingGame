@@ -6,30 +6,26 @@
     app:startDestination="@id/homeFragment">
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.testgame.ui.main.home.HomeFragment"
+        android:name="com.example.testgame.ui.home.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_main_home"/>
+        tools:layout="@layout/fragment_home"/>
     <fragment
         android:id="@+id/locationsFragment"
-        android:name="com.example.testgame.ui.main.fight.LocationsFragment"
+        android:name="com.example.testgame.locations.LocationsFragment"
         android:label="fragment_fight_locations"
-        tools:layout="@layout/fragment_main_fight_locations" >
-        <action
-            android:id="@+id/action_locationsFragment_to_fightFragment"
-            app:destination="@id/fightFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_fight_locations" />
     <fragment
         android:id="@+id/fightFragment"
-        android:name="com.example.testgame.ui.main.fight.FightFragment"
+        android:name="com.example.testgame.fight.FightFragment"
         android:label="fragment_fight_room"
-        tools:layout="@layout/fragment_main_fight_room" />
+        tools:layout="@layout/fragment_fight_room" />
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.testgame.ui.main.settings.SettingsFragment"
+        android:name="com.example.testgame.SettingsFragment"
         android:label="SettingsFragment" />
     <fragment
         android:id="@+id/shopFragment"
-        android:name="com.example.testgame.ui.main.shop.ShopFragment"
+        android:name="com.example.testgame.ShopFragment"
         android:label="shop_fragment"
-        tools:layout="@layout/fragment_main_shop" />
+        tools:layout="@layout/shop_fragment" />
 </navigation>

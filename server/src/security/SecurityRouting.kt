@@ -1,15 +1,13 @@
 package com.somegame.security
 
 import com.fasterxml.jackson.databind.JsonMappingException
-import user.User
+import com.somegame.user.User
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import security.ChangePasswordInput
-import security.UserLoginCredentials
 
 fun Routing.security() {
     post("/login") {
