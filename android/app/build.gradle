@@ -44,6 +44,8 @@ android {
 }
 
 dependencies {
+    implementation project(":shared")
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$version_kotlin"
 
