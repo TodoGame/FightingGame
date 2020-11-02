@@ -59,6 +59,5 @@ fun Routing.security() {
                 call.response.status(HttpStatusCode.Unauthorized)
             }
         }
-
     }
 }

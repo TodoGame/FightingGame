@@ -1,20 +1,20 @@
 package com.somegame
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.features.*
-import org.slf4j.event.*
-import io.ktor.routing.*
-import io.ktor.http.*
-import io.ktor.websocket.*
-import io.ktor.http.cio.websocket.*
-import java.time.*
-import io.ktor.auth.*
 import com.fasterxml.jackson.databind.*
+import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.http.cio.websocket.*
 import io.ktor.jackson.*
-import kotlin.test.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import io.ktor.server.testing.*
+import io.ktor.websocket.*
+import org.slf4j.event.*
+import java.time.*
+import kotlin.test.*
 
 class ApplicationTest {
     @Test

@@ -57,7 +57,6 @@ object MatchRouting {
         match?.start()
     }
 
-
     private fun tryConnectClient(session: WebSocketServerSession): WebSocketClient {
         val user = JwtConfig.authorizeWebSocketUser(session)
         MatchLogger.logUserConnect(user)
