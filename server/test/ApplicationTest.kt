@@ -26,4 +26,8 @@ class ApplicationTest {
             }
         }
     }
+    @Test
+    fun shouldPass() {
+        assert(true)
+    }
 }
