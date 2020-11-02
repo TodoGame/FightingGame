@@ -13,3 +13,7 @@ task("checkStage") {
         }
     }
 }
+
+task("ktlintCheck") {
+    dependsOn("shared:ktlintCheck", "server:ktlintCheck", "android:app:ktlintCheck")
+}
