@@ -23,9 +23,12 @@ class NotificationsFragment : Fragment() {
             ViewModelProviders.of(this).get(NotificationsViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_shop, container, false)
         val textView: TextView = root.findViewById(R.id.text_notifications)
-        notificationsViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+        notificationsViewModel.text.observe(
+            viewLifecycleOwner,
+            Observer {
+                textView.text = it
+            }
+        )
         return root
     }
 }

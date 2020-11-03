@@ -10,13 +10,13 @@ interface SecurityService {
 
     @POST("register")
     fun register(@Body registerData: RegisterData):
-            Deferred<Response<UserProperty>>
+        Deferred<Response<UserProperty>>
 
     @POST("login")
     fun login(@Body loginData: LoginData):
-            Deferred<Response<UserProperty>>
+        Deferred<Response<UserProperty>>
 
     @POST("changemypassword")
     fun changePassword(@Body changePasswordData: ChangePasswordData, @HeaderMap headers: Map<String, String>):
-            Deferred<Response<Void>>
+        Deferred<Response<Void>>
 }

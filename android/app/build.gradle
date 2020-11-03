@@ -8,6 +8,10 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
+    lintOptions {
+        abortOnError false
+    }
+
     defaultConfig {
         applicationId "com.example.testgame"
         minSdkVersion 16
@@ -88,4 +92,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_kotlin_coroutines"
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$version_retrofit_coroutines_adapter"
 
+}
+
+ktlint {
+    disabledRules.set(Set.of("no-wildcard-imports"))
 }
