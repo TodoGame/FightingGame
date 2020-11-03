@@ -95,5 +95,5 @@ dependencies {
 }
 
 ktlint {
-    disabledRules.set(Set.of("no-wildcard-imports"))
+    disabledRules = ["no-wildcard-imports"]
 }
