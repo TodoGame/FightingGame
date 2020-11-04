@@ -4,7 +4,6 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.testgame.network.matchService.MatchApi
 import io.ktor.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -39,7 +38,6 @@ class FightViewModel : ViewModel() {
             try {
 //                MatchApi.findMatch()
             } catch (exception: Exception) {
-
             }
         }
     }

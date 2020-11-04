@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 //apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "org.jetbrains.kotlin.plugin.serialization"
-apply plugin: "org.jlleitschuh.gradle.ktlint"
+//apply plugin: "org.jlleitschuh.gradle.ktlint"
 
 android {
     compileSdkVersion 30
@@ -87,6 +87,6 @@ dependencies {
     implementation("io.ktor:ktor-client-okhttp:$version_ktor")
 }
 
-ktlint {
-    disabledRules = ["no-wildcard-imports"]
-}
+//ktlint {
+//    disabledRules = ["no-wildcard-imports"]
+//}

@@ -5,8 +5,8 @@ import androidx.databinding.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.testgame.network.securityService.SecurityApi
 import com.example.testgame.network.securityService.LoginData
+import com.example.testgame.network.securityService.SecurityApi
 import com.example.testgame.network.securityService.UserProperty
 import io.ktor.client.statement.*
 import io.ktor.http.*

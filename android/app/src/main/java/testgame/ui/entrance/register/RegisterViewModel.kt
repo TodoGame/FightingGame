@@ -5,8 +5,8 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.testgame.network.securityService.SecurityApi
 import com.example.testgame.network.securityService.RegisterData
+import com.example.testgame.network.securityService.SecurityApi
 import com.example.testgame.network.securityService.UserProperty
 import io.ktor.http.*
 import kotlinx.coroutines.*
