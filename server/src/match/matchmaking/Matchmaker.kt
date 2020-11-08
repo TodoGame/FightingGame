@@ -19,7 +19,7 @@ class Matchmaker {
         if (user in waitingUsers) {
             throw UserAlreadyWaiting(user)
         }
-        return if (waitingUsersCount.getAcquire() >= MATCH_SIZE - 1) {
+        return if (waitingUsersCount.get() >= MATCH_SIZE - 1) {
             makeMatch(user)
         } else {
             waitingUsers.add(user)
