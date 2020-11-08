@@ -10,7 +10,7 @@ import io.ktor.routing.*
 fun Routing.user() {
     authenticate {
         get("/me") {
-            val user = call.principal<User>()
+            val user = call.principal<UserEntity>()
             if (user != null) {
                 call.respond(user)
             } else {
@@ -18,7 +18,7 @@ fun Routing.user() {
             }
         }
         post("/changemyname") {
-            val user = call.principal<User>()
+            val user = call.principal<UserEntity>()
             val newName = call.receive<String>()
             if (user != null) {
                 user.name = newName
