@@ -1,11 +1,11 @@
-package com.somegame.match.matchmaking
+package com.somegame.match.player
 
+import com.somegame.match.matchmaking.Match
+import com.somegame.websocket.WebSocketService
 import match.*
-import match.websocketuser.WebSocketClient
 import kotlin.math.max
 
-class Player(private val client: WebSocketClient, private val match: Match) {
-
+class Player(private val client: WebSocketService.Client, private val match: Match) {
     val username = client.username
 
     var isActive = false
@@ -19,7 +19,7 @@ class Player(private val client: WebSocketClient, private val match: Match) {
     }
 
     suspend fun onMatchStart() {
-        client.sendMessage(MatchStarted(match.playersUsernames))
+        client.sendMessage(MatchStarted(match.playersUsernames.toSet()))
     }
 
     suspend fun onTurnStart(matchSnapshot: MatchSnapshot) {
@@ -39,13 +39,12 @@ class Player(private val client: WebSocketClient, private val match: Match) {
 
     suspend fun handleGameEnd(winner: Player) {
         client.sendMessage(MatchEnded(winner.username))
-        client.disconnect()
+        client.kick()
     }
 
     suspend fun handleDisconnect() {
         match.handleDisconnect(this)
-        PlayerService.clearPlayer(username)
-        client.handleDisconnect()
+        PlayerService.clearPlayer(this)
     }
 
     private fun takeDamage(damage: Int) {

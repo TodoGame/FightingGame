@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 sealed class Message
 
 @Serializable
-data class MatchStarted(val players: List<String>) : Message()
+data class MatchStarted(val players: Set<String>) : Message()
 
 @Serializable
 data class MatchEnded(val winner: String) : Message()

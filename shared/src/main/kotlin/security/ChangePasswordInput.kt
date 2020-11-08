@@ -1,3 +1,3 @@
-package com.somegame.security
+package security
 
 data class ChangePasswordInput(val oldPassword: String, val newPassword: String)

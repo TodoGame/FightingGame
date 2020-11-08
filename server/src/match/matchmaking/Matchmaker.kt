@@ -1,60 +1,51 @@
 package com.somegame.match.matchmaking
 
-import com.somegame.match.MatchLogger
-import com.somegame.match.websocketuser.WebSocketClientService
-import match.websocketuser.WebSocketClient
+import org.slf4j.LoggerFactory
+import user.User
+import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.atomic.AtomicInteger
 
-object Matchmaker {
-    const val MATCH_SIZE = 2
+class Matchmaker {
+    private val logger = LoggerFactory.getLogger(javaClass)
 
-    private val waitingUsers = ArrayDeque<String>()
+    companion object {
+        private const val MATCH_SIZE = 2
+    }
 
-    fun findMatch(client: WebSocketClient): Match? {
-        val matchUsernames = join(client.username)
-        return if (matchUsernames != null) {
-            makeMatch(matchUsernames)
+    private val waitingUsers = ConcurrentLinkedDeque<User>()
+    private val waitingUsersCount = AtomicInteger(0)
+
+    fun join(user: User): List<User>? {
+        if (user in waitingUsers) {
+            throw UserAlreadyWaiting(user)
+        }
+        return if (waitingUsersCount.getAcquire() >= MATCH_SIZE - 1) {
+            makeMatch(user)
         } else {
+            waitingUsers.add(user)
+            waitingUsersCount.incrementAndGet()
+            logger.info("User $user added to matchmaking queue")
             null
         }
     }
 
-    private fun makeMatch(usernames: List<String>): Match {
-        val clients = usernames.map { WebSocketClientService.getClient(it) }
-        val match = Match()
-        for (client in clients) {
-            PlayerService.makePlayer(client, match)
-        }
-        return match
+    fun leave(user: User) {
+        waitingUsers.removeIf { it.username == user.username }
     }
 
-    private fun join(username: String): List<String>? {
-        if (username in waitingUsers) {
-            throw UserAlreadyWaiting(username)
-        }
-        return if (waitingUsers.size >= MATCH_SIZE - 1) {
-            makeMatch(username)
-        } else {
-            waitingUsers.add(username)
-            MatchLogger.logUserAddedToQueue(username)
-            null
-        }
-    }
-
-    fun leave(client: WebSocketClient) {
-        waitingUsers.remove(client.username)
-    }
-
-    private fun makeMatch(with: String): List<String>? {
+    private fun makeMatch(with: User): List<User>? {
         if (waitingUsers.size < MATCH_SIZE - 1) {
             return null
         }
         val users = mutableListOf(with)
         for (i in 0 until MATCH_SIZE - 1) {
             users.add(waitingUsers.removeFirst())
+            waitingUsersCount.decrementAndGet()
         }
+        logger.info("Found match with users $users")
         return users
     }
 
-    class UserAlreadyWaiting(username: String) :
-        IllegalArgumentException("User $username is has already joined matchmaking")
+    class UserAlreadyWaiting(user: User) :
+        IllegalArgumentException("User ${user.username} is has already joined matchmaking")
 }
