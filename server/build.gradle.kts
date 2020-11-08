@@ -34,12 +34,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
     implementation("org.junit.jupiter:junit-jupiter:5.4.2")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
-//    testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
-//    implementation("org.junit.jupiter:junit-jupiter:5.6.2")
-//    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-//    testImplementation(platform("org.junit:junit-bom:5.7.0"))
-//    testImplementation("org.junit.jupiter:junit-jupiter")
-//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
