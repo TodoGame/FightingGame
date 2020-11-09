@@ -1,12 +1,17 @@
 package com.somegame.match.matchmaking
 
-import com.somegame.match.MatchLogger
+import com.somegame.match.player.Player
+import com.somegame.match.player.PlayerService
+import com.somegame.websocket.WebSocketService
 import match.MatchSnapshot
 import match.PlayerAction
+import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
 
-class Match {
-    private val players = mutableSetOf<Player>()
+class Match(clients: List<WebSocketService.Client>) {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    private val players = clients.map { PlayerService.makePlayer(it, this) }.toMutableList()
 
     val playersUsernames
         get() = players.map { it.username }
@@ -19,11 +24,6 @@ class Match {
         ENDED(2),
     }
 
-    fun joinPlayer(player: Player) {
-        players.add(player)
-        MatchLogger.logPlayerAddedToMatch(player, this)
-    }
-
     suspend fun start() {
         state.set(State.IN_PROGRESS.code)
         for (player in players) {
@@ -31,13 +31,13 @@ class Match {
         }
         val activePlayer = players.first()
         activePlayer.changeIsActive()
-        MatchLogger.logMatchStart(this, activePlayer)
+        logger.info("Match $this started with first active player $activePlayer")
         handleTurnStart()
     }
 
     private suspend fun handleTurnStart() {
         val snapshot = getSnapshot()
-        MatchLogger.logTurnStart(snapshot)
+        logger.info("Turn started $snapshot")
         for (player in players) {
             player.onTurnStart(snapshot)
         }
@@ -57,6 +57,7 @@ class Match {
     }
 
     private suspend fun handleTurnEnd() {
+        logger.info("Turn ended $this")
         val winner = getWinner()
         if (winner != null) {
             endGame(winner)
@@ -70,6 +71,7 @@ class Match {
 
     private suspend fun endGame(winner: Player) {
         state.set(State.ENDED.code)
+        logger.info("Match ended $this")
         for (player in players) {
             player.handleGameEnd(winner)
         }
@@ -77,6 +79,7 @@ class Match {
 
     suspend fun handleDisconnect(player: Player) {
         players.remove(player)
+        logger.info("Player $player disconnected while match was in progress")
         if (state.get() == State.IN_PROGRESS.code) {
             val winner = players.first()
             endGame(winner)
@@ -97,7 +100,7 @@ class Match {
         }
     }
 
-    private fun getSnapshot() = MatchSnapshot(players.map { it.getSnapshot() })
+    private fun getSnapshot() = MatchSnapshot(players.map { it.getSnapshot() }.toSet())
 
     override fun toString() = "Match(users=${players.map { it.username }})"
 

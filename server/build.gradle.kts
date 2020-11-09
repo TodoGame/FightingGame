@@ -31,8 +31,9 @@ dependencies {
     implementation("io.ktor:ktor-auth:$ktorVersion")
     implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
-    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
+    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
@@ -43,4 +44,10 @@ sourceSets["test"].resources.srcDirs("testresources")
 
 ktlint {
     disabledRules.set(setOf("no-wildcard-imports"))
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
+    }
 }

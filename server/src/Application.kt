@@ -1,9 +1,8 @@
 package com.somegame
 
 import com.fasterxml.jackson.databind.*
-import com.somegame.match.MatchRouting.match
+import com.somegame.match.MatchRouting
 import com.somegame.security.JwtConfig
-import com.somegame.security.UserSource
 import com.somegame.security.security
 import com.somegame.user.user
 import io.ktor.application.*
@@ -26,7 +25,6 @@ fun main(args: Array<String>): Unit = EngineMain.main(args)
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
-
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
@@ -43,7 +41,7 @@ fun Application.module(testing: Boolean = false) {
         jwt {
             verifier(JwtConfig.verifier)
             validate {
-                it.payload.subject?.let { username -> UserSource.findUserByUsername(username) }
+                JwtConfig.verifyCredentialsAndGetPrincipal(it)
             }
         }
     }
@@ -61,6 +59,6 @@ fun Application.module(testing: Boolean = false) {
 
         security()
         user()
-        match()
+        MatchRouting().setUpMatchRoutes(this)
     }
 }
