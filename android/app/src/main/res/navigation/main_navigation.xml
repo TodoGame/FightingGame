@@ -11,18 +11,9 @@
         tools:layout="@layout/fragment_main_home"/>
     <fragment
         android:id="@+id/locationsFragment"
-        android:name="com.example.testgame.ui.main.fight.LocationsFragment"
+        android:name="testgame.ui.main.fight.LocationsFragment"
         android:label="fragment_fight_locations"
-        tools:layout="@layout/fragment_main_fight_locations" >
-        <action
-            android:id="@+id/action_locationsFragment_to_fightFragment"
-            app:destination="@id/fightFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/fightFragment"
-        android:name="com.example.testgame.ui.main.fight.FightFragment"
-        android:label="fragment_fight_room"
-        tools:layout="@layout/fragment_main_fight_room" />
+        tools:layout="@layout/fragment_main_fight_locations" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.testgame.ui.main.settings.SettingsFragment"

@@ -6,7 +6,7 @@
             type="java.lang.String"/>
         <variable
             name="viewModel"
-            type="com.example.testgame.ui.main.fight.FightViewModel" />
+            type="testgame.ui.main.fight.FightViewModel" />
     </data>
 
     <Button
@@ -16,7 +16,6 @@
         tools:showIn="@layout/activity_main"
         android:text="@{location}"
         android:textSize="45sp"
-        android:onClick="@{() -> viewModel.findMatch(location) }"
         tools:text="@{location}">
     </Button>
 

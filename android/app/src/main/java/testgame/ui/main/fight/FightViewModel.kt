@@ -1,4 +1,4 @@
-package com.example.testgame.ui.main.fight
+package testgame.ui.main.fight
 
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
@@ -17,6 +17,14 @@ class FightViewModel : ViewModel() {
     val isMatchStarted: LiveData<Boolean>
         get() = _isMatchStarted
 
+    private var _activePlayerId = MutableLiveData<Int>()
+    val activePlayerId: LiveData<Int>
+        get() = _activePlayerId
+
+    private var _currentOption = MutableLiveData<Option>()
+    val currentOption: LiveData<Option>
+        get() = _currentOption
+
     private var _errorString = String()
     val errorString: String
         get() = _errorString
@@ -25,20 +33,29 @@ class FightViewModel : ViewModel() {
     val errorIsCalled: LiveData<Boolean>
         get() = _errorIsCalled
 
-    enum class Location(locationName: String) {
-        MM("MatMech"),
-        PM_PU("PM_PU"),
-        Chem("Chemistry"),
-        Phys("Physics")
+    enum class Option() {
+        ATTACK,
+        INVENTORY,
+        DEFEND,
+        SKILLS
     }
 
-    @KtorExperimentalAPI
-    fun findMatch(location: String) {
+//    @KtorExperimentalAPI
+    fun findMatch() {
+        _isMatchStarted.value = true
         GlobalScope.launch {
             try {
 //                MatchApi.findMatch()
             } catch (exception: Exception) {
             }
+        }
+    }
+
+    fun selectFightOption() {
+        if (_currentOption.value == Option.ATTACK) {
+            _currentOption.value = Option.INVENTORY
+        } else {
+            _currentOption.value = Option.ATTACK
         }
     }
 

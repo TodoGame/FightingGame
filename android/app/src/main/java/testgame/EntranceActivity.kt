@@ -1,5 +1,6 @@
-package com.example.testgame
+package testgame
 
+import com.example.testgame.R
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil

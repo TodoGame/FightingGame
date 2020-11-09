@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
-import com.example.testgame.EntranceActivity
+import testgame.EntranceActivity
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentEntranceLoginBinding
 

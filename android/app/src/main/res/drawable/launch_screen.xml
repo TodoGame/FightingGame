@@ -4,5 +4,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
 
     <item android:drawable="@android:color/holo_orange_dark"/>
+    <item>
+        <bitmap android:src="@drawable/ic_cubok"
+            android:gravity="center_horizontal"/>
+    </item>
 
 </layer-list>
