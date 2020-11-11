@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.entrance.register.RegisterFragment">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.testgame.ui.entrance.register.RegisterViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/usernameInputLayout"
+            android:layout_width="275dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="36dp"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/usernameInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/username"
+                android:text="@={viewModel.username}"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
+                app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordInputLayout"
+            android:layout_width="275dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="32dp"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@+id/usernameInputLayout"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
+            app:layout_constraintTop_toBottomOf="@+id/usernameInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/password"
+                android:text="@={viewModel.password}"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
+                app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/userInputLayout"
+            android:layout_width="275dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="32dp"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@+id/passwordInputLayout"
+            app:layout_constraintTop_toBottomOf="@+id/passwordInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/userInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/user"
+                android:text="@={viewModel.user}"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
+                app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/signUpButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/sign_up"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userInputLayout"
+            android:onClick="@{() -> viewModel.signUp()}"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

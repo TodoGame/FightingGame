@@ -2,7 +2,26 @@
 /.idea
 /out
 /build
-*.iml
 *.ipr
 *.iws
-src/http/http-client.private.env.json
+local.properties
+
+# all subprojects
+*.iml
+/**/out/
+/**/.idea/
+/**/.gradle
+/**/build
+
+# android
+/android/.DS_Store
+/android/.externalNativeBuild
+/android/.cxx
+
+# shared
+/shared/build
+/shared/.gradle
+
+# server
+/server/.gradle
+/server/build
