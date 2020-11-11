@@ -1,30 +1,26 @@
 package com.somegame.user
 
+import com.somegame.security.UserPrincipal
+import com.somegame.user.service.UserService
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.koin.ktor.ext.inject
+import user.GET_ME_ENDPOINT
 
 fun Routing.user() {
+    val userService: UserService by inject()
+
     authenticate {
-        get("/me") {
-            val user = call.principal<UserEntity>()
+        get(GET_ME_ENDPOINT) {
+            val userPrincipal = call.principal<UserPrincipal>()
+            val user = userPrincipal?.let { userService.findUserByUsername(it?.username) }
             if (user != null) {
                 call.respond(user)
             } else {
-                call.response.status(HttpStatusCode.Unauthorized)
-            }
-        }
-        post("/changemyname") {
-            val user = call.principal<UserEntity>()
-            val newName = call.receive<String>()
-            if (user != null) {
-                user.name = newName
-                call.respond(user)
-            } else {
-                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
             }
         }
     }

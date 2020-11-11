@@ -2,7 +2,7 @@ package com.somegame.websocket
 
 import com.somegame.security.UnauthorizedException
 import com.somegame.security.UserPrincipal
-import com.somegame.user.UserEntity
+import com.somegame.user.repository.UserEntity
 import com.somegame.websocket.WebSocketTicketManager.Companion.DEFAULT_TICKET_LIFE_EXPECTANCY
 import io.ktor.application.*
 import io.ktor.auth.*

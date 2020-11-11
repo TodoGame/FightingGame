@@ -1,6 +1,7 @@
 package com.somegame
 
 import com.fasterxml.jackson.databind.*
+import com.somegame.db.DatabaseConfig
 import com.somegame.match.MatchRouting
 import com.somegame.security.JwtConfig
 import com.somegame.security.security
@@ -17,17 +18,26 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.netty.*
 import io.ktor.websocket.*
+import org.koin.core.Koin
 import org.slf4j.event.*
 import java.time.*
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 
-@Suppress("unused") // Referenced in application.conf
-@kotlin.jvm.JvmOverloads
-fun Application.module(testing: Boolean = false) {
+fun Application.module() {
+    val dbUrl = environment.config.property("database.url").getString()
+    val dbUser = environment.config.property("database.user").getString()
+    val dbPassword = environment.config.property("database.password").getString()
+
+    DatabaseConfig(dbUrl, dbUser, dbPassword).connect()
+
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
+    }
+
+    install(org.koin.ktor.ext.Koin) {
+        modules(com.somegame.databaseRepositoryModule, com.somegame.applicationModule)
     }
 
     install(WebSockets) {

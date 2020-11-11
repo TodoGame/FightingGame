@@ -4,9 +4,8 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import com.somegame.user.UserEntity
+import com.somegame.user.repository.UserEntity
 import io.ktor.auth.jwt.*
-import io.ktor.websocket.*
 
 object JwtConfig {
     private const val secret = "SecretHehe"
@@ -17,7 +16,7 @@ object JwtConfig {
     fun makeToken(userPrincipal: UserPrincipal): JWTCreator.Builder =
         JWT.create().withSubject(userPrincipal.username)
 
-    fun makeLoginToken(user: UserEntity): String = makeToken(user.principal).sign(algorithm)
+    fun makeLoginToken(user: UserEntity): String = makeToken(user.getPrincipal()).sign(algorithm)
 
     fun verifyCredentialsAndGetPrincipal(credential: JWTCredential) = UserPrincipal(credential.payload.subject)
 }

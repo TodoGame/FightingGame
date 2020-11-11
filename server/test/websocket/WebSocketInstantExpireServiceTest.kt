@@ -1,6 +1,8 @@
 package com.somegame.websocket
 
-import com.somegame.TestUsers.addJwtHeader
+import com.somegame.TestUtils.addJwtHeader
+import com.somegame.applicationModule
+import com.somegame.mockRepositoryModule
 import com.somegame.security.JwtConfig
 import com.somegame.security.UnauthorizedException
 import io.ktor.application.*
@@ -36,6 +38,10 @@ class WebSocketInstantExpireServiceTest {
                     timeout = Duration.ofSeconds(15)
                     maxFrameSize = Long.MAX_VALUE
                     masking = false
+                }
+
+                install(org.koin.ktor.ext.Koin) {
+                    modules(mockRepositoryModule, applicationModule)
                 }
 
                 install(Authentication) {

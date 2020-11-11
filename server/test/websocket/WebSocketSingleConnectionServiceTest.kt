@@ -1,9 +1,11 @@
 package com.somegame.websocket
 
-import com.somegame.TestUsers
-import com.somegame.TestUsers.addJwtHeader
+import com.somegame.TestUtils.addJwtHeader
+import com.somegame.applicationModule
+import com.somegame.mockRepositoryModule
 import com.somegame.security.JwtConfig
 import com.somegame.security.UnauthorizedException
+import com.somegame.user.repository.MockUserRepository
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -25,8 +27,6 @@ import websocket.getWebSocketTicketEndpoint
 import java.time.Duration
 
 class WebSocketSingleConnectionServiceTest {
-    private val userPrinciple = TestUsers.user1.principal
-
     private val webSocketName = "ws"
     private val endpoint = getWebSocketEndpoint(webSocketName)
     private val ticketEndpoint = getWebSocketTicketEndpoint(webSocketName)
@@ -38,6 +38,10 @@ class WebSocketSingleConnectionServiceTest {
     private fun withApp(block: TestApplicationEngine.() -> Unit) {
         withTestApplication(
             {
+                install(org.koin.ktor.ext.Koin) {
+                    modules(mockRepositoryModule, applicationModule)
+                }
+
                 install(WebSockets) {
                     pingPeriod = Duration.ofSeconds(1)
                     timeout = Duration.ofSeconds(15)
@@ -90,7 +94,7 @@ class WebSocketSingleConnectionServiceTest {
             assertEquals(HttpStatusCode.OK, response.status())
             val ticket = response.content?.let { Json.decodeFromString<WebSocketTicket>(it) }
             assertNotNull(ticket)
-            assertEquals(userPrinciple.username, ticket?.username)
+            assertEquals(MockUserRepository.user1.username, ticket?.username)
         }
     }
 
