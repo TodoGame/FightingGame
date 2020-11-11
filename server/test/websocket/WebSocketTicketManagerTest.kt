@@ -3,9 +3,9 @@ package websocket
 import com.somegame.BaseKoinTest
 import com.somegame.user.repository.MockUserRepository
 import com.somegame.websocket.WebSocketTicketManager
-import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
