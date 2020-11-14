@@ -7,12 +7,29 @@ executors:
     docker:
       - image: circleci/android:api-28
 
+#jobs:
+#  build-test:
+#    docker:
+#      - image: circleci/android:api-28
+#    steps:
+#      - checkout
+#      - with_cache:
+#          steps:
+#            - run:
+#              command: ./gradlew test
+#              name: Run Tests
+#      - collect_test_results:
+#          test_results_path: server/build/test-results
+#      - collect_test_results:
+#          test_results_path: shared/build/test-results
+
+
 workflows:
   build-test:
     jobs:
       - gradle/test:
           executor: android-sdk-executor
-          test_results_path: '**/build/test-results/'
+          test_results_path: /
       - gradle/run:
           executor: android-sdk-executor
           command: ktlintCheck
