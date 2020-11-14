@@ -182,7 +182,7 @@ class MatchRoutingTest {
     }
 
     @Test
-    fun `two players should play the game to the end and receive a predicted log of messages`() = withApp {
+    fun `active player should receive a predictable log of messages`() = withApp {
         val log1 = mutableListOf<Message>()
         val log2 = mutableListOf<Message>()
         connect2SimplePlayers("user1", "user2", log1, log2)
@@ -192,13 +192,29 @@ class MatchRoutingTest {
         val passivePlayerUsername = if (activePlayerUsername == "user1") "user2" else "user1"
 
         val activePlayerLog = generateActivePlayerLog(activePlayerUsername, passivePlayerUsername)
-        val passivePlayerLog = generatePassivePlayerLog(activePlayerUsername, passivePlayerUsername)
 
         if (activePlayerUsername == "user1") {
             assertEquals(activePlayerLog, log1)
-            assertEquals(passivePlayerLog, log2)
         } else {
             assertEquals(activePlayerLog, log2)
+        }
+    }
+
+    @Test
+    fun `passive player should receive a predictable log of messages`() = withApp {
+        val log1 = mutableListOf<Message>()
+        val log2 = mutableListOf<Message>()
+        connect2SimplePlayers("user1", "user2", log1, log2)
+
+        val activePlayerUsername =
+            log1.filterIsInstance<TurnStarted>().first().matchSnapshot.players.find { it.isActive }?.username!!
+        val passivePlayerUsername = if (activePlayerUsername == "user1") "user2" else "user1"
+
+        val passivePlayerLog = generatePassivePlayerLog(activePlayerUsername, passivePlayerUsername)
+
+        if (activePlayerUsername == "user1") {
+            assertEquals(passivePlayerLog, log2)
+        } else {
             assertEquals(passivePlayerLog, log1)
         }
     }
@@ -237,6 +253,15 @@ class MatchRoutingTest {
             assertEquals(activePlayerLog, log2)
             assertEquals(passivePlayerLog, log1)
         }
+    }
+
+    @Test
+    fun `failing super test`() = withApp {
+        val log1 = mutableListOf<Message>()
+        val log2 = mutableListOf<Message>()
+        connect2SimplePlayers("user1", "user2", log1, log2)
+
+        assert(log1.isEmpty())
     }
 
     // TODO: test multiple matches at the same time
