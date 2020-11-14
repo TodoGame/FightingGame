@@ -1,38 +1,29 @@
-orbs:
-  gradle: circleci/gradle@2.2.0
 version: 2.1
 
-executors:
-  android-sdk-executor:
+jobs:
+  build:
     docker:
       - image: circleci/android:api-28
-
-#jobs:
-#  build-test:
-#    docker:
-#      - image: circleci/android:api-28
-#    steps:
-#      - checkout
-#      - with_cache:
-#          steps:
-#            - run:
-#              command: ./gradlew test
-#              name: Run Tests
-#      - collect_test_results:
-#          test_results_path: server/build/test-results
-#      - collect_test_results:
-#          test_results_path: shared/build/test-results
-
-
-workflows:
-  build-test:
-    jobs:
-      - gradle/test:
-          executor: android-sdk-executor
-          test_results_path: /
-      - gradle/run:
-          executor: android-sdk-executor
-          command: ktlintCheck
-      - gradle/run:
-          executor: android-sdk-executor
-          command: checkStage
+    working_directory: ~/repo
+    steps:
+      - checkout:
+          path: ~/repo
+      - run:
+          name: Run Tests
+          command: ./gradlew test
+      - store_test_results:
+          path: ~/server/test-results/
+  checkLinter:
+    docker:
+      - image: circleci/android:api-28
+    steps:
+      - run:
+          name: Check KtLint
+          command: ./gradlew ktlintCheck
+  checkStageTask:
+    docker:
+      - image: circleci/android:api-28
+    steps:
+      - run:
+          name: Check :stage Task
+          command: ./gradlew checkStage
