@@ -1,14 +1,18 @@
 orbs:
   gradle: circleci/gradle@2.2.0
 version: 2.1
+
+jobs:
+  check-linter:
+    steps:
+      - run: ./gradlew ktlintCheck
+  check-stage:
+    steps:
+      - run: ./gradlew checkStage
+
 workflows:
   build-test:
     jobs:
-      - gradle/build
       - gradle/test
-  check-linter:
-    jobs:
-      - gradle/ktlintCheck
-  check-stage-task:
-    jobs:
-      - gradle/checkStage
+      - check-linter
+      - check-stage
