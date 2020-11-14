@@ -2,11 +2,19 @@ orbs:
   gradle: circleci/gradle@2.2.0
 version: 2.1
 
+executors:
+  android-sdk-executor:
+    docker:
+      - image: circleci/android:api-28
+
 workflows:
   build-test:
     jobs:
-      - gradle/test
+      - gradle/test:
+          executor: android-sdk-executor
       - gradle/run:
+          executor: android-sdk-executor
           command: ktlintCheck
       - gradle/run:
+          executor: android-sdk-executor
           command: checkStage
