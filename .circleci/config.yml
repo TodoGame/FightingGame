@@ -5,10 +5,12 @@ version: 2.1
 jobs:
   check-linter:
     steps:
-      - run: ./gradlew ktlintCheck
+      - gradle/run:
+          test_command: ktlintCheck
   check-stage:
     steps:
-      - run: ./gradlew checkStage
+      - gradle/run:
+          test_command: checkStage
 
 workflows:
   build-test:
