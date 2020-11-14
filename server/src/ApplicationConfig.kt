@@ -16,7 +16,6 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.util.*
 import io.ktor.websocket.*
-import org.slf4j.event.Level
 import java.time.Duration
 
 object ApplicationConfig {
@@ -50,14 +49,12 @@ object ApplicationConfig {
     }
 
     fun Application.installCallLogging() {
-        install(CallLogging) {
-            level = Level.INFO
-        }
+        install(CallLogging)
     }
 
     fun Application.installKoin() {
         install(org.koin.ktor.ext.Koin) {
-            modules(com.somegame.databaseRepositoryModule, com.somegame.applicationModule)
+            modules(databaseRepositoryModule, applicationModule)
         }
     }
 
