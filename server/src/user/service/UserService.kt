@@ -3,11 +3,15 @@ package com.somegame.user.service
 import com.somegame.security.UnauthorizedException
 import com.somegame.user.repository.UserEntity
 import com.somegame.user.repository.UserRepository
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import security.UserLoginInput
 import security.UserRegisterInput
 import user.Username
 
-class UserService(private val userRepository: UserRepository) {
+class UserService : KoinComponent {
+    private val userRepository: UserRepository by inject()
+
     fun findUserByUsername(username: Username) = userRepository.findUserByUsername(username)
 
     fun registerUser(input: UserRegisterInput): UserEntity {

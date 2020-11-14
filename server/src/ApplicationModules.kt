@@ -10,5 +10,5 @@ val databaseRepositoryModule = module {
 }
 
 val applicationModule = module {
-    single { UserService(get()) }
+    single { UserService() }
 }

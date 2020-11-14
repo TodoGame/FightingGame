@@ -18,7 +18,7 @@ fun Routing.user() {
             val userPrincipal = call.principal<UserPrincipal>()
             val user = userPrincipal?.let { userService.findUserByUsername(it?.username) }
             if (user != null) {
-                call.respond(user)
+                call.respond(user.getPublicData())
             } else {
                 call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
             }
