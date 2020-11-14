@@ -12,6 +12,7 @@ workflows:
     jobs:
       - gradle/test:
           executor: android-sdk-executor
+          test_results_path: '**/build/test-results/'
       - gradle/run:
           executor: android-sdk-executor
           command: ktlintCheck
