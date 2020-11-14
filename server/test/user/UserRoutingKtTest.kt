@@ -23,11 +23,6 @@ internal class UserRoutingKtTest : SimpleKtorTest() {
     )
 
     @Test
-    fun `should fail`() {
-        assert(false)
-    }
-
-    @Test
     fun `should respond with Unauthorized if no authorization header is provided`() = withApp {
         handleRequest {
             uri = GET_ME_ENDPOINT
