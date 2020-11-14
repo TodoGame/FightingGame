@@ -20,3 +20,8 @@ jobs:
         run: ./gradlew ktlintCheck
       - name: Check :stage task
         run: ./gradlew checkStage
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
