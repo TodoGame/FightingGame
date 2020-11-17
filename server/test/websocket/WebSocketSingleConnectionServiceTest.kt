@@ -2,31 +2,41 @@ package com.somegame.websocket
 
 import com.somegame.TestUtils.addJwtHeader
 import io.ktor.http.*
+import io.ktor.http.cio.websocket.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import websocket.WebSocketTicket
 
-class WebSocketSingleConnectionServiceTest : WorkingWebSocketServiceKtorTest(1) {
+class WebSocketSingleConnectionServiceTest : NotInstantExpireWebSocketServiceKtorTest(1) {
     @Test
-    fun `should not return second ticket for 1 user`() = withApp {
-        handleRequest {
+    fun `should not connect 1 user second time`() = withApp {
+        val ticketString1 = handleRequest {
             uri = ticketEndpoint
             addJwtHeader("user1")
             method = HttpMethod.Get
-        }.apply {
-            assert(requestHandled)
+        }.response.content
+        handleWebSocketConversation("$endpoint?ticket=$ticketString1", {}) { incoming, _ ->
+            val frame = incoming.receive()
+            assert(frame is Frame.Text)
+            if (frame is Frame.Text) {
+                assertEquals("user1", frame.readText())
+            }
         }
-        handleRequest {
+        val ticketString2 = handleRequest {
             uri = ticketEndpoint
             addJwtHeader("user1")
             method = HttpMethod.Get
-        }.apply {
-            assert(requestHandled)
-            assertEquals(HttpStatusCode.Conflict, response.status())
+        }.response.content
+        handleWebSocketConversation("$endpoint?ticket=$ticketString2", {}) { incoming, _ ->
+            assert(incoming.receive() is Frame.Close)
         }
     }
 
     @Test
-    fun `should not return any more tickets for 1 user`() = withApp {
+    fun `should return any number of tickets for 1 user`() = withApp {
         handleRequest {
             uri = ticketEndpoint
             addJwtHeader("user1")
@@ -41,7 +51,8 @@ class WebSocketSingleConnectionServiceTest : WorkingWebSocketServiceKtorTest(1) 
                 method = HttpMethod.Get
             }.apply {
                 assert(requestHandled)
-                assertEquals(HttpStatusCode.Conflict, response.status())
+                val ticket = response.content?.let { Json.decodeFromString<WebSocketTicket>(it) }
+                assertNotNull(ticket)
             }
         }
     }

@@ -4,17 +4,16 @@ import com.somegame.security.UnauthorizedException
 import com.somegame.security.UserPrincipal
 import com.somegame.user.repository.UserEntity
 import com.somegame.user.service.UserService
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import org.slf4j.LoggerFactory
-import user.Username
 import websocket.WebSocketTicket
 import java.lang.IllegalStateException
-import java.util.concurrent.ConcurrentHashMap
 
 class WebSocketTicketManager(
     private val webSocketName: String,
-    private val maxTicketsPerUser: Int,
     private val ticketLifeExpectancyMillis: Long = DEFAULT_TICKET_LIFE_EXPECTANCY
 ) : KoinComponent {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -26,19 +25,22 @@ class WebSocketTicketManager(
         const val DEFAULT_TICKET_LIFE_EXPECTANCY: Long = 60 * 1000
     }
 
-    private val tickets = ConcurrentHashMap<Username, MutableList<WebSocketTicket>>()
+    private val mutex = Mutex()
+    // ticket code -> WebSocketTicket
+    private val tickets = mutableMapOf<String, WebSocketTicket>()
 
-    private fun clearTickets(username: Username) {
-        tickets[username]?.removeIf { isTicketExpired(it) }
-        logger.info("Cleared $username's tickets")
+    private suspend fun clearExpiredTickets() = mutex.withLock {
+        val expiredTicketCodes = tickets.values.filter { isTicketExpired(it) }.map { it.code }
+
+        for (code in expiredTicketCodes) {
+            tickets.remove(code)
+        }
+        logger.info("Cleared ${expiredTicketCodes.size} expired tickets")
     }
 
-    fun makeTicket(userPrincipal: UserPrincipal): WebSocketTicket {
-        if (maxTicketsPerUser != -1 && countTickets(userPrincipal) >= maxTicketsPerUser) {
-            throw MaxNumberOfTicketsReachedException()
-        }
+    suspend fun makeTicket(userPrincipal: UserPrincipal): WebSocketTicket {
         val username = userPrincipal.username
-        clearTickets(username)
+        clearExpiredTickets()
         val code = getRandomString(TICKET_CODE_LENGTH)
         val expiresAt = getTokenExpiration()
         val ticket = WebSocketTicket(webSocketName, username, expiresAt, code)
@@ -46,22 +48,17 @@ class WebSocketTicketManager(
         return ticket
     }
 
-    // TODO: may cause multithreading issues
-    private fun registerTicket(ticket: WebSocketTicket) {
-        val username = ticket.username
-        val thisUserTickets = tickets[username]
-        if (thisUserTickets == null) {
-            tickets[username] = mutableListOf(ticket)
-        } else {
-            thisUserTickets.add(ticket)
-        }
+    private suspend fun registerTicket(ticket: WebSocketTicket) = mutex.withLock {
+        tickets[ticket.code] = ticket
+        logger.info("Ticket $ticket registered")
     }
 
-    private fun unregisterTicket(ticket: WebSocketTicket) {
-        tickets[ticket.username]?.remove(ticket)
+    private suspend fun unregisterTicket(ticket: WebSocketTicket) = mutex.withLock {
+        tickets.remove(ticket.code)
+        logger.info("Ticket $ticket unregistered")
     }
 
-    fun authorize(ticket: WebSocketTicket): UserEntity {
+    suspend fun authorize(ticket: WebSocketTicket): UserEntity {
         validateTicket(ticket)
         unregisterTicket(ticket)
         return userService.findUserByUsername(ticket.username) ?: throw InvalidTicketException("User not found")
@@ -78,7 +75,7 @@ class WebSocketTicketManager(
             .joinToString("")
     }
 
-    private fun validateTicket(ticket: WebSocketTicket) {
+    private suspend fun validateTicket(ticket: WebSocketTicket) {
         if (isTicketExpired(ticket)) {
             throw InvalidTicketException("Ticket is expired")
         }
@@ -89,9 +86,9 @@ class WebSocketTicketManager(
 
     private fun isTicketExpired(ticket: WebSocketTicket) = ticket.expiresAt <= System.currentTimeMillis()
 
-    private fun isTicketRegistered(ticket: WebSocketTicket) = tickets[ticket.username]?.contains(ticket) ?: false
-
-    private fun countTickets(userPrincipal: UserPrincipal) = tickets[userPrincipal.username]?.size ?: 0
+    private suspend fun isTicketRegistered(ticket: WebSocketTicket) = mutex.withLock {
+        tickets[ticket.code] == ticket
+    }
 
     class InvalidTicketException(msg: String) : UnauthorizedException(msg)
 

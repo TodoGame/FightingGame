@@ -1,11 +1,11 @@
 package com.somegame.match.player
 
+import com.somegame.match.MatchRouting
 import com.somegame.match.matchmaking.Match
-import com.somegame.websocket.WebSocketService
 import match.*
 import kotlin.math.max
 
-class Player(private val client: WebSocketService.Client, private val match: Match) {
+class Player(private val client: MatchRouting.MatchClient, val match: Match) {
     val username = client.username
 
     var isActive = false
@@ -13,6 +13,10 @@ class Player(private val client: WebSocketService.Client, private val match: Mat
 
     val isAlive
         get() = health > 0
+
+    init {
+        client.onJoinMatch(this)
+    }
 
     fun changeIsActive() {
         isActive = !isActive
@@ -44,7 +48,6 @@ class Player(private val client: WebSocketService.Client, private val match: Mat
 
     suspend fun handleDisconnect() {
         match.handleDisconnect(this)
-        PlayerService.clearPlayer(this)
     }
 
     private fun takeDamage(damage: Int) {

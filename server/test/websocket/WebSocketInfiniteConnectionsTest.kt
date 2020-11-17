@@ -6,7 +6,7 @@ import io.ktor.http.cio.websocket.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class WebSocketInfiniteConnectionsTest : WorkingWebSocketServiceKtorTest(-1) {
+class WebSocketInfiniteConnectionsTest : NotInstantExpireWebSocketServiceKtorTest(-1) {
     @Test
     fun `should return 100 tickets and establish 100 websocket connections`() = withApp {
         for (i in 0 until 100) {

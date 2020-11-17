@@ -26,6 +26,10 @@ class MockUserRepository : UserRepository {
         return createUser(UserRegisterInput("user$id", "pass$id", "User$id"))
     }
 
+    fun makeNewTestUser(username: Username): UserEntity {
+        return createUser(UserRegisterInput(username, "testPassword", username.capitalize()))
+    }
+
     fun clear() {
         users.clear()
         users.add(user1)

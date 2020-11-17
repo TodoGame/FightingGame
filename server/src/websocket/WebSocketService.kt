@@ -1,5 +1,6 @@
 package com.somegame.websocket
 
+import com.somegame.ConflictException
 import com.somegame.security.UnauthorizedException
 import com.somegame.security.UserPrincipal
 import com.somegame.user.repository.UserEntity
@@ -11,6 +12,8 @@ import io.ktor.http.cio.websocket.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -20,23 +23,22 @@ import org.slf4j.LoggerFactory
 import user.Username
 import websocket.WebSocketTicket
 import websocket.getWebSocketTicketEndpoint
-import java.util.concurrent.ConcurrentHashMap
 
 class WebSocketService(
     webSocketName: String,
-    maxConnectionsPerUser: Int = -1,
+    private val maxConnectionsPerUser: Int = -1,
     ticketLifeExpectancyMillis: Long = DEFAULT_TICKET_LIFE_EXPECTANCY
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     companion object {
         private const val TICKET_QUERY_PARAM_KEY = "ticket"
-        const val MAXIMUM_NUMBER_OF_TICKETS_REACHED_MESSAGE = "Maximum number of tickets reached message"
     }
 
-    private val ticketManager = WebSocketTicketManager(webSocketName, maxConnectionsPerUser, ticketLifeExpectancyMillis)
+    private val ticketManager = WebSocketTicketManager(webSocketName, ticketLifeExpectancyMillis)
 
-    private val clients = ConcurrentHashMap<Username, MutableList<Client>>()
+    private val connectionsPerUserMutex = Mutex()
+    private val connectionsPerUser = mutableMapOf<Username, Int>()
 
     private val ticketGetEndpoint = getWebSocketTicketEndpoint(webSocketName)
 
@@ -47,28 +49,24 @@ class WebSocketService(
                 if (userPrincipal == null) {
                     call.response.status(HttpStatusCode.Unauthorized)
                 } else {
-                    try {
-                        val ticket = makeTicket(userPrincipal)
-                        call.respond(Json.encodeToString(ticket))
-                    } catch (e: WebSocketTicketManager.MaxNumberOfTicketsReachedException) {
-                        logger.info("User $userPrincipal requested a ticket but the maximum number of tickets is reached")
-                        call.respond(HttpStatusCode.Conflict, MAXIMUM_NUMBER_OF_TICKETS_REACHED_MESSAGE)
-                    }
+                    val ticket = makeTicket(userPrincipal)
+                    call.respond(Json.encodeToString(ticket))
                 }
             }
         }
     }
 
-    fun makeTicket(userPrincipal: UserPrincipal) = ticketManager.makeTicket(userPrincipal)
+    suspend fun makeTicket(userPrincipal: UserPrincipal) = ticketManager.makeTicket(userPrincipal)
 
-    fun tryConnect(session: WebSocketServerSession): Client {
+    suspend fun tryConnect(session: WebSocketServerSession): Client {
         val user = authorizeSessionByTicket(session)
+        verifyNumberOfConnections(user)
         val client = Client(user, session)
         registerClient(client)
         return client
     }
 
-    private fun authorizeSessionByTicket(session: WebSocketServerSession): UserEntity {
+    private suspend fun authorizeSessionByTicket(session: WebSocketServerSession): UserEntity {
         val ticketString = session.call.request.queryParameters[TICKET_QUERY_PARAM_KEY]
         if (ticketString == null) {
             logger.info("Received request with no $TICKET_QUERY_PARAM_KEY query parameter")
@@ -82,23 +80,28 @@ class WebSocketService(
         return ticketManager.authorize(ticket)
     }
 
-    private fun registerClient(client: Client) {
-        val clientsForThisUser = clients[client.username]
-        if (clientsForThisUser == null) {
-            clients[client.username] = mutableListOf(client)
-        } else {
-            clientsForThisUser.add(client)
+    private suspend fun verifyNumberOfConnections(user: UserEntity) = connectionsPerUserMutex.withLock {
+        val connectionsNumber = connectionsPerUser[user.username] ?: 0
+        if (maxConnectionsPerUser != -1 && connectionsNumber >= maxConnectionsPerUser) {
+            throw MaximumNumberOfConnectionsReached(user)
         }
+    }
+
+    private suspend fun registerClient(client: Client) = connectionsPerUserMutex.withLock {
+        val connectionsCount = connectionsPerUser[client.username] ?: 0
+        connectionsPerUser[client.username] = connectionsCount + 1
         logger.info("Client $client registered")
     }
 
-    private fun unregisterClient(client: Client) {
-        clients[client.username]?.remove(client)
+    private suspend fun unregisterClient(client: Client) = connectionsPerUserMutex.withLock {
+        connectionsPerUser[client.username]?.let {
+            if (it - 1 <= 0) {
+                connectionsPerUser.remove(client.username)
+            } else {
+                connectionsPerUser[client.username] = it - 1
+            }
+        }
         logger.info("Unregistered client $client")
-    }
-
-    fun getClients(username: String): List<Client> {
-        return clients[username] ?: listOf()
     }
 
     inner class Client(val user: UserEntity, private val session: WebSocketServerSession) {
@@ -106,22 +109,30 @@ class WebSocketService(
 
         val username = user.username
 
+        suspend fun sendText(text: String) {
+            logger.info("Sending $text to $this")
+            session.send(Frame.Text(text))
+        }
+
         suspend fun sendMessage(message: Message) {
             logger.info("Sending $message to $this")
             val string = Json.encodeToString(message)
             session.send(Frame.Text(string))
         }
 
-        suspend fun kick(message: String = "Match ended") {
+        suspend fun kick(message: String = "Kicked") {
             logger.info("Kicked $this")
             session.close(CloseReason(CloseReason.Codes.NORMAL, message))
             unregisterClient(this)
         }
 
-        fun handleDisconnect() {
+        suspend fun handleDisconnect() {
             unregisterClient(this)
         }
 
         override fun toString() = "Client(username=$username)"
     }
+
+    class MaximumNumberOfConnectionsReached(user: UserEntity) :
+        ConflictException("Maximum number of connections reached by $user")
 }

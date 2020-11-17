@@ -1,17 +1,17 @@
 package com.somegame.match.matchmaking
 
+import com.somegame.match.MatchRouting
 import com.somegame.match.player.Player
-import com.somegame.match.player.PlayerService
-import com.somegame.websocket.WebSocketService
 import match.MatchSnapshot
 import match.PlayerAction
 import org.slf4j.LoggerFactory
+import user.Username
 import java.util.concurrent.atomic.AtomicInteger
 
-class Match(clients: List<WebSocketService.Client>) {
+class Match(clients: List<MatchRouting.MatchClient>) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    private val players = clients.map { PlayerService.makePlayer(it, this) }.toMutableList()
+    private val players = clients.map { Player(it, this) }.toMutableList()
 
     val playersUsernames
         get() = players.map { it.username }
@@ -43,9 +43,11 @@ class Match(clients: List<WebSocketService.Client>) {
         }
     }
 
+    private fun getPlayer(username: Username) = players.find { it.username == username }
+
     suspend fun handlePlayerAction(action: PlayerAction) {
-        val target = PlayerService.getPlayer(action.target)
-        val attacker = PlayerService.getPlayer(action.attacker)
+        val target = getPlayer(action.target)
+        val attacker = getPlayer(action.attacker)
         if (target == null || attacker == null || !target.isAlive || !attacker.isActive) {
             throw IllegalAction(action)
         }

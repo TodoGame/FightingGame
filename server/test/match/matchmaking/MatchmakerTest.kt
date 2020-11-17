@@ -1,98 +1,132 @@
 package match.matchmaking
 
+import com.somegame.BaseKoinTest
+import com.somegame.match.MatchRouting
 import com.somegame.match.matchmaking.Matchmaker
-import com.somegame.user.repository.MockUserRepository
+import com.somegame.match.player.Player
+import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import user.User
+import user.Username
 
-internal class MatchmakerTest {
-    private val userRepository = MockUserRepository()
+internal class MatchmakerTest : BaseKoinTest() {
     var matchmaker = Matchmaker()
+
+    private fun mockClient(username: Username): MatchRouting.MatchClient {
+        userRepository.makeNewTestUser(username)
+        val client = mockk<MatchRouting.MatchClient>()
+        every { client.username } returns username
+        coEvery { client.kick() } just Runs
+        coEvery { client.sendMessage(any()) } just Runs
+        coEvery { client.onJoinMatch(any()) } just Runs
+        return client
+    }
 
     @BeforeEach
     fun init() {
         matchmaker = Matchmaker()
-        userRepository.clear()
-    }
-
-    @Test()
-    fun `should throw if user already joined`() {
-        matchmaker.join(MockUserRepository.user1)
-        assertThrows(Matchmaker.UserAlreadyWaiting::class.java) {
-            matchmaker.join(MockUserRepository.user1)
-        }
     }
 
     @Test
-    fun `should return null if first user joins matchmaking`() {
-        val otherUsers = matchmaker.join(MockUserRepository.user1)
-        assertNull(otherUsers)
-    }
-
-    @Test
-    fun `should return match with all 2 users if these 2 users join matchmaking`() {
-        matchmaker.join(MockUserRepository.user1)
-        val otherUsers = matchmaker.join(MockUserRepository.user2)
-        assertEquals(setOf(MockUserRepository.user1, MockUserRepository.user2), otherUsers?.toSet())
-    }
-
-    @Test
-    fun `should make 50 correct matches for 100 users`() {
-        val users = List(100) { userRepository.makeNewTestUser() }
-        val expectedMatches = users.chunked(2).map { it.toSet() }
-        val actualMatches = mutableListOf<Set<User>>()
-
-        for (user in users) {
-            val match = matchmaker.join(user)
-            if (match != null) {
-                actualMatches.add(match.toSet())
+    fun `should throw if user already joined`(): Unit = runBlocking {
+        val client = mockClient("user1")
+        matchmaker.startSearchingForMatch(client)
+        assertThrows(Matchmaker.ClientAlreadyWaitingException::class.java) {
+            runBlocking {
+                matchmaker.startSearchingForMatch(client)
             }
         }
-
-        assertEquals(expectedMatches, actualMatches)
     }
 
     @Test
-    fun `should make 50 matches for 100 concurrent users`() {
-        val users = List(100) { userRepository.makeNewTestUser() }
-        val actualMatches = mutableListOf<Set<User>>()
+    fun `should not make match if 1 user joins`() = runBlocking {
+        val client = mockClient("user1")
+        matchmaker.startSearchingForMatch(client)
+        coVerify(exactly = 0) { client.onJoinMatch(any()) }
+    }
+
+    @Test
+    fun `should call every client's onJoinMatch if 2 clients join`() = runBlocking {
+        val client1 = mockClient("user1")
+        val client2 = mockClient("user2")
+
+        matchmaker.startSearchingForMatch(client1)
+        matchmaker.startSearchingForMatch(client2)
+
+        coVerify {
+            client1.onJoinMatch(any())
+        }
+        coVerify {
+            client2.onJoinMatch(any())
+        }
+    }
+
+    @Test
+    fun `should call every client's onJoinMatch if 100 clients join`() = runBlocking {
+        val clients = List(100) { mockClient("user$it") }
+
+        for (client in clients) {
+            matchmaker.startSearchingForMatch(client)
+        }
+
+        for (client in clients) {
+            coVerify { client.onJoinMatch(any()) }
+        }
+    }
+
+    @Test
+    fun `should make 50 matches if 100 clients join`() = runBlocking {
+        val clients = List(100) { mockClient("user$it") }
+
+        val players = mutableListOf<Player>()
+
+        for (client in clients) {
+            every { client.onJoinMatch(capture(players)) } just Runs
+            matchmaker.startSearchingForMatch(client)
+        }
+
+        val matches = players.map { it.match }.toSet()
+
+        assertEquals(50, matches.size)
+    }
+
+    @Test
+    fun `should call every client's onJoinMatch if 100 concurrent clients join`() = runBlocking {
+        val clients = List(100) { mockClient("user$it") }
 
         runBlocking {
-            for (user in users) {
+            for (client in clients) {
                 launch {
-                    val match = matchmaker.join(user)
-                    if (match != null) {
-                        actualMatches.add(match.toSet())
-                    }
+                    matchmaker.startSearchingForMatch(client)
                 }
             }
         }
 
-        assertEquals(50, actualMatches.size)
+        for (client in clients) {
+            coVerify { client.onJoinMatch(any()) }
+        }
     }
 
     @Test
-    fun `should make 50 matches with all players and with each player only once for 100 concurrent users`() {
-        val users = List(100) { userRepository.makeNewTestUser() }
-        val actualMatches = mutableListOf<Set<User>>()
+    fun `should make 50 matches if 100 concurrent clients join`() = runBlocking {
+        val clients = List(100) { mockClient("user$it") }
+
+        val players = mutableListOf<Player>()
 
         runBlocking {
-            for (user in users) {
+            for (client in clients) {
+                every { client.onJoinMatch(capture(players)) } just Runs
                 launch {
-                    val match = matchmaker.join(user)
-                    if (match != null) {
-                        actualMatches.add(match.toSet())
-                    }
+                    matchmaker.startSearchingForMatch(client)
                 }
             }
         }
 
-        val allUsersInActualMatches = actualMatches.flatMap { it.toList() }.toSet()
+        val matches = players.map { it.match }.toSet()
 
-        assertEquals(users.toSet(), allUsersInActualMatches)
+        assertEquals(50, matches.size)
     }
 }

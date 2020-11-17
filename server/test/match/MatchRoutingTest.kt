@@ -17,7 +17,6 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import match.*
@@ -93,7 +92,6 @@ class MatchRoutingTest {
         log2: MutableList<Message>
     ) {
         connect(username1) { incoming1, outgoing1 ->
-            incoming1.receive()
             launch {
                 connect(username2) { incoming2, outgoing2 ->
                     val player2 = SimplePlayer(username2, username1, log2, incoming2, outgoing2)
@@ -173,12 +171,12 @@ class MatchRoutingTest {
     }
 
     @Test
-    fun `getTicket should return only 1 ticket per 1 user`() = withApp {
+    fun `getTicket should return second ticket per 1 user`() = withApp {
         getTicket("user1")
-        val anotherTicket = getTicket("user1") ?: ""
-        assertThrows(SerializationException::class.java) {
-            Json.decodeFromString<WebSocketTicket>(anotherTicket)
+        val anotherTicket = getTicket("user1")?.let {
+            Json.decodeFromString<WebSocketTicket>(it)
         }
+        assertNotNull(anotherTicket)
     }
 
     @Test
@@ -254,15 +252,5 @@ class MatchRoutingTest {
             assertEquals(passivePlayerLog, log1)
         }
     }
-
-    @Test
-    fun `failing super test`() = withApp {
-        val log1 = mutableListOf<Message>()
-        val log2 = mutableListOf<Message>()
-        connect2SimplePlayers("user1", "user2", log1, log2)
-
-        assert(log1.isEmpty())
-    }
-
     // TODO: test multiple matches at the same time
 }
