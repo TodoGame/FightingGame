@@ -56,4 +56,28 @@ class WebSocketSingleConnectionServiceTest : NotInstantExpireWebSocketServiceKto
             }
         }
     }
+
+    @Test
+    fun `should connect 1 user second time after the first connection is destroyed`() = withApp {
+        val ticketString1 = handleRequest {
+            uri = ticketEndpoint
+            addJwtHeader("user1")
+            method = HttpMethod.Get
+        }.response.content
+        handleWebSocketConversation("$endpoint?ticket=$ticketString1", {}) { incoming, outgoing ->
+            outgoing.close()
+        }
+        val ticketString2 = handleRequest {
+            uri = ticketEndpoint
+            addJwtHeader("user1")
+            method = HttpMethod.Get
+        }.response.content
+        handleWebSocketConversation("$endpoint?ticket=$ticketString2", {}) { incoming, _ ->
+            val frame = incoming.receive()
+            assert(frame is Frame.Text)
+            if (frame is Frame.Text) {
+                assertEquals("user1", frame.readText())
+            }
+        }
+    }
 }
