@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory
 class MatchRouting {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    private val webSocketService = WebSocketService("match", 1)
+    private val webSocketService = WebSocketService("match", -1)
     val matchService = MatchService(webSocketService)
 
     fun setUpMatchRoutes(routing: Routing) {
