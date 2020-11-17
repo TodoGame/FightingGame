@@ -19,7 +19,7 @@ internal class MatchmakerTest : BaseKoinTest() {
         userRepository.makeNewTestUser(username)
         val client = mockk<MatchRouting.MatchClient>()
         every { client.username } returns username
-        coEvery { client.kick() } just Runs
+        coEvery { client.kick(any()) } just Runs
         coEvery { client.sendMessage(any()) } just Runs
         coEvery { client.onJoinMatch(any()) } just Runs
         return client

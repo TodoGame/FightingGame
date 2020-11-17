@@ -64,7 +64,7 @@ class MatchRouting {
             this.player = player
         }
 
-        suspend fun kick(message: String = "Kicked") {
+        suspend fun kick(message: String) {
             client.kick(message)
         }
 
@@ -96,7 +96,7 @@ class MatchRouting {
             }
             try {
                 player?.doAction(message)
-            } catch (e: Match.IllegalAction) {
+            } catch (e: Match.IllegalActionException) {
                 logger.info("Player $player sent an illegal action $e")
             }
         }

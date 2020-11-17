@@ -3,6 +3,8 @@ package com.somegame.websocket
 import com.somegame.TestUtils.addJwtHeader
 import com.somegame.applicationModule
 import com.somegame.match.MatchRouting
+import com.somegame.match.MatchTestUtils.generateActivePlayerLog
+import com.somegame.match.MatchTestUtils.generatePassivePlayerLog
 import com.somegame.security.JwtConfig
 import com.somegame.user.repository.MockUserRepository
 import com.somegame.user.repository.UserRepository
@@ -92,7 +94,7 @@ class MatchRoutingTest {
         log2: MutableList<Message>
     ) {
         connect(username1) { incoming1, outgoing1 ->
-            launch {
+            val job = launch {
                 connect(username2) { incoming2, outgoing2 ->
                     val player2 = SimplePlayer(username2, username1, log2, incoming2, outgoing2)
                     player2.start()
@@ -100,69 +102,9 @@ class MatchRoutingTest {
             }
             val player1 = SimplePlayer(username1, username2, log1, incoming1, outgoing1)
             player1.start()
+            job.join()
         }
     }
-
-    fun generateActivePlayerLog(activeUsername: Username, passiveUsername: Username) = listOf(
-        MatchStarted(setOf(activeUsername, passiveUsername)),
-        TurnStarted(
-            MatchSnapshot(
-                setOf(
-                    PlayerSnapshot(activeUsername, true, 15),
-                    PlayerSnapshot(passiveUsername, false, 15)
-                )
-            )
-        ),
-        TurnStarted(
-            MatchSnapshot(
-                setOf(
-                    PlayerSnapshot(activeUsername, false, 15),
-                    PlayerSnapshot(passiveUsername, true, 5)
-                )
-            )
-        ),
-        PlayerAction(activeUsername, passiveUsername),
-        TurnStarted(
-            MatchSnapshot(
-                setOf(
-                    PlayerSnapshot(activeUsername, true, 5),
-                    PlayerSnapshot(passiveUsername, false, 5)
-                )
-            )
-        ),
-        MatchEnded(activeUsername)
-    )
-
-    fun generatePassivePlayerLog(activeUsername: Username, passiveUsername: Username) = listOf(
-        MatchStarted(setOf(activeUsername, passiveUsername)),
-        TurnStarted(
-            MatchSnapshot(
-                setOf(
-                    PlayerSnapshot(activeUsername, true, 15),
-                    PlayerSnapshot(passiveUsername, false, 15)
-                )
-            )
-        ),
-        PlayerAction(passiveUsername, activeUsername),
-        TurnStarted(
-            MatchSnapshot(
-                setOf(
-                    PlayerSnapshot(activeUsername, false, 15),
-                    PlayerSnapshot(passiveUsername, true, 5)
-                )
-            )
-        ),
-        TurnStarted(
-            MatchSnapshot(
-                setOf(
-                    PlayerSnapshot(activeUsername, true, 5),
-                    PlayerSnapshot(passiveUsername, false, 5)
-                )
-            )
-        ),
-        PlayerAction(passiveUsername, activeUsername),
-        MatchEnded(activeUsername)
-    )
 
     @Test
     fun `getTicket should return ticket`() = withApp {
@@ -226,8 +168,7 @@ class MatchRoutingTest {
         val log2 = mutableListOf<Message>()
 
         connect(username1) { incoming1, outgoing1 ->
-            incoming1.receive()
-            launch {
+            val job = launch {
                 connect(username2) { incoming2, outgoing2 ->
                     val player2 = SimplePlayerThatAlwaysHits(username2, username1, log2, incoming2, outgoing2)
                     player2.start()
@@ -235,6 +176,7 @@ class MatchRoutingTest {
             }
             val player1 = SimplePlayerThatAlwaysHits(username1, username2, log1, incoming1, outgoing1)
             player1.start()
+            job.join()
         }
 
         val activePlayerUsername =
