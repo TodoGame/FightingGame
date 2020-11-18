@@ -1,17 +1,17 @@
 package com.somegame.match.matchmaking
 
+import com.somegame.match.MatchRouting
 import com.somegame.match.player.Player
-import com.somegame.match.player.PlayerService
-import com.somegame.websocket.WebSocketService
 import match.MatchSnapshot
 import match.PlayerAction
 import org.slf4j.LoggerFactory
+import user.Username
 import java.util.concurrent.atomic.AtomicInteger
 
-class Match(clients: List<WebSocketService.Client>) {
+class Match(clients: List<MatchRouting.MatchClient>) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    private val players = clients.map { PlayerService.makePlayer(it, this) }.toMutableList()
+    private val players = clients.map { Player(it, this) }
 
     val playersUsernames
         get() = players.map { it.username }
@@ -38,16 +38,18 @@ class Match(clients: List<WebSocketService.Client>) {
     private suspend fun handleTurnStart() {
         val snapshot = getSnapshot()
         logger.info("Turn started $snapshot")
-        for (player in players) {
-            player.onTurnStart(snapshot)
-        }
+        // notify the inactive player first
+        getCurrentlyInActivePlayer()?.onTurnStart(snapshot)
+        getCurrentlyActivePlayer()?.onTurnStart(snapshot)
     }
 
+    private fun getPlayer(username: Username) = players.find { it.username == username }
+
     suspend fun handlePlayerAction(action: PlayerAction) {
-        val target = PlayerService.getPlayer(action.target)
-        val attacker = PlayerService.getPlayer(action.attacker)
+        val target = getPlayer(action.target)
+        val attacker = getPlayer(action.attacker)
         if (target == null || attacker == null || !target.isAlive || !attacker.isActive) {
-            throw IllegalAction(action)
+            throw IllegalActionException(action)
         }
         val playersExceptAttacker = players.filter { it.username != attacker.username }
         for (player in playersExceptAttacker) {
@@ -72,16 +74,16 @@ class Match(clients: List<WebSocketService.Client>) {
     private suspend fun endGame(winner: Player) {
         state.set(State.ENDED.code)
         logger.info("Match ended $this")
-        for (player in players) {
+        // the players list
+        for (player in players.toList()) {
             player.handleGameEnd(winner)
         }
     }
 
     suspend fun handleDisconnect(player: Player) {
-        players.remove(player)
-        logger.info("Player $player disconnected while match was in progress")
         if (state.get() == State.IN_PROGRESS.code) {
-            val winner = players.first()
+            logger.info("Player $player disconnected while match was in progress")
+            val winner = players.filter { it != player }.first()
             endGame(winner)
         }
     }
@@ -100,9 +102,13 @@ class Match(clients: List<WebSocketService.Client>) {
         }
     }
 
+    private fun getCurrentlyInActivePlayer() = players.find { !it.isActive }
+
+    private fun getCurrentlyActivePlayer() = players.find { it.isActive }
+
     private fun getSnapshot() = MatchSnapshot(players.map { it.getSnapshot() }.toSet())
 
     override fun toString() = "Match(users=${players.map { it.username }})"
 
-    class IllegalAction(action: PlayerAction) : IllegalStateException(action.toString())
+    class IllegalActionException(action: PlayerAction) : IllegalStateException(action.toString())
 }
