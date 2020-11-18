@@ -64,19 +64,19 @@ class WebSocketSingleConnectionServiceTest : NotInstantExpireWebSocketServiceKto
             addJwtHeader("user1")
             method = HttpMethod.Get
         }.response.content
-        handleWebSocketConversation("$endpoint?ticket=$ticketString1", {}) { incoming, outgoing ->
+        handleWebSocketConversation("$endpoint?ticket=$ticketString1", {}) { _, outgoing ->
             outgoing.close()
-        }
-        val ticketString2 = handleRequest {
-            uri = ticketEndpoint
-            addJwtHeader("user1")
-            method = HttpMethod.Get
-        }.response.content
-        handleWebSocketConversation("$endpoint?ticket=$ticketString2", {}) { incoming, _ ->
-            val frame = incoming.receive()
-            assert(frame is Frame.Text)
-            if (frame is Frame.Text) {
-                assertEquals("user1", frame.readText())
+            val ticketString2 = handleRequest {
+                uri = ticketEndpoint
+                addJwtHeader("user1")
+                method = HttpMethod.Get
+            }.response.content
+            handleWebSocketConversation("$endpoint?ticket=$ticketString2", {}) { incoming, _ ->
+                val frame = incoming.receive()
+                assert(frame is Frame.Text)
+                if (frame is Frame.Text) {
+                    assertEquals("user1", frame.readText())
+                }
             }
         }
     }
