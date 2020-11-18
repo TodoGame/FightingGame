@@ -24,6 +24,7 @@ import kotlinx.serialization.json.Json
 import match.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.koin.dsl.module
 import user.Username
@@ -159,6 +160,7 @@ class MatchRoutingTest {
         }
     }
 
+    @Disabled
     @Test
     fun `players that always hit should have the same logs as the normal players`() = withApp {
         val username1 = "user1"

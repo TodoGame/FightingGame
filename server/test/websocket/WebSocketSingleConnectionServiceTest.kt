@@ -3,6 +3,7 @@ package com.somegame.websocket
 import com.somegame.TestUtils.addJwtHeader
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
+import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -64,8 +65,10 @@ class WebSocketSingleConnectionServiceTest : NotInstantExpireWebSocketServiceKto
             addJwtHeader("user1")
             method = HttpMethod.Get
         }.response.content
-        handleWebSocketConversation("$endpoint?ticket=$ticketString1", {}) { _, outgoing ->
-            outgoing.close()
+        handleWebSocketConversation("$endpoint?ticket=$ticketString1", {}) { incoming1, outgoing ->
+            incoming1.receive()
+            outgoing.sendBlocking(Frame.Text("kick"))
+            incoming1.receive()
             val ticketString2 = handleRequest {
                 uri = ticketEndpoint
                 addJwtHeader("user1")
@@ -73,7 +76,7 @@ class WebSocketSingleConnectionServiceTest : NotInstantExpireWebSocketServiceKto
             }.response.content
             handleWebSocketConversation("$endpoint?ticket=$ticketString2", {}) { incoming, _ ->
                 val frame = incoming.receive()
-                assert(frame is Frame.Text)
+                assert(frame is Frame.Text) { "Received not Frame.Text, but $frame" }
                 if (frame is Frame.Text) {
                     assertEquals("user1", frame.readText())
                 }
