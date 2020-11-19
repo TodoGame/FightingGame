@@ -41,11 +41,9 @@ object ApplicationConfig {
 
     @KtorExperimentalAPI
     fun Application.installDatabase() {
-        val dbUrl = environment.config.property("database.url").getString()
-        val dbUser = environment.config.property("database.user").getString()
-        val dbPassword = environment.config.property("database.password").getString()
+        val dbFullUrl = environment.config.property("database.fullUrl").getString()
 
-        DatabaseConfig(dbUrl, dbUser, dbPassword).configure()
+        DatabaseConfig(dbFullUrl).configure()
     }
 
     fun Application.installCallLogging() {
