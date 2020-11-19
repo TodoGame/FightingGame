@@ -6,15 +6,21 @@ import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.LoggerFactory
 
-class DatabaseConfig(private val dbUrl: String, private val dbUser: String, private val dbPassword: String) {
+class DatabaseConfig(private val dbUrl: String) {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     fun configure() {
         connect()
         createTables()
     }
+
     private fun connect() {
-        Database.connect(dbUrl, driver = "org.postgresql.Driver", user = dbUser, password = dbPassword)
+        Database.connect(dbUrl, driver = "org.postgresql.Driver")
+        logger.info("Connected to database $dbUrl")
     }
+
     private fun createTables() {
         transaction {
             SchemaUtils.create(Users)
