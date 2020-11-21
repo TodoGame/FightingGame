@@ -5,18 +5,30 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.testgame.network.securityService.RegisterData
-import com.example.testgame.network.securityService.SecurityApi
-import com.example.testgame.network.securityService.UserProperty
+import testgame.network.securityService.SecurityApi
 import io.ktor.http.*
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
+import testgame.network.NetworkService
+import user.UserData
 import java.lang.NullPointerException
 
 class RegisterViewModel : ViewModel() {
 
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
+
     val username = ObservableField<String>("")
     val password = ObservableField<String>("")
     val user = ObservableField<String>("")
+
+    private var _errorString = String()
+    val errorString: String
+        get() = _errorString
+
+    private val _errorIsCalled = MutableLiveData<Boolean>(false)
+    val errorIsCalled: LiveData<Boolean>
+        get() = _errorIsCalled
 
     private val _usernameInputErrorHint = MutableLiveData<String>()
     val usernameInputErrorHint: LiveData<String>
@@ -34,18 +46,7 @@ class RegisterViewModel : ViewModel() {
     val signUpCompleted: LiveData<Boolean>
         get() = _signUpCompleted
 
-    private lateinit var _userResponseString: UserProperty
-    val userResponseString: UserProperty
-        get() = _userResponseString
-
-    private var _errorString = String()
-    val errorString: String
-        get() = _errorString
-
-    private val _errorIsCalled = MutableLiveData<Boolean>(false)
-    val errorIsCalled: LiveData<Boolean>
-        get() = _errorIsCalled
-
+    @KtorExperimentalAPI
     fun signUp() {
         if (username.get() == "" || password.get() == "" || user.get() == "") {
             if (username.get() == "") {
@@ -59,27 +60,23 @@ class RegisterViewModel : ViewModel() {
             }
             return
         }
-        GlobalScope.launch {
+        coroutineScope.launch {
             try {
                 val response = SecurityApi.register(
-                    RegisterData(
-                        username.get()!!,
-                        password.get()!!,
-                        user.get()!!
-                    )
+                        security.UserRegisterInput(
+                                username.get()!!,
+                                password.get()!!,
+                                user.get()!!
+                        )
                 )
-                if (SecurityApi.responseIsSuccessful(response)) {
-                    val token = response.headers[SecurityApi.AUTHORIZATION_HEADER_NAME]
-                    if (token != null) {
-                        _signUpCompleted.value = true
-                    } else {
-                        callError("Wrong token response")
-                    }
-                } else if (response.status == HttpStatusCode.BadRequest) {
-                    callError("Bad request")
-                } else if (response.status == HttpStatusCode.Unauthorized) {
-                    callError("Unauthorized")
+                val token = response.headers[NetworkService.AUTHORIZATION_HEADER_NAME]
+                if (token != null) {
+                    _signUpCompleted.postValue(true)
+                } else {
+                    callError("Wrong token response")
                 }
+            } catch (exception: NetworkService.ConnectionException) {
+                exception.message?.let { callError(it) }
             } catch (exception: NullPointerException) {
                 callError("Some data missed")
             }
@@ -92,11 +89,6 @@ class RegisterViewModel : ViewModel() {
 
     private fun callError(message: String) {
         _errorString = message
-        _errorIsCalled.value = true
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.i("UserCreateVModel", "View model destroyed")
+        _errorIsCalled.postValue(true)
     }
 }

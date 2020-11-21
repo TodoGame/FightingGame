@@ -1,29 +1,39 @@
-package com.example.testgame.network.securityService
+package testgame.network.securityService
 
-import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.util.KtorExperimentalAPI
+import security.LOGIN_ENDPOINT
+import security.REGISTER_ENDPOINT
+import security.UserLoginInput
+import security.UserRegisterInput
+import testgame.network.NetworkService
+import java.lang.Exception
+import java.net.UnknownHostException
 
-object SecurityApi {
-    private const val BASE_URL = "https://fighting-game-server.herokuapp.com/"
-    const val AUTHORIZATION_HEADER_NAME = "Authorization"
-    private val client = HttpClient()
+object SecurityApi : NetworkService() {
 
-    suspend fun login(loginData: LoginData): HttpResponse {
-        return client.post<HttpResponse>() {
-            url("$BASE_URL/login")
-            body = loginData
+    @KtorExperimentalAPI
+    suspend fun login(userLoginInput: UserLoginInput): HttpResponse {
+        return getSuccessfulResponseOrException {
+            client.post() {
+                url("$BASE_HTTP_URL$LOGIN_ENDPOINT")
+                body = userLoginInput
+                contentType(ContentType.Application.Json)
+            }
         }
     }
 
-    suspend fun register(registerData: RegisterData): HttpResponse {
-        return client.post<HttpResponse>() {
-            url("$BASE_URL/register")
-            body = registerData
+    @KtorExperimentalAPI
+    suspend fun register(userRegisterInput: UserRegisterInput): HttpResponse {
+        return getSuccessfulResponseOrException {
+            client.post() {
+                url("$BASE_HTTP_URL$REGISTER_ENDPOINT")
+                body = userRegisterInput
+                contentType(ContentType.Application.Json)
+            }
         }
-    }
-
-    fun responseIsSuccessful(httpResponse: HttpResponse): Boolean {
-        return httpResponse.status.value in 200..299
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TestGame</string>
+    <string name="app_name">Fight</string>
     <string name="saved_token_key">com.example.testgame.PREFERENCE_TOKEN_KEY</string>
     <string name="saved_username_key">com.example.testgame.PREFERENCE_USERNAME_KEY</string>
 
@@ -14,37 +14,43 @@
     <string name="health">Health</string>
     <string name="user">User</string>
     <string name="title_activity_main">Fight</string>
+    <string name="title_activity_fight">FightActivity</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="shop">Shop</string>
     <string name="fight">Fight</string>
     <string name="settings">Settings</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
-    <string name="mm">MM</string>
+    <string name="match_mech">MathMech</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="you_will_lose_progress">you will lose your fight progress</string>
-    <string name="sure_to_leave_fight">do you want to leave fight?</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="clickerimage">ClickerImage</string>
+    <string name="you_will_lose_progress">You will lose your fight progress</string>
+    <string name="sure_to_leave_fight">Do you want to leave fight?</string>
+    <string name="clicker_image">ClickerImage</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="inventory">inventory</string>
     <string name="score">score</string>
+    <string name="log_out">Log out</string>
+    <string name="entrance_activity_name">Entrance</string>
+    <string name="fight_acivity_name">Fight</string>
+    <string name="fight_activity_name">Fight</string>
+    <string name="main_activity_name">Main</string>
+    <string name="user_avatar">User_Avatar</string>
+    <string name="experience">Experience</string>
+    <string name="level">Level</string>
+    <string name="faculty">Faculty</string>
+    <string name="leading_faculty">Leading faculty</string>
+    <string name="tap_on_a_donkey_to_earn_some_scores">tap on a donkey to earn some scores</string>
+    <string name="try_to_open_game">Try to open game</string>
+    <string name="locations">Locations</string>
+    <string name="primary_weapon">Primary weapon</string>
+    <string name="skills">Skills</string>
+    <string name="time">Time</string>
+    <string name="imageofenemy">ImageOfEnemy</string>
+    <string name="enemyhealth">EnemyHealth</string>
+    <string name="imageofme">ImageOfMe</string>
+    <string name="myhealth">MyHealth</string>
+    <string name="change_language">change language</string>
+    <string name="shopitemimage">ShopItemImage</string>
 </resources>

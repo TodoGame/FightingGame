@@ -15,118 +15,211 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="?attr/actionBarSize">
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontal_guideline_fight_to_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.61" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/fightLayout"
             android:layout_width="match_parent"
-            android:layout_height="502dp"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
-            tools:layout_editor_absoluteX="173dp">
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/horizontal_guideline_fight_to_action"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.678">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/myLayout"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:layout_marginTop="60dp"
+            <TextView
+                android:id="@+id/myHealthTextView"
+                android:layout_width="93dp"
+                android:layout_height="wrap_content"
+                android:text="@string/myhealth"
+                style="@style/textView.FightHeader"
+                app:layout_constraintStart_toStartOf="@+id/myImageView"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <testgame.ui.main.fight.features.HealthBarView
+                android:id="@+id/myHealthBar"
+                android:layout_width="0dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/myHealthTextView"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/myHealthTextView"
+                app:layout_constraintTop_toBottomOf="@+id/myHealthTextView" />
+
+            <ImageView
+                android:id="@+id/myImageView"
+                android:layout_width="150dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:contentDescription="@string/imageofme"
+                android:src="@drawable/lizawarrior"
+                android:scaleX="-1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/myHealthTextView"
-                    android:layout_width="101dp"
-                    android:layout_height="49dp"
-                    android:text="MyHealth"
-                    app:layout_constraintBottom_toTopOf="@+id/myImageView"
-                    app:layout_constraintStart_toStartOf="@+id/myImageView"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/enemyHealthTextView"
+                android:layout_width="101dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@string/enemyhealth"
+                style="@style/textView.FightHeader"
+                app:layout_constraintEnd_toEndOf="@+id/enemyImageView"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/myImageView"
-                    android:layout_width="170dp"
-                    android:layout_height="170dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:contentDescription="ImageOfMe"
-                    android:src="@drawable/ic_fight_black_24dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <testgame.ui.main.fight.features.HealthBarView
+                android:id="@+id/enemyHealthBar"
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/enemyHealthTextView"
+                app:layout_constraintStart_toStartOf="@+id/enemyHealthTextView"
+                app:layout_constraintTop_toBottomOf="@+id/enemyHealthTextView" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/enemyLayout"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                app:layout_constraintBottom_toBottomOf="@+id/myLayout"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <TextView
-                    android:id="@+id/enemyHealthTextView"
-                    android:layout_width="101dp"
-                    android:layout_height="45dp"
-                    android:gravity="end"
-                    android:text="EnemyHealth"
-                    app:layout_constraintBottom_toTopOf="@+id/enemyImageView"
-                    app:layout_constraintEnd_toEndOf="@+id/enemyImageView"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/enemyImageView"
-                    android:layout_width="170dp"
-                    android:layout_height="170dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:contentDescription="ImageOfEnemy"
-                    android:src="@drawable/ic_fight_black_24dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/enemyImageView"
+                android:layout_width="150dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:contentDescription="@string/imageofenemy"
+                android:src="@drawable/lizawarrior"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/actionTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="50dp"
-                android:text="Action"
+                android:text="@={viewModel.action}"
+                style="@style/textView.FightHeader"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Enemy hit you with sword" />
+
+            <TextView
+                android:id="@+id/timeHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time"
+                style="@style/textView.FightHeader"
+                app:layout_constraintEnd_toStartOf="@+id/enemyHealthTextView"
+                app:layout_constraintStart_toEndOf="@+id/myHealthTextView"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/timeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Time"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginTop="8dp"
+                android:text="@{viewModel.time}"
+                style="@style/textView.FightHeader"
+                app:layout_constraintEnd_toStartOf="@+id/enemyHealthTextView"
+                app:layout_constraintStart_toEndOf="@+id/myHealthTextView"
+                app:layout_constraintTop_toBottomOf="@+id/timeHeaderTextView"
+                tools:text="0:35" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout2"
+            android:id="@+id/actionLayout"
             android:layout_width="match_parent"
-            android:layout_height="219dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/horizontal_guideline_fight_to_action">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/vertical_guideline_buttons_to_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.34" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="236dp"
-                android:layout_height="215dp"
+                android:id="@+id/options_choose_layout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/vertical_guideline_buttons_to_action"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <Button
+                    android:id="@+id/button"
+                    style="@style/button.Fight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> viewModel.selectAttackOption()}"
+                    android:text="@string/attack"
+                    app:layout_constraintBottom_toTopOf="@+id/button11"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <Button
+                    android:id="@+id/button11"
+                    style="@style/button.Fight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> viewModel.selectInventoryOption()}"
+                    android:text="@string/inventory"
+                    app:layout_constraintBottom_toTopOf="@+id/button12"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/button" />
+
+                <Button
+                    android:id="@+id/button12"
+                    style="@style/button.Fight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/skill"
+                    app:layout_constraintBottom_toTopOf="@+id/button13"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/button11" />
+
+                <Button
+                    android:id="@+id/button13"
+                    style="@style/button.Fight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/escape"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/button12" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/concrete_option_Layout"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/constraintLayout"
+                app:layout_constraintStart_toEndOf="@+id/vertical_guideline_buttons_to_action"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -136,21 +229,32 @@
 
                     <Button
                         android:id="@+id/primaryWeaponButton"
+                        style="@style/button.Fight"
                         android:layout_width="match_parent"
-                        android:layout_height="106dp"
-                        android:text="Primary weapon"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:text="@string/primary_weapon"
+                        app:layout_constraintBottom_toTopOf="@+id/skillsButton"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="spread">
 
                     </Button>
 
                     <Button
                         android:id="@+id/skillsButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="106dp"
-                        android:text="Skills"
+                        style="@style/button.Fight"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:text="@string/skills"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/primaryWeaponButton">
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="@+id/primaryWeaponButton"
+                        app:layout_constraintTop_toBottomOf="@+id/primaryWeaponButton">
 
                     </Button>
 
@@ -161,18 +265,26 @@
                     android:id="@+id/inventoryWindow"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:visibility="gone">
 
                     <GridView
                         android:id="@+id/inventoryGridView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="0dp"
                         android:columnWidth="100dp"
                         android:gravity="center"
                         android:horizontalSpacing="5dp"
                         android:numColumns="auto_fit"
                         android:stretchMode="columnWidth"
-                        android:verticalSpacing="35dp" >
+                        android:verticalSpacing="35dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
                     </GridView>
 
 
@@ -189,65 +301,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
-                android:layout_width="157dp"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <Button
-                    android:id="@+id/button"
-                    android:layout_width="155dp"
-                    android:layout_height="53dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginRight="2dp"
-                    android:text="@string/attack"
-                    app:layout_constraintBottom_toTopOf="@+id/button11"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:onClick="@{() -> viewModel.selectFightOption()}"/>
-
-                <Button
-                    android:id="@+id/button11"
-                    android:layout_width="155dp"
-                    android:layout_height="54dp"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginLeft="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:layout_marginRight="1dp"
-                    android:text="@string/inventory"
-                    app:layout_constraintBottom_toTopOf="@+id/button12"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button"
-                    android:onClick="@{() -> viewModel.selectFightOption()}"/>
-
-                <Button
-                    android:id="@+id/button12"
-                    android:layout_width="155dp"
-                    android:layout_height="53dp"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginLeft="1dp"
-                    android:text="@string/skill"
-                    app:layout_constraintBottom_toTopOf="@+id/button13"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button11" />
-
-                <Button
-                    android:id="@+id/button13"
-                    android:layout_width="155dp"
-                    android:layout_height="54dp"
-                    android:layout_marginEnd="1dp"
-                    android:layout_marginRight="1dp"
-                    android:text="@string/escape"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button12" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

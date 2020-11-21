@@ -13,15 +13,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainClickerBinding
-import testgame.EntranceActivity
-import testgame.GameApplication
-import testgame.MainActivity
+import testgame.data.GameApp
+import testgame.activities.MainActivity
 import java.lang.IllegalArgumentException
 
 class ClickerFragment : Fragment() {
 
     private lateinit var viewModel: ClickerViewModel
-    private val gameApp = GameApplication()
+    private val gameApp = GameApp()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +44,7 @@ class ClickerFragment : Fragment() {
             if (isClicked) {
                 val image = binding.image
                 val bounceAnimation = AnimationUtils.loadAnimation(activity, R.anim.bounce_animation)
+                bounceAnimation.interpolator = BounceInterpolator(0.2, 20.0)
                 image.startAnimation(bounceAnimation)
                 viewModel.onImageClicked()
             }

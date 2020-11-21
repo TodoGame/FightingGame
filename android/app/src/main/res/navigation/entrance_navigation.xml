@@ -6,13 +6,14 @@
     app:startDestination="@id/loginFragment">
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.testgame.ui.entrance.login.LoginFragment"
+        android:name="testgame.ui.entrance.login.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_entrance_login">
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment"
-            app:popUpTo="@id/loginFragment" />
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="false" />
         <argument
             android:name="username"
             app:argType="string"

@@ -1,11 +1,13 @@
-package com.example.testgame.ui.entrance.login
+package testgame.ui.entrance.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -13,9 +15,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
-import testgame.EntranceActivity
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentEntranceLoginBinding
+//import com.example.testgame.ui.entrance.login.LoginFragmentArgs
+//import com.example.testgame.ui.entrance.login.LoginFragmentDirections
+import testgame.activities.EntranceActivity
+import testgame.data.GameApp
 
 class LoginFragment : Fragment() {
 
@@ -51,6 +56,23 @@ class LoginFragment : Fragment() {
             }
         }
 
+        binding.usernameInput.setOnEditorActionListener { _: TextView, actionId: Int, _: KeyEvent ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                binding.passwordInput.requestFocus()
+                binding.passwordInput.isCursorVisible = true
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
+
+        binding.passwordInput.setOnEditorActionListener { _: TextView, actionId: Int, _: KeyEvent ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.logIn()
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
+
         viewModel.usernameInputErrorHint.observe(
             viewLifecycleOwner,
             Observer { hint ->
@@ -83,23 +105,17 @@ class LoginFragment : Fragment() {
             Observer { isCompleted ->
                 if (isCompleted) {
                     viewModel.onLoginConfirm()
-                    val token = viewModel.token
-                    val username = viewModel.user.name
-                    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
-                    with(sharedPreferences.edit()) {
-                        putString(getString(R.string.saved_token_key), token)
-                        putString(getString(R.string.saved_username_key), username)
-                        apply()
-                    }
+                    Toast.makeText(this.activity, "FUCK", Toast.LENGTH_SHORT).show()
+                    setUpAppData()
                     val intent = Intent(activity, EntranceActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                     startActivity(intent)
+                    activity?.finish()
                 }
             }
         )
 
-        viewModel.signUpCalled.observe(
-            viewLifecycleOwner,
-            Observer { isCalled ->
+        viewModel.signUpCalled.observe(viewLifecycleOwner, Observer { isCalled ->
                 if (isCalled) {
                     viewModel.onSignUpConfirm()
                     val action = LoginFragmentDirections.actionLoginFragmentToRegisterFragment()
@@ -108,12 +124,20 @@ class LoginFragment : Fragment() {
             }
         )
 
-        val testButton = view?.findViewById<Button>(R.id.testButton)
-        testButton?.setOnClickListener {
-            val intent = Intent(activity, EntranceActivity::class.java)
-            startActivity(intent)
-        }
-
         return binding.root
+    }
+
+    private fun setUpAppData() {
+        val token = viewModel.token
+        val username = viewModel.user.name
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
+        with(sharedPreferences.edit()) {
+            putString(getString(R.string.saved_token_key), token)
+            putString(getString(R.string.saved_username_key), username)
+            apply()
+        }
+        val app: GameApp = activity?.application as GameApp
+        app.user.username = username
+        app.user.authenticationToken = token
     }
 }
