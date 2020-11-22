@@ -1,10 +1,15 @@
 package com.somegame.user.repository
 
+import com.somegame.items.repository.ItemEntity
+import com.somegame.items.repository.ItemEntityImpl
 import com.somegame.security.UserPrincipal
+import com.somegame.user.tables.UserItems
 import com.somegame.user.tables.Users
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.transactions.transaction
 import user.User
 import user.UserData
 import user.Username
@@ -16,8 +21,10 @@ class UserEntityImpl(id: EntityID<Int>) : IntEntity(id), User, UserEntity {
     override var password by Users.password
     override var name by Users.name
 
-    override fun getPrincipal() = UserPrincipal(username)
-    override fun getPublicData() = UserData(username, name)
+    override var inventory by ItemEntityImpl via UserItems
 
-    override fun toString() = "User(username=$username)"
+    override fun getPrincipal() = UserPrincipal(username)
+    override fun getPublicData() = transaction { UserData(username, name, inventory.map { it.getPublicData() }) }
+
+    override fun toString() = "User(id=$id, username=$username)"
 }

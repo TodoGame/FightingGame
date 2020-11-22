@@ -1,5 +1,7 @@
 package com.somegame.db
 
+import com.somegame.items.tables.Items
+import com.somegame.user.tables.UserItems
 import com.somegame.user.tables.Users
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -24,6 +26,8 @@ class DatabaseConfig(private val dbUrl: String) {
     private fun createTables() {
         transaction {
             SchemaUtils.create(Users)
+            SchemaUtils.create(Items)
+            SchemaUtils.create(UserItems)
         }
     }
 }
