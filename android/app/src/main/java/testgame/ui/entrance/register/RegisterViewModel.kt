@@ -1,16 +1,13 @@
 package com.example.testgame.ui.entrance.register
 
-import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import testgame.network.securityService.SecurityApi
-import io.ktor.http.*
+import testgame.network.SecurityApi
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
 import testgame.network.NetworkService
-import user.UserData
 import java.lang.NullPointerException
 
 class RegisterViewModel : ViewModel() {

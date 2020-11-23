@@ -4,7 +4,6 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.ktor.client.features.websocket.DefaultClientWebSocketSession
 import io.ktor.http.cio.websocket.close
 import io.ktor.http.cio.websocket.send
 import io.ktor.util.KtorExperimentalAPI
@@ -13,8 +12,7 @@ import kotlinx.serialization.encodeToString
 import match.Message
 import testgame.data.GameApp
 import testgame.network.NetworkService
-import testgame.network.matchService.MatchApi
-import java.lang.Exception
+import testgame.network.MatchApi
 import java.lang.NullPointerException
 import java.net.SocketTimeoutException
 
@@ -76,12 +74,15 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
         }
     }
 
-    fun onMatchStarted() {
+    private fun onMatchStarted() {
         callError("Match started")
         _isMatchStarted.postValue(true)
     }
 
-    suspend fun onMatchEnded(winner: String) {
+
+    private suspend fun onMatchEnded(winner: String) {
+        callError("Match ended")
+        _isMatchEnded.postValue(true)
         app.match.webSocketSession?.close() ?: throw GameApp.NullAppDataException("Null match webSocketSession")
         if (winner == app.user.username) {
 
@@ -96,13 +97,9 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
         _isMatchStarted.value = false
     }
 
-    fun confirmRoomExit() {
-        _isMatchEnded.value = true
-    }
-
     //fight
     val time = "0:35"
-    val action = ObservableField<String>("Action: ")
+    val action = ObservableField("Action: ")
 
     private var _activePlayerId = MutableLiveData<Int>()
     val activePlayerId: LiveData<Int>
@@ -119,7 +116,19 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
         SKILLS
     }
 
-    suspend fun attackWithPrimaryWeapon() {
+    fun exitMatch() {
+        _isMatchEnded.postValue(true)
+        coroutineScope.launch {
+            app.match.webSocketSession?.close() ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+        }
+    }
+
+    fun onRoomExit() {
+        _isMatchEnded.value = false
+    }
+
+    fun attackWithPrimaryWeapon() {
+        action.set("Primary attack")
         val turnSnapshot = app.match.currentSnapshot
         try {
             if (turnSnapshot != null) {
@@ -128,7 +137,9 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
                 val action = NetworkService.jsonFormat.encodeToString<Message>(
                         match.PlayerAction(enemy, app.user.username)
                 )
-                app.match.webSocketSession?.send(action) ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+                coroutineScope.launch {
+                    app.match.webSocketSession?.send(action) ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+                }
             }
         } catch (exception: NullPointerException) {
             callError("Null pointer exception")

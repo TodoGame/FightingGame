@@ -6,25 +6,42 @@ import android.os.PersistableBundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
 import com.example.testgame.R
 import com.example.testgame.databinding.ActivityEntranceBinding
 import com.example.testgame.databinding.ActivityFightBinding
+import testgame.ui.main.fight.FightViewModel
+import testgame.ui.main.fight.FightViewModelFactory
 
 class FightActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        val binding = DataBindingUtil.setContentView<ActivityEntranceBinding>(this, R.layout.activity_fight)
-//        val mediaPlayer: MediaPlayer? = MediaPlayer.create(this, R.raw.app_music)
-//        mediaPlayer?.isLooping = true
-//        mediaPlayer?.start()
+    private lateinit var viewModel: FightViewModel
+    private lateinit var viewModelFactory: FightViewModelFactory
+    var mediaPlayer: MediaPlayer? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val binding = DataBindingUtil.setContentView<ActivityFightBinding>(this, R.layout.activity_fight)
+        setMusic()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mediaPlayer?.stop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mediaPlayer?.start()
+    }
+
+    private fun setMusic() {
+        mediaPlayer = MediaPlayer.create(this, R.raw.main_activity_music)
+        mediaPlayer?.isLooping = true
+        mediaPlayer?.start()
     }
 
     override fun onBackPressed() {
+
         val builder = AlertDialog.Builder(this)
         val dialog = builder.setTitle(R.string.sure_to_leave_fight)
             .setMessage(R.string.you_will_lose_progress)

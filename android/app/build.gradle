@@ -71,6 +71,7 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.1'
 
     // design
+    implementation "androidx.fragment:fragment-ktx:1.2.5"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
@@ -86,7 +87,6 @@ dependencies {
     implementation "io.ktor:ktor-client-core:$version_ktor"
     implementation "io.ktor:ktor-client-android:$version_ktor"
     implementation "io.ktor:ktor-client-websockets:$version_ktor"
-    implementation "io.ktor:ktor-client-logging-jvm:$version_ktor"
     implementation "io.ktor:ktor-client-json-jvm:$version_ktor"
     implementation "io.ktor:ktor-client-gson:$version_ktor"
     implementation "io.ktor:ktor-client-okhttp:$version_ktor"

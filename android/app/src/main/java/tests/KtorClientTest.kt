@@ -1,21 +1,20 @@
 package tests
 
 import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.http.cio.websocket.close
+import io.ktor.http.cio.websocket.*
 import io.ktor.util.KtorExperimentalAPI
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import match.matchWebSocketEndpoint
+import kotlinx.serialization.encodeToString
+import match.Message
 import testgame.data.GameApp
+import testgame.network.MatchApi
 import testgame.network.NetworkService
-import testgame.network.matchService.MatchApi
-import testgame.network.securityService.SecurityApi
-import websocket.WebSocketTicket
+import testgame.network.SecurityApi
 
 const val AUTHORIZATION_HEADER_NAME = "Authorization"
-val app = GameApp()
+val data = TestDataClass
 
 @KtorExperimentalAPI
 fun main() {
@@ -47,18 +46,34 @@ fun main() {
         }
 
         val ticket = MatchApi.getWebSocketTicket(tokenTest)
-        MatchApi.connectMatchWebSocket(
-                app,
-                ticket,
-                ::onMatchStarted,
-                ::onMatchEnded
-        )
-//        while (GameData.webSocketSession == null) {
-//            println(GameData.webSocketSession)
-//        }
-//        val action = Json.encodeToString(match.PlayerAction("adsf", "asdf")) ?: ""
-//        matchSession?.send(action)
-//        println(matchSession)
+        GlobalScope.launch {
+            MatchApi.connectMatchWebSocket(
+                    data,
+                    ticket,
+                    ::onMatchStarted,
+                    ::onMatchEnded
+            )
+        }
+        Thread.sleep(5000)
+        val turnSnapshot = data.match.currentSnapshot
+        try {
+            if (turnSnapshot != null) {
+                println("Not null snapshot")
+                val enemy = data.match.currentSnapshot!!.players.find { it.username != myUsername }?.username
+                        ?: ""
+                val action = NetworkService.jsonFormat.encodeToString<Message>(
+                        match.PlayerAction(enemy, myUsername)
+                )
+                GlobalScope.launch {
+                    data.match.webSocketSession?.send(action) ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+                }
+            }
+            else {
+                println("Null snapshot")
+            }
+        } catch (exception: java.lang.NullPointerException) {
+            println("Null pointer exception")
+        }
     }
 }
 

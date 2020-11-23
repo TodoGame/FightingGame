@@ -4,7 +4,7 @@ import androidx.databinding.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import testgame.network.securityService.SecurityApi
+import testgame.network.SecurityApi
 import io.ktor.client.statement.*
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.Job
@@ -21,8 +21,8 @@ class LoginViewModel : ViewModel() {
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    val username = ObservableField<String>("")
-    val password = ObservableField<String>("")
+    val username = ObservableField("")
+    val password = ObservableField("")
 
     private val _usernameInputErrorHint = MutableLiveData<String>()
     val usernameInputErrorHint: LiveData<String>

@@ -29,12 +29,14 @@
         <activity
             android:name="testgame.activities.FightActivity"
             android:label="@string/fight_activity_name"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:screenOrientation="portrait">
         </activity>
 
         <activity
             android:name="testgame.activities.MainActivity"
             android:label="@string/main_activity_name"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:screenOrientation="portrait">
         </activity>
     </application>

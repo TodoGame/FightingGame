@@ -235,6 +235,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginLeft="8dp"
                         android:text="@string/primary_weapon"
+                        android:onClick="@{() -> viewModel.attackWithPrimaryWeapon()}"
                         app:layout_constraintBottom_toTopOf="@+id/skillsButton"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
