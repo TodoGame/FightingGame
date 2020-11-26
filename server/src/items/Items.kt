@@ -1,4 +1,4 @@
-package com.somegame.items.tables
+package com.somegame.items
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 

@@ -3,7 +3,7 @@ package com.somegame.websocket
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
 import com.somegame.security.UnauthorizedException
-import com.somegame.user.repository.MockUserRepository
+import com.somegame.user.repository.MockUserRepositoryFactory
 import com.somegame.websocket.WebSocketTicketManager.Companion.DEFAULT_TICKET_LIFE_EXPECTANCY
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
@@ -77,7 +77,7 @@ open class BaseWebSocketServiceKtorTest(
             Assertions.assertEquals(HttpStatusCode.OK, response.status())
             val ticket = response.content?.let { Json.decodeFromString<WebSocketTicket>(it) }
             Assertions.assertNotNull(ticket)
-            Assertions.assertEquals(MockUserRepository.user1.username, ticket?.username)
+            Assertions.assertEquals(MockUserRepositoryFactory.user1.username, ticket?.username)
         }
     }
 

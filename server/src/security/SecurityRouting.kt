@@ -1,7 +1,7 @@
 package com.somegame.security
 
 import com.fasterxml.jackson.databind.JsonMappingException
-import com.somegame.user.repository.UserEntity
+import com.somegame.user.User
 import com.somegame.user.service.UserService
 import io.ktor.application.*
 import io.ktor.http.*
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory
 import security.*
 
 object SecurityRouting {
-    val loginLogger: Logger = LoggerFactory.getLogger(LOGIN_ENDPOINT)
     val registerLogger: Logger = LoggerFactory.getLogger(REGISTER_ENDPOINT)
 
     fun Routing.security() {
@@ -74,7 +73,7 @@ object SecurityRouting {
     }
 }
 
-fun PipelineContext<Unit, ApplicationCall>.addJwtToken(user: UserEntity) {
+fun PipelineContext<Unit, ApplicationCall>.addJwtToken(user: User) {
     val token = JwtConfig.makeLoginToken(user)
     call.response.headers.append("Authorization", "Bearer $token")
 }

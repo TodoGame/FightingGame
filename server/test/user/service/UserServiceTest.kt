@@ -1,7 +1,7 @@
 package user.service
 
 import com.somegame.BaseKoinTest
-import com.somegame.user.repository.MockUserRepository
+import com.somegame.user.repository.MockUserRepositoryFactory
 import com.somegame.user.service.UserService
 import io.mockk.spyk
 import io.mockk.verify
@@ -12,7 +12,6 @@ import security.UserLoginInput
 import security.UserRegisterInput
 
 internal class UserServiceTest : BaseKoinTest() {
-    override val userRepository = spyk(MockUserRepository())
     private val userService: UserService by inject()
 
     @Test

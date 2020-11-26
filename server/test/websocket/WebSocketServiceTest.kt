@@ -2,6 +2,7 @@ package websocket
 
 import com.somegame.BaseKoinTest
 import com.somegame.security.UnauthorizedException
+import com.somegame.user.repository.MockUserRepositoryFactory.makeNewTestUser
 import com.somegame.websocket.WebSocketService
 import io.ktor.websocket.*
 import io.mockk.every

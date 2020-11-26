@@ -1,10 +1,8 @@
 package com.somegame.db
 
-import com.somegame.items.tables.Items
+import com.somegame.items.Items
 import com.somegame.user.tables.UserItems
 import com.somegame.user.tables.Users
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction

@@ -1,13 +1,13 @@
 package com.somegame.websocket
 
+import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
 import com.somegame.applicationModule
 import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils.generateActivePlayerLog
 import com.somegame.match.MatchTestUtils.generatePassivePlayerLog
 import com.somegame.security.JwtConfig
-import com.somegame.user.repository.MockUserRepository
-import com.somegame.user.repository.UserRepository
+import com.somegame.user.repository.MockUserRepositoryFactory
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -31,48 +31,12 @@ import user.Username
 import websocket.WebSocketTicket
 import java.time.Duration
 
-class MatchRoutingTest {
-    private val mockUserRepository = MockUserRepository()
-
-    private val repositoryModule = module {
-        single<UserRepository> { mockUserRepository }
-    }
-
-    private fun withApp(block: TestApplicationEngine.() -> Unit) {
-        withTestApplication(
-            {
-                install(org.koin.ktor.ext.Koin) {
-                    modules(repositoryModule, applicationModule)
-                }
-
-                install(WebSockets) {
-                    pingPeriod = Duration.ofSeconds(1)
-                    timeout = Duration.ofSeconds(15)
-                    maxFrameSize = Long.MAX_VALUE
-                    masking = false
-                }
-
-                install(Authentication) {
-                    jwt {
-                        verifier(JwtConfig.verifier)
-                        validate {
-                            JwtConfig.verifyCredentialsAndGetPrincipal(it)
-                        }
-                    }
-                }
-
-                routing {
-                    MatchRouting().setUpMatchRoutes(this)
-                }
-            },
-            block
-        )
-    }
-
-    @BeforeEach
-    fun clearRepository() {
-        mockUserRepository.clear()
-    }
+class MatchRoutingTest : SimpleKtorTest() {
+    private fun withApp(block: TestApplicationEngine.() -> Unit) = withBaseApp({
+        routing {
+            MatchRouting().setUpMatchRoutes(this)
+        }
+    }) { block() }
 
     private fun TestApplicationEngine.getTicket(username: Username): String? = handleRequest {
         uri = matchWebSocketTicketEndpoint

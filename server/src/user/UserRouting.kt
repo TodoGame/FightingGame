@@ -16,7 +16,7 @@ fun Routing.user() {
     authenticate {
         get(GET_ME_ENDPOINT) {
             val userPrincipal = call.principal<UserPrincipal>()
-            val user = userPrincipal?.let { userService.findUserByUsername(it?.username) }
+            val user = userPrincipal?.let { userService.findUserByUsername(it.username) }
             if (user != null) {
                 call.respond(user.getPublicData())
             } else {

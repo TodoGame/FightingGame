@@ -75,7 +75,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val password = "password"
         val name = "name"
         val registerInput = UserRegisterInput(username, password, name)
-        val expectedUserData = UserData(username, name)
+        val expectedUserData = UserData(username, name, listOf())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
