@@ -55,6 +55,8 @@ class MatchRouting {
     inner class MatchClient(private val client: WebSocketService.Client) {
         private val logger = LoggerFactory.getLogger(javaClass)
 
+        val user = client.user
+
         val username
             get() = client.username
         private var player: Player? = null

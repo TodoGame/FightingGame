@@ -5,14 +5,10 @@ import com.somegame.TestUtils.addJwtHeader
 import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils.generateActivePlayerLog
 import com.somegame.match.MatchTestUtils.generatePassivePlayerLog
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
-import io.ktor.websocket.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
@@ -154,5 +150,18 @@ class MatchRoutingTest : SimpleKtorTest() {
             assertEquals(passivePlayerLog, log1)
         }
     }
+
+    @Test
+    fun `winning player should have 10 money`() = withApp {
+        val log1 = mutableListOf<Message>()
+        val log2 = mutableListOf<Message>()
+        connect2SimplePlayers("user1", "user2", log1, log2)
+
+        val winnerUsername = log1.filterIsInstance<MatchEnded>().first().winner
+        val winner = userRepository.findUserByUsername(winnerUsername)
+
+        assertEquals(10, winner?.money)
+    }
+
     // TODO: test multiple matches at the same time
 }

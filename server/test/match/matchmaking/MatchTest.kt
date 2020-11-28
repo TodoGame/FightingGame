@@ -1,9 +1,13 @@
 package match.matchmaking
 
+import com.somegame.BaseKoinTest
 import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils
 import com.somegame.match.matchmaking.Match
 import com.somegame.match.matchmaking.MockMatchClientThatPlays
+import com.somegame.user.User
+import com.somegame.user.repository.MockUserFactory
+import com.somegame.user.repository.MockUserRepositoryFactory.makeNewTestUser
 import io.mockk.*
 import io.mockk.every
 import kotlinx.coroutines.runBlocking
@@ -14,11 +18,13 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import user.Username
 
-internal class MatchTest {
+internal class MatchTest : BaseKoinTest() {
     private fun mockClient(username: Username): MatchRouting.MatchClient {
+        val user = userRepository.makeNewTestUser(username)
         val client = mockk<MatchRouting.MatchClient>()
         every { client.username } returns username
         every { client.onJoinMatch(any()) } just Runs
+        every { client.user } returns user
         coEvery { client.sendMessage(any()) } just Runs
         return client
     }

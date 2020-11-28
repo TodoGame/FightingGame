@@ -8,9 +8,10 @@ import org.koin.core.inject
 import user.Username
 
 object TestUtils : KoinComponent {
-    private val userService: UserService by inject()
 
     fun TestApplicationRequest.addJwtHeader(username: Username) {
+        val userService: UserService by inject()
+
         val userEntity = userService.findUserByUsername(username) ?: throw IllegalArgumentException()
         val token = JwtConfig.makeLoginToken(userEntity)
         addHeader("Authorization", "Bearer $token")

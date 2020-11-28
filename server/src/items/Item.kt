@@ -10,5 +10,7 @@ class Item(id: EntityID<Int>) : IntEntity(id) {
     var name by Items.name
     var price by Items.price
 
+    fun getId() = id.value
+
     override fun toString() = "Item(id=$id, name=$name)"
 }

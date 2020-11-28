@@ -34,6 +34,10 @@ class User(id: EntityID<Int>) : IntEntity(id) {
         money += amount
     }
 
+    fun spendMoney(amount: Int) = transaction {
+        money -= amount
+    }
+
     fun publicInventory() = transaction { inventory.map { it.publicData() } }
 
     override fun toString() = "User(id=$id, username=$username)"

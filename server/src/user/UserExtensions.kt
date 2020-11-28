@@ -12,7 +12,7 @@ object UserExtensions {
         }
         if (money >= item.price) {
             addToInventory(item)
-            money -= item.price
+            spendMoney(item.price)
         } else {
             throw NotEnoughMoneyException(item)
         }

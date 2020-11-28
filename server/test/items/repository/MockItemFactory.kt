@@ -9,7 +9,7 @@ object MockItemFactory {
     fun create(id: Int, name: String, price: Int): Item {
         val item = mockk<Item>()
 
-        every { item.id.value } returns id
+        every { item.getId() } returns id
         every { item.name } returns name
         every { item.price } returns price
 

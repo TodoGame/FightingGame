@@ -9,6 +9,8 @@ import kotlin.math.max
 class Player(private val client: MatchRouting.MatchClient, val match: Match) {
     val username = client.username
 
+    val user = client.user
+
     var isActive = false
     private var health = 15
 
@@ -46,6 +48,9 @@ class Player(private val client: MatchRouting.MatchClient, val match: Match) {
 
     suspend fun handleGameEnd(winner: Player) {
         if (!disconnected.get()) {
+            if (winner == this) {
+                user.acceptMoney(10)
+            }
             client.sendMessage(MatchEnded(winner.username))
             client.kick("Match Ended")
         }
