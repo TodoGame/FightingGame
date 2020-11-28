@@ -1,14 +1,16 @@
-package com.somegame.user.repository
+package com.somegame.user
 
 import com.somegame.user.tables.Users
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.koin.core.KoinComponent
 import security.UserRegisterInput
 import user.Username
 
-class UserRepositoryImpl : UserRepository {
-    override fun findUserByUsername(username: Username): UserEntity? {
+class UserRepository : KoinComponent {
+    fun findUserByUsername(username: Username): User? {
         return transaction {
-            val result = UserEntityImpl.find { Users.username eq username }
+            val result = User.find { Users.username eq username }
             if (result.count() == 0L) {
                 null
             } else {
@@ -17,9 +19,9 @@ class UserRepositoryImpl : UserRepository {
         }
     }
 
-    override fun createUser(input: UserRegisterInput): UserEntity {
+    fun createUser(input: UserRegisterInput): User {
         return transaction {
-            UserEntityImpl.new {
+            User.new {
                 username = input.username
                 password = input.password
                 name = input.name

@@ -1,21 +1,14 @@
 package com.somegame.websocket
 
+import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
-import com.somegame.applicationModule
 import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils.generateActivePlayerLog
 import com.somegame.match.MatchTestUtils.generatePassivePlayerLog
-import com.somegame.security.JwtConfig
-import com.somegame.user.repository.MockUserRepository
-import com.somegame.user.repository.UserRepository
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
-import io.ktor.websocket.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
@@ -23,56 +16,17 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import match.*
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.koin.dsl.module
 import user.Username
 import websocket.WebSocketTicket
-import java.time.Duration
 
-class MatchRoutingTest {
-    private val mockUserRepository = MockUserRepository()
-
-    private val repositoryModule = module {
-        single<UserRepository> { mockUserRepository }
-    }
-
-    private fun withApp(block: TestApplicationEngine.() -> Unit) {
-        withTestApplication(
-            {
-                install(org.koin.ktor.ext.Koin) {
-                    modules(repositoryModule, applicationModule)
-                }
-
-                install(WebSockets) {
-                    pingPeriod = Duration.ofSeconds(1)
-                    timeout = Duration.ofSeconds(15)
-                    maxFrameSize = Long.MAX_VALUE
-                    masking = false
-                }
-
-                install(Authentication) {
-                    jwt {
-                        verifier(JwtConfig.verifier)
-                        validate {
-                            JwtConfig.verifyCredentialsAndGetPrincipal(it)
-                        }
-                    }
-                }
-
-                routing {
-                    MatchRouting().setUpMatchRoutes(this)
-                }
-            },
-            block
-        )
-    }
-
-    @BeforeEach
-    fun clearRepository() {
-        mockUserRepository.clear()
-    }
+class MatchRoutingTest : SimpleKtorTest() {
+    private fun withApp(block: TestApplicationEngine.() -> Unit) = withBaseApp({
+        routing {
+            MatchRouting().setUpMatchRoutes(this)
+        }
+    }) { block() }
 
     private fun TestApplicationEngine.getTicket(username: Username): String? = handleRequest {
         uri = matchWebSocketTicketEndpoint
@@ -196,5 +150,18 @@ class MatchRoutingTest {
             assertEquals(passivePlayerLog, log1)
         }
     }
+
+    @Test
+    fun `winning player should have 10 money`() = withApp {
+        val log1 = mutableListOf<Message>()
+        val log2 = mutableListOf<Message>()
+        connect2SimplePlayers("user1", "user2", log1, log2)
+
+        val winnerUsername = log1.filterIsInstance<MatchEnded>().first().winner
+        val winner = userRepository.findUserByUsername(winnerUsername)
+
+        assertEquals(10, winner?.money)
+    }
+
     // TODO: test multiple matches at the same time
 }

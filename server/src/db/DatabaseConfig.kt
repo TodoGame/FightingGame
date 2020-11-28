@@ -1,8 +1,8 @@
 package com.somegame.db
 
+import com.somegame.items.Items
+import com.somegame.user.tables.UserItems
 import com.somegame.user.tables.Users
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -23,7 +23,11 @@ class DatabaseConfig(private val dbUrl: String) {
 
     private fun createTables() {
         transaction {
-            SchemaUtils.create(Users)
+//            SchemaUtils.drop(Users, Items, UserItems)
+            SchemaUtils.create(Users, Items, UserItems)
+//            SchemaUtils.create(Users)
+//            SchemaUtils.create(Items)
+//            SchemaUtils.create(UserItems)
         }
     }
 }

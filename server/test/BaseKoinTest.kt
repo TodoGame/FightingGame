@@ -1,7 +1,6 @@
 package com.somegame
 
-import com.somegame.user.repository.MockUserRepository
-import com.somegame.user.repository.UserRepository
+import com.somegame.user.repository.MockUserRepositoryFactory
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.koin.core.context.startKoin
@@ -10,15 +9,18 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 
 open class BaseKoinTest : KoinTest {
-    protected open val userRepository = MockUserRepository()
+    protected open var userRepository = MockUserRepositoryFactory.create()
 
-    private val userRepositoryModule = module {
-        single<UserRepository> { userRepository }
+    private var userRepositoryModule = makeRepositoriesModule()
+
+    private fun makeRepositoriesModule() = module {
+        single { userRepository }
     }
 
     @BeforeEach
     fun clearRepositories() {
-        userRepository.clear()
+        userRepository = MockUserRepositoryFactory.create()
+        userRepositoryModule = makeRepositoriesModule()
         startKoin {
             modules(userRepositoryModule, applicationModule)
         }

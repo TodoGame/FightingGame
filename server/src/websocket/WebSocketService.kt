@@ -1,9 +1,7 @@
 package com.somegame.websocket
 
-import com.somegame.ConflictException
-import com.somegame.security.UnauthorizedException
 import com.somegame.security.UserPrincipal
-import com.somegame.user.repository.UserEntity
+import com.somegame.user.User
 import com.somegame.websocket.WebSocketTicketManager.Companion.DEFAULT_TICKET_LIFE_EXPECTANCY
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -66,21 +64,21 @@ class WebSocketService(
         return client
     }
 
-    private suspend fun authorizeSessionByTicket(session: WebSocketServerSession): UserEntity {
+    private suspend fun authorizeSessionByTicket(session: WebSocketServerSession): User {
         val ticketString = session.call.request.queryParameters[TICKET_QUERY_PARAM_KEY]
         if (ticketString == null) {
             logger.info("Received request with no $TICKET_QUERY_PARAM_KEY query parameter")
-            throw UnauthorizedException()
+            throw WebSocketTicketManager.InvalidTicketException("No ticket provided")
         }
         val ticket = try {
             Json.decodeFromString<WebSocketTicket>(ticketString)
         } catch (e: SerializationException) {
-            throw UnauthorizedException("Error parsing ticket: $e")
+            throw WebSocketTicketManager.InvalidTicketException("Could not deserialize ticket: $e")
         }
         return ticketManager.authorize(ticket)
     }
 
-    private suspend fun verifyNumberOfConnections(user: UserEntity) = connectionsPerUserMutex.withLock {
+    private suspend fun verifyNumberOfConnections(user: User) = connectionsPerUserMutex.withLock {
         val connectionsNumber = connectionsPerUser[user.username] ?: 0
         if (maxConnectionsPerUser != -1 && connectionsNumber >= maxConnectionsPerUser) {
             throw MaximumNumberOfConnectionsReached(user)
@@ -104,7 +102,7 @@ class WebSocketService(
         logger.info("Unregistered client $client")
     }
 
-    inner class Client(val user: UserEntity, private val session: WebSocketServerSession) {
+    inner class Client(val user: User, private val session: WebSocketServerSession) {
         private val logger = LoggerFactory.getLogger(javaClass)
 
         val username = user.username
@@ -133,6 +131,6 @@ class WebSocketService(
         override fun toString() = "Client(username=$username)"
     }
 
-    class MaximumNumberOfConnectionsReached(user: UserEntity) :
-        ConflictException("Maximum number of connections reached by $user")
+    class MaximumNumberOfConnectionsReached(user: User) :
+        IllegalStateException("Maximum number of connections reached by $user")
 }

@@ -1,8 +1,8 @@
 package com.somegame.websocket
 
-import com.somegame.security.UnauthorizedException
+import com.somegame.responseExceptions.UnauthorizedException
 import com.somegame.security.UserPrincipal
-import com.somegame.user.repository.UserEntity
+import com.somegame.user.User
 import com.somegame.user.service.UserService
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -58,7 +58,7 @@ class WebSocketTicketManager(
         logger.info("Ticket $ticket unregistered")
     }
 
-    suspend fun authorize(ticket: WebSocketTicket): UserEntity {
+    suspend fun authorize(ticket: WebSocketTicket): User {
         validateTicket(ticket)
         unregisterTicket(ticket)
         return userService.findUserByUsername(ticket.username) ?: throw InvalidTicketException("User not found")

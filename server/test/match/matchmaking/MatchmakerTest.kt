@@ -4,6 +4,7 @@ import com.somegame.BaseKoinTest
 import com.somegame.match.MatchRouting
 import com.somegame.match.matchmaking.Matchmaker
 import com.somegame.match.player.Player
+import com.somegame.user.repository.MockUserRepositoryFactory.makeNewTestUser
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -16,9 +17,10 @@ internal class MatchmakerTest : BaseKoinTest() {
     var matchmaker = Matchmaker()
 
     private fun mockClient(username: Username): MatchRouting.MatchClient {
-        userRepository.makeNewTestUser(username)
+        val user = userRepository.makeNewTestUser(username)
         val client = mockk<MatchRouting.MatchClient>()
         every { client.username } returns username
+        every { client.user } returns user
         coEvery { client.kick(any()) } just Runs
         coEvery { client.sendMessage(any()) } just Runs
         coEvery { client.onJoinMatch(any()) } just Runs

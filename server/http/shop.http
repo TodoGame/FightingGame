@@ -1,0 +1,5 @@
+POST {{host}}/shop/buyItem
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+1
