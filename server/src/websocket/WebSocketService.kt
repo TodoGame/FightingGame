@@ -1,7 +1,5 @@
 package com.somegame.websocket
 
-import com.somegame.ConflictException
-import com.somegame.security.UnauthorizedException
 import com.somegame.security.UserPrincipal
 import com.somegame.user.User
 import com.somegame.websocket.WebSocketTicketManager.Companion.DEFAULT_TICKET_LIFE_EXPECTANCY
@@ -70,12 +68,12 @@ class WebSocketService(
         val ticketString = session.call.request.queryParameters[TICKET_QUERY_PARAM_KEY]
         if (ticketString == null) {
             logger.info("Received request with no $TICKET_QUERY_PARAM_KEY query parameter")
-            throw UnauthorizedException()
+            throw WebSocketTicketManager.InvalidTicketException("No ticket provided")
         }
         val ticket = try {
             Json.decodeFromString<WebSocketTicket>(ticketString)
         } catch (e: SerializationException) {
-            throw UnauthorizedException("Error parsing ticket: $e")
+            throw WebSocketTicketManager.InvalidTicketException("Could not deserialize ticket: $e")
         }
         return ticketManager.authorize(ticket)
     }
@@ -134,5 +132,5 @@ class WebSocketService(
     }
 
     class MaximumNumberOfConnectionsReached(user: User) :
-        ConflictException("Maximum number of connections reached by $user")
+        IllegalStateException("Maximum number of connections reached by $user")
 }

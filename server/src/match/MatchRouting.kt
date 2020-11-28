@@ -2,7 +2,6 @@ package com.somegame.match
 
 import com.somegame.match.matchmaking.*
 import com.somegame.match.player.Player
-import com.somegame.security.UnauthorizedException
 import com.somegame.websocket.WebSocketService
 import com.somegame.websocket.WebSocketTicketManager
 import io.ktor.http.cio.websocket.*
@@ -29,7 +28,7 @@ class MatchRouting {
             logger.info("New connection")
             val webSocketClient = try {
                 webSocketService.tryConnect(this)
-            } catch (e: UnauthorizedException) {
+            } catch (e: WebSocketTicketManager.InvalidTicketException) {
                 logger.info("Connection was not authorized")
                 close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
                 return@webSocket

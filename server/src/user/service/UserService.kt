@@ -1,6 +1,6 @@
 package com.somegame.user.service
 
-import com.somegame.security.UnauthorizedException
+import com.somegame.responseExceptions.UnauthorizedException
 import com.somegame.user.User
 import com.somegame.user.UserRepository
 import org.koin.core.KoinComponent

@@ -1,7 +1,7 @@
 package com.somegame.user
 
 import com.somegame.items.Item
-import com.somegame.security.UserPrincipal
+import com.somegame.items.ItemExtensions.publicData
 import com.somegame.user.tables.UserItems
 import com.somegame.user.tables.Users
 import org.jetbrains.exposed.dao.IntEntity
@@ -9,7 +9,6 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
-import user.UserData
 import user.Username
 
 class User(id: EntityID<Int>) : IntEntity(id) {
@@ -21,17 +20,21 @@ class User(id: EntityID<Int>) : IntEntity(id) {
 
     var inventory by Item via UserItems
 
+    var money by Users.money
+
+    fun hasItem(item: Item) = transaction {
+        inventory.find { it.id == item.id } != null
+    }
+
     fun addToInventory(item: Item) = transaction {
-        if (item in inventory) {
-            throw ItemAlreadyInInventoryException(item)
-        }
         inventory = SizedCollection(inventory + listOf(item))
     }
 
-    fun getPrincipal() = UserPrincipal(username)
-    fun getPublicData() = transaction { UserData(username, name, inventory.map { it.getPublicData() }) }
+    fun acceptMoney(amount: Int) = transaction {
+        money += amount
+    }
+
+    fun publicInventory() = transaction { inventory.map { it.publicData() } }
 
     override fun toString() = "User(id=$id, username=$username)"
-    
-    class ItemAlreadyInInventoryException(item: Item) : IllegalArgumentException("Item $item already in inventory")
 }

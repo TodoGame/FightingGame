@@ -1,6 +1,7 @@
 package com.somegame
 
 import com.somegame.ApplicationConfig.installAuth
+import com.somegame.ApplicationConfig.installExceptionsTransformation
 import com.somegame.ApplicationConfig.installSerialization
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -42,6 +43,7 @@ abstract class BaseKtorTest : KoinTest {
 
             installAuth()
             installSerialization()
+            installExceptionsTransformation()
 
             setUpApp()
         }) {

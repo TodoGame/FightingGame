@@ -23,9 +23,11 @@ class DatabaseConfig(private val dbUrl: String) {
 
     private fun createTables() {
         transaction {
-            SchemaUtils.create(Users)
-            SchemaUtils.create(Items)
-            SchemaUtils.create(UserItems)
+//            SchemaUtils.drop(Users, Items, UserItems)
+            SchemaUtils.create(Users, Items, UserItems)
+//            SchemaUtils.create(Users)
+//            SchemaUtils.create(Items)
+//            SchemaUtils.create(UserItems)
         }
     }
 }

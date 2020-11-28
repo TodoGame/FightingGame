@@ -1,7 +1,10 @@
 package com.somegame.security
 
-import com.fasterxml.jackson.databind.JsonMappingException
+import com.somegame.handleReceiveExceptions
+import com.somegame.responseExceptions.ConflictException
+import com.somegame.responseExceptions.UnauthorizedException
 import com.somegame.user.User
+import com.somegame.user.UserExtensions.publicData
 import com.somegame.user.service.UserService
 import io.ktor.application.*
 import io.ktor.http.*
@@ -9,67 +12,53 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
-import kotlinx.serialization.SerializationException
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import org.koin.ktor.ext.inject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import security.*
 
-object SecurityRouting {
-    val registerLogger: Logger = LoggerFactory.getLogger(REGISTER_ENDPOINT)
+object SecurityRouting : KoinComponent {
+    private val loginLogger: Logger = LoggerFactory.getLogger(LOGIN_ENDPOINT)
+    private val registerLogger: Logger = LoggerFactory.getLogger(REGISTER_ENDPOINT)
 
     fun Routing.security() {
-        val userService: UserService by inject()
-
         post(LOGIN_ENDPOINT) {
-            val input = try {
-                call.receive<UserLoginInput>()
-            } catch (e: ContentTransformationException) {
-                call.respond(HttpStatusCode.BadRequest, "Failed to deserialize Json")
-                return@post
-            } catch (e: SerializationException) {
-                registerLogger.info("Could not serialize $e")
-                call.respond(HttpStatusCode.BadRequest, "Failed to deserialize Json")
-                return@post
-            }
-            val user = try {
-                userService.loginUser(input)
-            } catch (e: UnauthorizedException) {
-                call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
-                return@post
-            }
+            val input = handleReceiveExceptions { call.receive<UserLoginInput>() }
+            val user = loginUser(input)
 
             addJwtToken(user)
-            call.respond(user.getPublicData())
+            call.respond(user.publicData())
         }
 
         post(REGISTER_ENDPOINT) {
-            val input = try {
-                call.receive<UserRegisterInput>()
-            } catch (e: io.ktor.features.ContentTransformationException) {
-                registerLogger.info("Could not serialize $e")
-                call.respond(HttpStatusCode.BadRequest, "Failed to deserialize Json")
-                return@post
-            } catch (e: JsonMappingException) {
-                registerLogger.info("Could not serialize $e")
-                call.respond(HttpStatusCode.BadRequest, "Failed to deserialize Json")
-                return@post
-            } catch (e: SerializationException) {
-                registerLogger.info("Could not serialize $e")
-                call.respond(HttpStatusCode.BadRequest, "Failed to deserialize Json")
-                return@post
-            }
+            val input = handleReceiveExceptions { call.receive<UserRegisterInput>() }
 
-            val newUser = try {
-                userService.registerUser(input)
-            } catch (e: UserService.UserAlreadyExistsException) {
-                call.respond(HttpStatusCode.Conflict, "User with this username already exists")
-                return@post
-            }
+            val newUser = registerUser(input)
+
             addJwtToken(newUser)
             call.response.status(HttpStatusCode.Created)
-            call.respond(newUser.getPublicData())
+            call.respond(newUser.publicData())
         }
+    }
+
+    private fun loginUser(input: UserLoginInput): User {
+        val userService: UserService by inject()
+
+        return try {
+            userService.loginUser(input)
+        } catch (e: UserService.InvalidLoginInputException) {
+            throw UnauthorizedException("Invalid credentials")
+        }
+    }
+
+    private fun registerUser(input: UserRegisterInput) = try {
+        val userService: UserService by inject()
+
+        userService.registerUser(input)
+    } catch (e: UserService.UserAlreadyExistsException) {
+        throw ConflictException("User with this username already exists")
     }
 }
 

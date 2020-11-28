@@ -10,22 +10,22 @@ import org.koin.dsl.module
 open class SimpleKtorTest : BaseKtorTest() {
     protected var userRepository = MockUserRepositoryFactory.create()
 
-    private var repositoriesModule = module {
-        single { userRepository }
-    }
-
-    override var applicationModules = listOf(repositoriesModule, applicationModule)
+    override var applicationModules = makeApplicationModules()
 
     private fun makeRepositoriesModule() = module {
         single { userRepository }
     }
 
-    private fun makeApplicationModules() = listOf(repositoriesModule, applicationModule)
+    private fun makeApplicationModules() = listOf(
+        module {
+            single { userRepository }
+        },
+        applicationModule
+    )
 
     @BeforeEach
     fun clearRepositories() {
         userRepository = MockUserRepositoryFactory.create()
-        repositoriesModule = makeRepositoriesModule()
         applicationModules = makeApplicationModules()
     }
 }

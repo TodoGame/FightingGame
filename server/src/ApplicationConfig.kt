@@ -2,6 +2,7 @@ package com.somegame
 
 import com.somegame.db.DatabaseConfig
 import com.somegame.match.MatchRouting
+import com.somegame.responseExceptions.TransformExceptionsIntoResponses
 import com.somegame.security.JwtConfig
 import com.somegame.security.SecurityRouting.security
 import com.somegame.shop.shop
@@ -29,6 +30,8 @@ object ApplicationConfig {
         installAuth()
         installSerialization()
 
+        install(TransformExceptionsIntoResponses)
+
         routing {
             get("/") {
                 call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
@@ -46,6 +49,10 @@ object ApplicationConfig {
         val dbFullUrl = environment.config.property("database.fullUrl").getString()
 
         DatabaseConfig(dbFullUrl).configure()
+    }
+
+    fun Application.installExceptionsTransformation() {
+        install(TransformExceptionsIntoResponses)
     }
 
     fun Application.installCallLogging() {

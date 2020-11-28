@@ -3,23 +3,10 @@ POST {{host}}/register
 Content-Type: application/json
 
 {
-  "username": "username1",
-  "password": "password2",
+  "username": "username",
+  "password": "password",
   "name": "name3"
 }
-
-> {%
-client.test('should return user entity', function() {
-    client.assert(response.contentType.mimeType === 'application/json', 'did not respond with json')
-    client.assert(
-        response.headers.valueOf('Authorization').startsWith('Bearer'),
-        'Response Auth header does not start with Bearer'
-    )
-    client.assert(response.body.username === 'username', 'incorrect username')
-    client.assert(response.body.name === 'name', 'incorrect name')
-    client.assert(response.body.password == null, 'password was not null')
-})
- %}
 
 ###
 
@@ -32,14 +19,6 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {%
-client.test('login should respond with Auth header', function() {
-    client.assert(
-        response.headers.valueOf('Authorization').startsWith('Bearer')
-    )
-})
- %}
-
 ###
 
 # login should respond with user entity without password
@@ -50,14 +29,6 @@ Content-Type: application/json
   "username": "username",
   "password": "password"
 }
-
-> {%
-client.test('login should respond with user entity without password', function() {
-    client.assert(response.body.username === 'username', 'username not correct')
-    client.assert(response.body.password == null, 'password not null')
-    client.assert(response.body.name === 'name', 'name not correct')
-})
- %}
 
 ###
 
@@ -73,12 +44,6 @@ Content-Type: application/json
   "name": "othername"
 }
 
-> {%
-client.test('shoult respond with bad request if we try to register the same user twice', function() {
-    client.assert(response.status === 400)
-})
- %}
-
 ###
 
 
@@ -92,12 +57,6 @@ Content-Type: application/json
   "password": "pass"
 }
 
-> {%
-client.test('should respond with bad request if username is not provided', function() {
-    client.assert(response.status === 400)
-})
- %}
-
 ###username
 
 # not providing password should throw 400
@@ -109,11 +68,6 @@ Content-Type: application/json
   "name": "without pass"
 }
 
-> {%
-client.test('should respond with bad request if password is not provided', function() {
-    client.assert(response.status === 400)
-})
- %}
 
 ###
 
@@ -126,11 +80,6 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {%
-client.test('should respond with bad request if name is not provided', function() {
-    client.assert(response.status === 400)
-})
- %}
 
 ###
 
@@ -143,12 +92,6 @@ Content-Type: application/json
   "password": "incorrectpassword"
 }
 
-> {%
-client.test('login should respond with 401 if password is not correct', function() {
-    client.assert(response.status === 401)
-})
- %}
-
 ###
 
 # login should respond with 401 if there is no user with that username
@@ -159,9 +102,3 @@ Content-Type: application/json
   "username": "somerandomusername",
   "password": "incorrectpassword"
 }
-
-> {%
-client.test('login should respond with 401 if password is not correct', function() {
-    client.assert(response.status === 401)
-})
- %}

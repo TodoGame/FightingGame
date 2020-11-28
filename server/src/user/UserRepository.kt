@@ -1,11 +1,9 @@
 package com.somegame.user
 
-import com.somegame.items.ItemRepository
 import com.somegame.user.tables.Users
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.KoinComponent
-import org.koin.core.inject
 import security.UserRegisterInput
 import user.Username
 

@@ -1,6 +1,6 @@
 package com.somegame.websocket
 
-import com.somegame.security.UnauthorizedException
+import com.somegame.responseExceptions.UnauthorizedException
 import com.somegame.security.UserPrincipal
 import com.somegame.user.User
 import com.somegame.user.service.UserService

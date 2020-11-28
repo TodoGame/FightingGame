@@ -2,12 +2,9 @@ package com.somegame.websocket
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
-import com.somegame.applicationModule
 import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils.generateActivePlayerLog
 import com.somegame.match.MatchTestUtils.generatePassivePlayerLog
-import com.somegame.security.JwtConfig
-import com.somegame.user.repository.MockUserRepositoryFactory
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -23,13 +20,10 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import match.*
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.koin.dsl.module
 import user.Username
 import websocket.WebSocketTicket
-import java.time.Duration
 
 class MatchRoutingTest : SimpleKtorTest() {
     private fun withApp(block: TestApplicationEngine.() -> Unit) = withBaseApp({

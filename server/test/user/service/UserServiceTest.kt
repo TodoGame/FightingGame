@@ -1,9 +1,7 @@
 package user.service
 
 import com.somegame.BaseKoinTest
-import com.somegame.user.repository.MockUserRepositoryFactory
 import com.somegame.user.service.UserService
-import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
