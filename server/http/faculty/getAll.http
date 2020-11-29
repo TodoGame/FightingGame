@@ -1,0 +1,4 @@
+# get all faculties
+GET {{host}}/faculties/getAll
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}

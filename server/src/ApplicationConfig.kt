@@ -1,6 +1,7 @@
 package com.somegame
 
 import com.somegame.db.DatabaseConfig
+import com.somegame.faculty.faculties
 import com.somegame.match.MatchRouting
 import com.somegame.responseExceptions.TransformExceptionsIntoResponses
 import com.somegame.security.JwtConfig
@@ -41,6 +42,7 @@ object ApplicationConfig {
             user()
             MatchRouting().setUpMatchRoutes(this)
             shop()
+            faculties()
         }
     }
 

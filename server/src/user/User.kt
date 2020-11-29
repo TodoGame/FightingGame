@@ -1,5 +1,6 @@
 package com.somegame.user
 
+import com.somegame.faculty.Faculty
 import com.somegame.items.Item
 import com.somegame.items.ItemExtensions.publicData
 import com.somegame.user.tables.UserItems
@@ -17,6 +18,8 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     var username: Username by Users.username
     var password by Users.password
     var name by Users.name
+
+    var faculty by Faculty referencedOn Users.faculty
 
     var inventory by Item via UserItems
 
