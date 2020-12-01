@@ -1,7 +1,0 @@
-# Buy item in shop
-# Request body: item id
-POST {{host}}/shop/buyItem
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-1

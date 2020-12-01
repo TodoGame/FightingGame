@@ -1,5 +1,6 @@
 package com.somegame.faculty
 
+import com.somegame.responseExceptions.NotFoundException
 import faculty.FacultyData
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -22,9 +23,10 @@ class FacultyRepository {
 }
 
 class Faculty(id: EntityID<Int>) : IntEntity(id) {
-
     companion object : IntEntityClass<Faculty>(Faculties)
     var name by Faculties.name
 }
 
 fun Faculty.publicData() = FacultyData(name)
+
+class FacultyNotFound(id: Int) : NotFoundException("Faculty with id=$id not found")

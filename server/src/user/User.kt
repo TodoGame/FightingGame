@@ -48,10 +48,22 @@ class UserRepository : KoinComponent {
             }
         }
     }
+
+    fun createUser(username: Username, password: String, name: String, faculty: Faculty): User = transaction {
+        User.new {
+            this.username = username
+            this.password = password
+            this.name = name
+            this.faculty = faculty
+        }
+    }
 }
+
+fun UserRepository.doesUserExist(username: Username): Boolean = findUserByUsername(username) != null
 
 class User(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<User>(Users)
+
     var username: Username by Users.username
 
     var password by Users.password
@@ -79,6 +91,7 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     fun spendMoney(amount: Int) = transaction {
         money -= amount
     }
+
     fun publicInventory() = transaction { inventory.map { it.publicData() } }
     override fun toString() = "User(id=$id, username=$username)"
 }

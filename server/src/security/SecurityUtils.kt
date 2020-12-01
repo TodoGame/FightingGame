@@ -9,10 +9,10 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 object SecurityUtils : KoinComponent {
-    fun ApplicationCall.userPrinciple() = principal<UserPrincipal>() ?: throw UnauthorizedException()
+    fun ApplicationCall.userPrincipal() = principal<UserPrincipal>() ?: throw UnauthorizedException()
 
     fun ApplicationCall.user(): User {
         val userService: UserService by inject()
-        return userService.findUserByUsername(userPrinciple().username) ?: throw UnauthorizedException()
+        return userService.findUserByUsername(userPrincipal().username) ?: throw UnauthorizedException()
     }
 }

@@ -1,11 +1,15 @@
 package com.somegame.security
 
+import com.somegame.addJwtToken
+import com.somegame.faculty.FacultyNotFound
+import com.somegame.faculty.FacultyRepository
 import com.somegame.handleReceiveExceptions
 import com.somegame.responseExceptions.ConflictException
 import com.somegame.responseExceptions.UnauthorizedException
 import com.somegame.user.User
+import com.somegame.user.UserRepository
+import com.somegame.user.doesUserExist
 import com.somegame.user.publicData
-import com.somegame.user.service.UserService
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -15,48 +19,56 @@ import io.ktor.util.pipeline.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import security.*
+import user.Username
 
-object SecurityRouting : KoinComponent {
-    fun Routing.security() {
-        post(LOGIN_ENDPOINT) {
-            val input = handleReceiveExceptions { call.receive<UserLoginInput>() }
-            val user = loginUser(input)
+fun Routing.security() {
+    val securityRoutingHelpers = SecurityRoutingHelpers()
 
-            addJwtToken(user)
-            call.respond(user.publicData())
-        }
+    post(LOGIN_ENDPOINT) {
+        val input = handleReceiveExceptions { call.receive<UserLoginInput>() }
+        val user = securityRoutingHelpers.loginUser(input)
 
-        post(REGISTER_ENDPOINT) {
-            val input = handleReceiveExceptions { call.receive<UserRegisterInput>() }
-
-            val newUser = registerUser(input)
-
-            addJwtToken(newUser)
-            call.response.status(HttpStatusCode.Created)
-            call.respond(newUser.publicData())
-        }
+        addJwtToken(user)
+        call.respond(user.publicData())
     }
 
-    private fun loginUser(input: UserLoginInput): User {
-        val userService: UserService by inject()
+    post(REGISTER_ENDPOINT) {
+        val input = handleReceiveExceptions { call.receive<UserRegisterInput>() }
 
-        return try {
-            userService.loginUser(input)
-        } catch (e: UserService.InvalidLoginInputException) {
-            throw UnauthorizedException("Invalid credentials")
-        }
-    }
+        val newUser = securityRoutingHelpers.registerUser(input)
 
-    private fun registerUser(input: UserRegisterInput) = try {
-        val userService: UserService by inject()
-
-        userService.registerUser(input)
-    } catch (e: UserService.UserAlreadyExistsException) {
-        throw ConflictException("User with this username already exists")
+        addJwtToken(newUser)
+        call.response.status(HttpStatusCode.Created)
+        call.respond(newUser.publicData())
     }
 }
 
-fun PipelineContext<Unit, ApplicationCall>.addJwtToken(user: User) {
-    val token = JwtConfig.makeLoginToken(user)
-    call.response.headers.append("Authorization", "Bearer $token")
+class SecurityRoutingHelpers : KoinComponent {
+    private val userRepository: UserRepository by inject()
+    private val facultyRepository: FacultyRepository by inject()
+
+    fun loginUser(input: UserLoginInput): User {
+        val user = userRepository.findUserByUsername(input.username)
+        if (user != null && user.password == input.password) {
+            return user
+        } else {
+            throw UnauthorizedException()
+        }
+    }
+
+    fun registerUser(input: UserRegisterInput): User {
+        if (userRepository.doesUserExist(input.username)) {
+            throw UserAlreadyExistsException(input.username)
+        }
+        val faculty = facultyRepository.getFacultyById(input.facultyId) ?: throw FacultyNotFound(input.facultyId)
+        return userRepository.createUser(
+            username = input.username,
+            password = input.password,
+            name = input.name,
+            faculty = faculty
+        )
+    }
+
+    class UserAlreadyExistsException(username: Username) :
+        ConflictException("User with username $username already exists")
 }

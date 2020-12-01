@@ -24,6 +24,10 @@ class ItemRepository {
     fun getItemById(id: Int): Item? = transaction {
         Item.findById(id)
     }
+
+    fun getAllItems(): List<Item> = transaction {
+        Item.all().toList()
+    }
 }
 
 class Item(id: EntityID<Int>) : IntEntity(id) {

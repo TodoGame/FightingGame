@@ -1,5 +1,6 @@
 package com.somegame.user.service
 
+import com.somegame.faculty.FacultyRepository
 import com.somegame.responseExceptions.UnauthorizedException
 import com.somegame.user.User
 import com.somegame.user.UserRepository
@@ -10,6 +11,7 @@ import security.UserRegisterInput
 import user.Username
 
 class UserService : KoinComponent {
+    private val facultyRepository: FacultyRepository by inject()
     private val userRepository: UserRepository by inject()
 
     fun findUserByUsername(username: Username) = userRepository.findUserByUsername(username)

@@ -1,0 +1,21 @@
+# Login and receive a Bearer token
+POST {{host}}/login
+Content-Type: application/json
+
+{
+  "username": "username",
+  "password": "password"
+}
+
+###
+
+# Register a new user and receive a Bearer token
+POST {{host}}/register
+Content-Type: application/json
+
+{
+  "username": "username",
+  "password": "password",
+  "name": "UserName",
+  "facultyId": 1
+}

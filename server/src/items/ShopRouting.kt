@@ -2,6 +2,8 @@ package com.somegame.shop
 
 import com.somegame.handleReceiveExceptions
 import com.somegame.items.ItemRepository
+import com.somegame.items.publicData
+import com.somegame.requiredIdParameter
 import com.somegame.responseExceptions.ConflictException
 import com.somegame.responseExceptions.ForbiddenException
 import com.somegame.responseExceptions.NotFoundException
@@ -32,6 +34,17 @@ fun Routing.shop() {
             } catch (e: NotEnoughMoneyException) {
                 throw ForbiddenException(e.message)
             }
+        }
+
+        get(ShopEndpoints.GET_ALL_ITEMS_ENDPOINT) {
+            val items = itemRepository.getAllItems().map { it.publicData() }
+            call.respond(items)
+        }
+
+        get(ShopEndpoints.GET_ITEM_ENDPOINT) {
+            val itemId = call.requiredIdParameter()
+            val item = itemRepository.getItemById(itemId) ?: throw NotFoundException("Item with id=$itemId not found")
+            call.respond(item.publicData())
         }
     }
 }
