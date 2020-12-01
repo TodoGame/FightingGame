@@ -1,167 +1,21 @@
-# register should respond with registered user (without password)
+# Login and receive a Bearer token
+POST {{host}}/login
+Content-Type: application/json
+
+{
+  "username": "username",
+  "password": "password"
+}
+
+###
+
+# Register a new user and receive a Bearer token
 POST {{host}}/register
 Content-Type: application/json
 
 {
   "username": "username",
   "password": "password",
-  "name": "name"
+  "name": "UserName",
+  "facultyId": 1
 }
-
-> {%
-client.test('should return user entity', function() {
-    client.assert(response.contentType.mimeType === 'application/json', 'did not respond with json')
-    client.assert(
-        response.headers.valueOf('Authorization').startsWith('Bearer'),
-        'Response Auth header does not start with Bearer'
-    )
-    client.assert(response.body.username === 'username', 'incorrect username')
-    client.assert(response.body.name === 'name', 'incorrect name')
-    client.assert(response.body.password == null, 'password was not null')
-})
- %}
-
-###
-
-# login should respond with Authorization header with Bearer prefix
-POST {{host}}/login
-Content-Type: application/json
-
-{
-  "username": "username",
-  "password": "password"
-}
-
-> {%
-client.test('login should respond with Auth header', function() {
-    client.assert(
-        response.headers.valueOf('Authorization').startsWith('Bearer')
-    )
-})
- %}
-
-###
-
-# login should respond with user entity without password
-POST {{host}}/login
-Content-Type: application/json
-
-{
-  "username": "username",
-  "password": "password"
-}
-
-> {%
-client.test('login should respond with user entity without password', function() {
-    client.assert(response.body.username === 'username', 'username not correct')
-    client.assert(response.body.password == null, 'password not null')
-    client.assert(response.body.name === 'name', 'name not correct')
-})
- %}
-
-###
-
-# Error tests
-
-# register should respond with 400 if we try to register the same user twice
-POST {{host}}/register
-Content-Type: application/json
-
-{
-  "username": "username",
-  "password": "otherpassword",
-  "name": "othername"
-}
-
-> {%
-client.test('shoult respond with bad request if we try to register the same user twice', function() {
-    client.assert(response.status === 400)
-})
- %}
-
-###
-
-
-
-# not providing username should throw 400
-POST {{host}}/register
-Content-Type: application/json
-
-{
-  "name": "without username",
-  "password": "pass"
-}
-
-> {%
-client.test('should respond with bad request if username is not provided', function() {
-    client.assert(response.status === 400)
-})
- %}
-
-###username
-
-# not providing password should throw 400
-POST {{host}}/register
-Content-Type: application/json
-
-{
-  "username": "otherusername",
-  "name": "without pass"
-}
-
-> {%
-client.test('should respond with bad request if password is not provided', function() {
-    client.assert(response.status === 400)
-})
- %}
-
-###
-
-# not providing name should throw 400
-POST {{host}}/register
-Content-Type: application/json
-
-{
-  "username": "without name",
-  "password": "password"
-}
-
-> {%
-client.test('should respond with bad request if name is not provided', function() {
-    client.assert(response.status === 400)
-})
- %}
-
-###
-
-# Login should respond with 401 if password is not correct
-POST {{host}}/login
-Content-Type: application/json
-
-{
-  "username": "username",
-  "password": "incorrectpassword"
-}
-
-> {%
-client.test('login should respond with 401 if password is not correct', function() {
-    client.assert(response.status === 401)
-})
- %}
-
-###
-
-# login should respond with 401 if there is no user with that username
-POST {{host}}/login
-Content-Type: application/json
-
-{
-  "username": "somerandomusername",
-  "password": "incorrectpassword"
-}
-
-> {%
-client.test('login should respond with 401 if password is not correct', function() {
-    client.assert(response.status === 401)
-})
- %}

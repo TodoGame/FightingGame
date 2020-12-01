@@ -1,3 +1,6 @@
 package security
 
-data class UserRegisterInput(val username: String, val password: String, val name: String)
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class UserRegisterInput(val username: String, val password: String, val name: String, val facultyId: Int)
