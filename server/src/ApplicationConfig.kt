@@ -63,7 +63,7 @@ object ApplicationConfig {
 
     fun Application.installKoin() {
         install(org.koin.ktor.ext.Koin) {
-            modules(databaseRepositoryModule, applicationModule)
+            modules(databaseRepositoryModule)
         }
     }
 

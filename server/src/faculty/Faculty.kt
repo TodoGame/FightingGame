@@ -25,6 +25,8 @@ class FacultyRepository {
 class Faculty(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Faculty>(Faculties)
     var name by Faculties.name
+
+    fun getId(): Int = id.value
 }
 
 fun Faculty.publicData() = FacultyData(name)

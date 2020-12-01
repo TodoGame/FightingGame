@@ -2,8 +2,7 @@ package security
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJsonContentHeader
-import com.somegame.security.SecurityRouting.security
-import com.somegame.user.service.UserService
+import com.somegame.security.security
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -15,6 +14,7 @@ import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.koin.core.inject
+import testFaculty1
 import user.UserData
 
 internal class SecurityRoutingKtTest : SimpleKtorTest() {
@@ -57,7 +57,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val username = "username"
         val password = "password"
         val name = "name"
-        val registerInput = UserRegisterInput(username, password, name)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
@@ -74,7 +74,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val username = "username"
         val password = "password"
         val name = "name"
-        val registerInput = UserRegisterInput(username, password, name)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
         val expectedUserData = UserData(username, name, listOf(), 0)
         handleRequest {
             uri = REGISTER_ENDPOINT
@@ -93,7 +93,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val username = "username"
         val password = "password"
         val name = "name"
-        val registerInput = UserRegisterInput(username, password, name)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
@@ -139,7 +139,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val username = "username"
         val password = "password"
         val name = "name"
-        val registerInput = UserRegisterInput(username, password, name)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
@@ -161,14 +161,13 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
     }
 
     @Test
-    fun `login should respond with Authorization header with Bearer token if user was registered (even directly using UserService)`() =
+    fun `login should respond with Authorization header with Bearer token if user was registered (even directly using UserRepository)`() =
         withApp {
-            val userService: UserService by inject()
             val username = "username"
             val password = "password"
             val name = "name"
 
-            userService.registerUser(UserRegisterInput(username, password, name))
+            userRepository.createUser(username, password, name, testFaculty1)
 
             val loginInput = UserLoginInput(username, password)
 

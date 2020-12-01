@@ -2,7 +2,7 @@ package com.somegame.websocket
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
-import com.somegame.user.repository.MockUserRepositoryFactory.user1
+import com.somegame.user.user1
 import com.somegame.websocket.WebSocketTicketManager.Companion.DEFAULT_TICKET_LIFE_EXPECTANCY
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
