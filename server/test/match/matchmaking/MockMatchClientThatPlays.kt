@@ -3,7 +3,7 @@ package com.somegame.match.matchmaking
 import com.somegame.match.MatchRouting
 import com.somegame.match.player.Player
 import com.somegame.user.UserRepository
-import com.somegame.user.repository.MockUserRepositoryFactory.makeNewTestUser
+import com.somegame.user.makeNewTestUser
 import io.mockk.*
 import match.*
 import org.koin.core.KoinComponent

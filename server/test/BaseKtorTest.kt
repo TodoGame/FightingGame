@@ -9,7 +9,6 @@ import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
-import io.ktor.jackson.*
 import io.ktor.request.*
 import io.ktor.serialization.*
 import io.ktor.server.testing.*

@@ -5,7 +5,7 @@ import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils
 import com.somegame.match.matchmaking.Match
 import com.somegame.match.matchmaking.MockMatchClientThatPlays
-import com.somegame.user.repository.MockUserRepositoryFactory.makeNewTestUser
+import com.somegame.user.makeNewTestUser
 import io.mockk.*
 import io.mockk.every
 import kotlinx.coroutines.runBlocking

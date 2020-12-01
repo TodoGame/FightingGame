@@ -25,3 +25,6 @@ local.properties
 # server
 /server/.gradle
 /server/build
+
+# http
+/server/http/http-client.env.private.json

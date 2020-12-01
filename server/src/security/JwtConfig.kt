@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.somegame.user.User
-import com.somegame.user.UserExtensions.principal
+import com.somegame.user.principal
 import io.ktor.auth.jwt.*
 
 object JwtConfig {

@@ -1,10 +1,11 @@
 package com.somegame
 
 import com.somegame.db.DatabaseConfig
+import com.somegame.faculty.faculties
 import com.somegame.match.MatchRouting
 import com.somegame.responseExceptions.TransformExceptionsIntoResponses
 import com.somegame.security.JwtConfig
-import com.somegame.security.SecurityRouting.security
+import com.somegame.security.security
 import com.somegame.shop.shop
 import com.somegame.user.user
 import io.ktor.application.*
@@ -41,6 +42,7 @@ object ApplicationConfig {
             user()
             MatchRouting().setUpMatchRoutes(this)
             shop()
+            faculties()
         }
     }
 
@@ -61,7 +63,7 @@ object ApplicationConfig {
 
     fun Application.installKoin() {
         install(org.koin.ktor.ext.Koin) {
-            modules(databaseRepositoryModule, applicationModule)
+            modules(databaseRepositoryModule)
         }
     }
 

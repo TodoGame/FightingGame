@@ -1,15 +1,20 @@
-package shop
+package com.somegame.items.repository
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJsonContentHeader
 import com.somegame.TestUtils.addJwtHeader
+import com.somegame.items.publicData
 import com.somegame.shop.shop
-import com.somegame.user.repository.MockUserRepositoryFactory.makeNewTestUser
+import com.somegame.user.makeNewTestUser
 import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
+import item.ItemData
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import shop.ShopEndpoints
 
 class ShopRoutingKtTest : SimpleKtorTest() {
     private fun withApp(block: TestApplicationEngine.() -> Unit) = withBaseApp({
@@ -125,8 +130,76 @@ class ShopRoutingKtTest : SimpleKtorTest() {
             addJsonContentHeader()
             setBody("1")
         }.apply {
-            assert(requestHandled)
+            assert(requestHandled) { "Request not handled" }
             assertEquals(HttpStatusCode.Conflict, response.status())
+        }
+    }
+
+    @Test
+    fun `getAllItems should respond with all test items`() = withApp {
+        handleRequest {
+            uri = ShopEndpoints.GET_ALL_ITEMS_ENDPOINT
+            method = HttpMethod.Get
+            addJwtHeader("user1")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
+            assertEquals(listOf(testItem1.publicData(), testItem2.publicData()), items)
+        }
+    }
+
+    @Test
+    fun `getItem with id=1 should respond with test item 1`() = withApp {
+        handleRequest {
+            uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=1"
+            method = HttpMethod.Get
+            addJwtHeader("user1")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            val item = response.content?.let { Json.decodeFromString<ItemData>(it) }
+            assertEquals(testItem1.publicData(), item)
+        }
+    }
+
+    @Test
+    fun `getItem with id=2 should respond with test item 2`() = withApp {
+        handleRequest {
+            uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=2"
+            method = HttpMethod.Get
+            addJwtHeader("user1")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            val item = response.content?.let { Json.decodeFromString<ItemData>(it) }
+            assertEquals(testItem2.publicData(), item)
+        }
+    }
+
+    @Test
+    fun `getItem with id=3 should respond with 404`() = withApp {
+        handleRequest {
+            uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=3"
+            method = HttpMethod.Get
+            addJwtHeader("user1")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            assertEquals(HttpStatusCode.NotFound, response.status())
+        }
+    }
+
+    @Test
+    fun `getItem with id=stringValue should respond with BadRequest`() = withApp {
+        handleRequest {
+            uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=stringValue"
+            method = HttpMethod.Get
+            addJwtHeader("user1")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            assertEquals(HttpStatusCode.BadRequest, response.status())
         }
     }
 }

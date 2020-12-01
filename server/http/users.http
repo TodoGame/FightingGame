@@ -1,0 +1,11 @@
+# Request current user's UserData
+GET {{host}}/me
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+
+# Get user by username
+GET {{host}}/user?username=username
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json

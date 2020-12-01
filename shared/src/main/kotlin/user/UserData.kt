@@ -1,5 +1,6 @@
 package user
 
+import faculty.FacultyData
 import item.ItemData
 import kotlinx.serialization.Serializable
 
@@ -8,5 +9,6 @@ data class UserData(
     override val username: String,
     override val name: String,
     val inventory: List<ItemData>,
-    val money: Int
+    val money: Int,
+    val faculty: FacultyData,
 ) : User

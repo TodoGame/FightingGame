@@ -3,7 +3,7 @@ package com.somegame.websocket
 import com.somegame.responseExceptions.UnauthorizedException
 import com.somegame.security.UserPrincipal
 import com.somegame.user.User
-import com.somegame.user.service.UserService
+import com.somegame.user.UserRepository
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.koin.core.KoinComponent
@@ -18,7 +18,7 @@ class WebSocketTicketManager(
 ) : KoinComponent {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    private val userService: UserService by inject()
+    private val userRepository: UserRepository by inject()
 
     companion object {
         private const val TICKET_CODE_LENGTH = 30
@@ -61,7 +61,7 @@ class WebSocketTicketManager(
     suspend fun authorize(ticket: WebSocketTicket): User {
         validateTicket(ticket)
         unregisterTicket(ticket)
-        return userService.findUserByUsername(ticket.username) ?: throw InvalidTicketException("User not found")
+        return userRepository.findUserByUsername(ticket.username) ?: throw InvalidTicketException("User not found")
     }
 
     private fun getTokenExpiration(): Long {

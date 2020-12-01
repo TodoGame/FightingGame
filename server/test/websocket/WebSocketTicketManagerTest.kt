@@ -1,10 +1,9 @@
 package websocket
 
 import com.somegame.BaseKoinTest
-import com.somegame.user.UserExtensions.principal
-import com.somegame.user.repository.MockUserRepositoryFactory
-import com.somegame.user.repository.MockUserRepositoryFactory.user1
-import com.somegame.user.repository.MockUserRepositoryFactory.user2
+import com.somegame.user.principal
+import com.somegame.user.user1
+import com.somegame.user.user2
 import com.somegame.websocket.WebSocketTicketManager
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -59,7 +58,7 @@ internal class WebSocketTicketManagerTest : BaseKoinTest() {
     @Test
     fun `should not authorize tickets with correct name but with fake username`(): Unit = runBlocking {
         val expiresAt = System.currentTimeMillis() + 60 * 1000
-        val ticket = WebSocketTicket("wsname", MockUserRepositoryFactory.fakeUser.username, expiresAt, "some code")
+        val ticket = WebSocketTicket("wsname", "fakeUsername", expiresAt, "some code")
         assertThrows(WebSocketTicketManager.InvalidTicketException::class.java) {
             runBlocking {
                 ticketManager.authorize(ticket)

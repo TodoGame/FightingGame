@@ -1,68 +1,85 @@
 package com.somegame.security
 
+import com.somegame.addJwtToken
+import com.somegame.faculty.FacultyNotFound
+import com.somegame.faculty.FacultyRepository
 import com.somegame.handleReceiveExceptions
+import com.somegame.responseExceptions.BadRequestException
 import com.somegame.responseExceptions.ConflictException
 import com.somegame.responseExceptions.UnauthorizedException
-import com.somegame.user.User
-import com.somegame.user.UserExtensions.publicData
-import com.somegame.user.service.UserService
+import com.somegame.user.*
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
+import org.apache.commons.codec.digest.DigestUtils
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import org.koin.ktor.ext.inject
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import security.*
+import user.Username
 
-object SecurityRouting : KoinComponent {
-    private val loginLogger: Logger = LoggerFactory.getLogger(LOGIN_ENDPOINT)
-    private val registerLogger: Logger = LoggerFactory.getLogger(REGISTER_ENDPOINT)
+fun Routing.security() {
+    val securityRoutingHelpers = SecurityRoutingHelpers()
 
-    fun Routing.security() {
-        post(LOGIN_ENDPOINT) {
-            val input = handleReceiveExceptions { call.receive<UserLoginInput>() }
-            val user = loginUser(input)
+    post(LOGIN_ENDPOINT) {
+        val input = handleReceiveExceptions { call.receive<UserLoginInput>() }
+        val user = securityRoutingHelpers.loginUser(input)
 
-            addJwtToken(user)
-            call.respond(user.publicData())
-        }
-
-        post(REGISTER_ENDPOINT) {
-            val input = handleReceiveExceptions { call.receive<UserRegisterInput>() }
-
-            val newUser = registerUser(input)
-
-            addJwtToken(newUser)
-            call.response.status(HttpStatusCode.Created)
-            call.respond(newUser.publicData())
-        }
+        addJwtToken(user)
+        call.respond(user.publicData())
     }
 
-    private fun loginUser(input: UserLoginInput): User {
-        val userService: UserService by inject()
+    post(REGISTER_ENDPOINT) {
+        val input = handleReceiveExceptions { call.receive<UserRegisterInput>() }
 
-        return try {
-            userService.loginUser(input)
-        } catch (e: UserService.InvalidLoginInputException) {
-            throw UnauthorizedException("Invalid credentials")
-        }
-    }
+        val newUser = securityRoutingHelpers.registerUser(input)
 
-    private fun registerUser(input: UserRegisterInput) = try {
-        val userService: UserService by inject()
-
-        userService.registerUser(input)
-    } catch (e: UserService.UserAlreadyExistsException) {
-        throw ConflictException("User with this username already exists")
+        addJwtToken(newUser)
+        call.response.status(HttpStatusCode.Created)
+        call.respond(newUser.publicData())
     }
 }
 
-fun PipelineContext<Unit, ApplicationCall>.addJwtToken(user: User) {
-    val token = JwtConfig.makeLoginToken(user)
-    call.response.headers.append("Authorization", "Bearer $token")
+class SecurityRoutingHelpers : KoinComponent {
+    private val userRepository: UserRepository by inject()
+    private val facultyRepository: FacultyRepository by inject()
+
+    fun loginUser(input: UserLoginInput): User {
+        val user = userRepository.findUserByUsername(input.username)
+        if (user != null && user.password == hash(input.password)) {
+            return user
+        } else {
+            throw UnauthorizedException()
+        }
+    }
+
+    fun registerUser(input: UserRegisterInput): User {
+        validateLengths(input)
+        if (userRepository.doesUserExist(input.username)) {
+            throw UserAlreadyExistsException(input.username)
+        }
+        val faculty = facultyRepository.getFacultyById(input.facultyId) ?: throw FacultyNotFound(input.facultyId)
+        return userRepository.createUser(
+            username = input.username,
+            password = hash(input.password),
+            name = input.name,
+            faculty = faculty
+        )
+    }
+
+    private fun validateLengths(input: UserRegisterInput) {
+        if (input.username.length > USER_MAX_USERNAME_LENGTH) {
+            throw BadRequestException("Username exceeds max length of $USER_MAX_NAME_LENGTH")
+        }
+        if (input.name.length > USER_MAX_NAME_LENGTH) {
+            throw BadRequestException("Name exceeds max length of $USER_MAX_NAME_LENGTH")
+        }
+    }
+
+    private fun hash(string: String): String = DigestUtils.sha256Hex(string)
+
+    class UserAlreadyExistsException(username: Username) :
+        ConflictException("User with username $username already exists")
 }
