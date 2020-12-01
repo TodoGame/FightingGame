@@ -2,7 +2,6 @@ package com.somegame.items.repository
 
 import com.somegame.items.Item
 import com.somegame.items.ItemRepository
-import com.somegame.items.publicData
 import io.mockk.every
 import io.mockk.mockk
 

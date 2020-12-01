@@ -1,8 +1,6 @@
 package com.somegame.user
 
 import com.somegame.faculty.Faculty
-import testFaculty1
-import testFaculty2
 import com.somegame.items.Item
 import com.somegame.items.publicData
 import io.mockk.Runs
@@ -10,7 +8,8 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import org.jetbrains.exposed.sql.SizedCollection
-import security.UserRegisterInput
+import testFaculty1
+import testFaculty2
 import user.Username
 
 fun createMockUser(username: Username, password: String, name: String, faculty: Faculty): User {

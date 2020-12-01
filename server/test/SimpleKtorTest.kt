@@ -1,8 +1,8 @@
 package com.somegame
 
-import createMockFacultyRepository
 import com.somegame.items.repository.createMockItemRepository
 import com.somegame.user.createMockUserRepository
+import createMockFacultyRepository
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith

@@ -2,6 +2,7 @@ package com.somegame.user
 
 import com.somegame.faculty.Faculties
 import com.somegame.faculty.Faculty
+import com.somegame.faculty.publicData
 import com.somegame.items.Item
 import com.somegame.items.UserItems
 import com.somegame.items.publicData
@@ -115,4 +116,4 @@ class ItemAlreadyInInventoryException(item: Item) :
 
 fun User.principal() = UserPrincipal(username)
 
-fun User.publicData() = UserData(username, name, publicInventory(), money)
+fun User.publicData() = UserData(username, name, publicInventory(), money, faculty.publicData())

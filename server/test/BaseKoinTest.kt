@@ -1,8 +1,8 @@
 package com.somegame
 
-import createMockFacultyRepository
 import com.somegame.items.repository.createMockItemRepository
 import com.somegame.user.createMockUserRepository
+import createMockFacultyRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.koin.core.context.startKoin

@@ -5,8 +5,6 @@ import com.somegame.TestUtils.addJsonContentHeader
 import com.somegame.TestUtils.addJwtHeader
 import com.somegame.faculty.faculties
 import com.somegame.faculty.publicData
-import testFaculty1
-import testFaculty2
 import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
@@ -14,6 +12,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import testFaculty1
+import testFaculty2
 
 internal class FacultiesRoutingKtTest : SimpleKtorTest() {
     private fun withApp(block: TestApplicationEngine.() -> Unit) = withBaseApp({

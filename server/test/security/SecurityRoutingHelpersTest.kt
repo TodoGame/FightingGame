@@ -1,20 +1,15 @@
 package com.somegame.security
 
 import com.somegame.BaseKoinTest
-import com.somegame.responseExceptions.BadRequestException
 import com.somegame.responseExceptions.ConflictException
 import com.somegame.responseExceptions.UnauthorizedException
-import com.somegame.user.publicData
-import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.koin.core.inject
 import security.UserLoginInput
 import security.UserRegisterInput
 import testFaculty1
-import user.UserData
 
 internal class SecurityRoutingHelpersTest : BaseKoinTest() {
     private var securityRoutingHelpers = SecurityRoutingHelpers()

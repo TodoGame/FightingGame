@@ -19,7 +19,7 @@ fun createMockFacultyRepository(): FacultyRepository {
     val facultyRepository = mockk<FacultyRepository>()
 
     every { facultyRepository.getAllFaculties() } returns copiedFaculties
-    every { facultyRepository.getFacultyById(any())} answers {
+    every { facultyRepository.getFacultyById(any()) } answers {
         copiedFaculties.find { it.getId() == firstArg() }
     }
 

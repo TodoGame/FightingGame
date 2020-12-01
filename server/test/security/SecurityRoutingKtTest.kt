@@ -2,6 +2,7 @@ package security
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJsonContentHeader
+import com.somegame.faculty.publicData
 import com.somegame.security.security
 import io.ktor.application.*
 import io.ktor.http.*
@@ -13,7 +14,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.koin.core.inject
 import testFaculty1
 import user.UserData
 
@@ -75,7 +75,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val password = "password"
         val name = "name"
         val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
-        val expectedUserData = UserData(username, name, listOf(), 0)
+        val expectedUserData = UserData(username, name, listOf(), 0, testFaculty1.publicData())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
