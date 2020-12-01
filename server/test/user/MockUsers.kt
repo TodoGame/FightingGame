@@ -18,7 +18,8 @@ fun createMockUser(username: Username, password: String, name: String, faculty: 
     every { user.username } returns username
     every { user.password } returns password
     every { user.name } returns name
-    every { user.faculty } returns faculty
+//    every { user.faculty } returns faculty
+    every { user.loadFaculty() } returns faculty
 
     val givenMoney = mutableListOf<Int>()
 

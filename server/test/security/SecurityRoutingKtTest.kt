@@ -159,28 +159,4 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
             assert(authHeaderValue?.startsWith("Bearer") ?: false)
         }
     }
-
-    @Test
-    fun `login should respond with Authorization header with Bearer token if user was registered (even directly using UserRepository)`() =
-        withApp {
-            val username = "username"
-            val password = "password"
-            val name = "name"
-
-            userRepository.createUser(username, password, name, testFaculty1)
-
-            val loginInput = UserLoginInput(username, password)
-
-            handleRequest {
-                uri = LOGIN_ENDPOINT
-                method = HttpMethod.Post
-                setBody(Json.encodeToString(loginInput))
-                addJsonContentHeader()
-            }.apply {
-                assert(requestHandled) { "Request not handled" }
-                val authHeaderValue = response.headers["Authorization"]
-                assertNotNull(authHeaderValue)
-                assert(authHeaderValue?.startsWith("Bearer") ?: false)
-            }
-        }
 }

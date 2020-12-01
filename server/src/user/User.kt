@@ -14,14 +14,17 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.KoinComponent
-import security.UserRegisterInput
 import user.UserData
 import user.Username
 
+val USER_MAX_USERNAME_LENGTH = 16
+val USER_MAX_PASSWORD_LENGTH = 100
+val USER_MAX_NAME_LENGTH = 30
+
 object Users : IntIdTable() {
-    val username = varchar("username", 16).uniqueIndex()
-    val password = varchar("password", 50)
-    val name = varchar("name", 30)
+    val username = varchar("username", USER_MAX_USERNAME_LENGTH).uniqueIndex()
+    val password = varchar("password", USER_MAX_PASSWORD_LENGTH)
+    val name = varchar("name", USER_MAX_NAME_LENGTH)
 
     val faculty = reference("faculty", Faculties)
 
@@ -36,16 +39,6 @@ class UserRepository : KoinComponent {
                 null
             } else {
                 result.first()
-            }
-        }
-    }
-
-    fun createUser(input: UserRegisterInput): User {
-        return transaction {
-            User.new {
-                username = input.username
-                password = input.password
-                name = input.name
             }
         }
     }
@@ -72,6 +65,8 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     var name by Users.name
 
     var faculty by Faculty referencedOn Users.faculty
+
+    fun loadFaculty(): Faculty = transaction { faculty }
 
     var inventory by Item via UserItems
 
@@ -116,4 +111,4 @@ class ItemAlreadyInInventoryException(item: Item) :
 
 fun User.principal() = UserPrincipal(username)
 
-fun User.publicData() = UserData(username, name, publicInventory(), money, faculty.publicData())
+fun User.publicData() = UserData(username, name, publicInventory(), money, loadFaculty().publicData())

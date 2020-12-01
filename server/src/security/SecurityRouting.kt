@@ -16,6 +16,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
+import org.apache.commons.codec.digest.DigestUtils
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import security.*
@@ -49,7 +50,7 @@ class SecurityRoutingHelpers : KoinComponent {
 
     fun loginUser(input: UserLoginInput): User {
         val user = userRepository.findUserByUsername(input.username)
-        if (user != null && user.password == input.password) {
+        if (user != null && user.password == hash(input.password)) {
             return user
         } else {
             throw UnauthorizedException()
@@ -63,11 +64,13 @@ class SecurityRoutingHelpers : KoinComponent {
         val faculty = facultyRepository.getFacultyById(input.facultyId) ?: throw FacultyNotFound(input.facultyId)
         return userRepository.createUser(
             username = input.username,
-            password = input.password,
+            password = hash(input.password),
             name = input.name,
             faculty = faculty
         )
     }
+
+    private fun hash(string: String): String = DigestUtils.sha256Hex(string)
 
     class UserAlreadyExistsException(username: Username) :
         ConflictException("User with username $username already exists")
