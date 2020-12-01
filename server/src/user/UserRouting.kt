@@ -1,7 +1,6 @@
 package com.somegame.user
 
 import com.somegame.security.SecurityUtils.user
-import com.somegame.user.UserExtensions.publicData
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*

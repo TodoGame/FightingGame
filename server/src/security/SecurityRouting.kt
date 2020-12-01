@@ -4,7 +4,7 @@ import com.somegame.handleReceiveExceptions
 import com.somegame.responseExceptions.ConflictException
 import com.somegame.responseExceptions.UnauthorizedException
 import com.somegame.user.User
-import com.somegame.user.UserExtensions.publicData
+import com.somegame.user.publicData
 import com.somegame.user.service.UserService
 import io.ktor.application.*
 import io.ktor.http.*
@@ -14,15 +14,9 @@ import io.ktor.routing.*
 import io.ktor.util.pipeline.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import org.koin.ktor.ext.inject
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import security.*
 
 object SecurityRouting : KoinComponent {
-    private val loginLogger: Logger = LoggerFactory.getLogger(LOGIN_ENDPOINT)
-    private val registerLogger: Logger = LoggerFactory.getLogger(REGISTER_ENDPOINT)
-
     fun Routing.security() {
         post(LOGIN_ENDPOINT) {
             val input = handleReceiveExceptions { call.receive<UserLoginInput>() }

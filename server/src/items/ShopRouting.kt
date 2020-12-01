@@ -6,9 +6,7 @@ import com.somegame.responseExceptions.ConflictException
 import com.somegame.responseExceptions.ForbiddenException
 import com.somegame.responseExceptions.NotFoundException
 import com.somegame.security.SecurityUtils.user
-import com.somegame.user.UserExtensions
-import com.somegame.user.UserExtensions.buyItem
-import com.somegame.user.UserExtensions.publicData
+import com.somegame.user.*
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
@@ -29,9 +27,9 @@ fun Routing.shop() {
             try {
                 user.buyItem(item)
                 call.respond(user.publicData())
-            } catch (e: UserExtensions.ItemAlreadyInInventoryException) {
+            } catch (e: ItemAlreadyInInventoryException) {
                 throw ConflictException(e.message)
-            } catch (e: UserExtensions.NotEnoughMoneyException) {
+            } catch (e: NotEnoughMoneyException) {
                 throw ForbiddenException(e.message)
             }
         }

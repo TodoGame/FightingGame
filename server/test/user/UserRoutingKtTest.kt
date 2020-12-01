@@ -2,7 +2,7 @@ package user
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
-import com.somegame.user.UserExtensions.publicData
+import com.somegame.user.publicData
 import com.somegame.user.repository.MockUserRepositoryFactory.user1
 import com.somegame.user.user
 import io.ktor.http.*

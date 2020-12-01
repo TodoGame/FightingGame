@@ -1,10 +1,9 @@
 package com.somegame.user.repository
 
 import com.somegame.items.Item
-import com.somegame.items.ItemExtensions.publicData
+import com.somegame.items.publicData
+import com.somegame.user.ItemAlreadyInInventoryException
 import com.somegame.user.User
-import com.somegame.user.UserExtensions
-import com.somegame.user.UserExtensions.publicData
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -38,7 +37,7 @@ object MockUserFactory {
         every { user.addToInventory(any()) } answers {
             val item = firstArg<Item>()
             if (item in inventory) {
-                throw UserExtensions.ItemAlreadyInInventoryException(item)
+                throw ItemAlreadyInInventoryException(item)
             } else {
                 inventory = SizedCollection(inventory + listOf(item))
             }

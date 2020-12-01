@@ -1,7 +1,7 @@
 package websocket
 
 import com.somegame.BaseKoinTest
-import com.somegame.user.UserExtensions.principal
+import com.somegame.user.principal
 import com.somegame.user.repository.MockUserRepositoryFactory.makeNewTestUser
 import com.somegame.websocket.WebSocketService
 import com.somegame.websocket.WebSocketTicketManager

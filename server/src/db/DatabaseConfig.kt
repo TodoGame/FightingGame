@@ -1,8 +1,8 @@
 package com.somegame.db
 
 import com.somegame.items.Items
-import com.somegame.user.tables.UserItems
-import com.somegame.user.tables.Users
+import com.somegame.items.UserItems
+import com.somegame.user.Users
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
