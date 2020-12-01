@@ -4,12 +4,10 @@ import com.somegame.addJwtToken
 import com.somegame.faculty.FacultyNotFound
 import com.somegame.faculty.FacultyRepository
 import com.somegame.handleReceiveExceptions
+import com.somegame.responseExceptions.BadRequestException
 import com.somegame.responseExceptions.ConflictException
 import com.somegame.responseExceptions.UnauthorizedException
-import com.somegame.user.User
-import com.somegame.user.UserRepository
-import com.somegame.user.doesUserExist
-import com.somegame.user.publicData
+import com.somegame.user.*
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -58,6 +56,7 @@ class SecurityRoutingHelpers : KoinComponent {
     }
 
     fun registerUser(input: UserRegisterInput): User {
+        validateLengths(input)
         if (userRepository.doesUserExist(input.username)) {
             throw UserAlreadyExistsException(input.username)
         }
@@ -68,6 +67,15 @@ class SecurityRoutingHelpers : KoinComponent {
             name = input.name,
             faculty = faculty
         )
+    }
+
+    private fun validateLengths(input: UserRegisterInput) {
+        if (input.username.length > USER_MAX_USERNAME_LENGTH) {
+            throw BadRequestException("Username exceeds max length of $USER_MAX_NAME_LENGTH")
+        }
+        if (input.name.length > USER_MAX_NAME_LENGTH) {
+            throw BadRequestException("Name exceeds max length of $USER_MAX_NAME_LENGTH")
+        }
     }
 
     private fun hash(string: String): String = DigestUtils.sha256Hex(string)

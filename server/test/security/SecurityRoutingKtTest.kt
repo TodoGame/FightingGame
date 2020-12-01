@@ -4,6 +4,8 @@ import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJsonContentHeader
 import com.somegame.faculty.publicData
 import com.somegame.security.security
+import com.somegame.user.USER_MAX_NAME_LENGTH
+import com.somegame.user.USER_MAX_USERNAME_LENGTH
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -157,6 +159,40 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
             val authHeaderValue = response.headers["Authorization"]
             assertNotNull(authHeaderValue)
             assert(authHeaderValue?.startsWith("Bearer") ?: false)
+        }
+    }
+
+    @Test
+    fun `register should respond with BadRequest if username exceeds max length`() = withApp {
+        val username = "u".repeat(USER_MAX_USERNAME_LENGTH + 1)
+        val password = "password"
+        val name = "name"
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
+        handleRequest {
+            uri = REGISTER_ENDPOINT
+            method = HttpMethod.Post
+            setBody(Json.encodeToString(registerInput))
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            assertEquals(HttpStatusCode.BadRequest, response.status())
+        }
+    }
+
+    @Test
+    fun `register should respond with BadRequest if name exceeds max length`() = withApp {
+        val username = "username"
+        val password = "password"
+        val name = "n".repeat(USER_MAX_NAME_LENGTH + 1)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
+        handleRequest {
+            uri = REGISTER_ENDPOINT
+            method = HttpMethod.Post
+            setBody(Json.encodeToString(registerInput))
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            assertEquals(HttpStatusCode.BadRequest, response.status())
         }
     }
 }
