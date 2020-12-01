@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="inventoryItem"
+            type="testgame.ui.main.shop.features.InventoryItem" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/inventoryItemTextView"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:text="testText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/inventoryItemImageView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/inventoryItemImageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="InventoryItemText"
+            android:src="@drawable/brick_wall"
+            app:layout_constraintBottom_toBottomOf="@+id/inventoryItemTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/inventoryItemTextView"
+            app:layout_constraintTop_toTopOf="@id/inventoryItemTextView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

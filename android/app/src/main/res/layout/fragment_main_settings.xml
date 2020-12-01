@@ -16,12 +16,12 @@
 
         <Button
             android:id="@+id/logOutButton"
+            style="@style/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="156dp"
+            android:layout_marginTop="32dp"
             android:onClick="@{() -> viewModel.logOut()}"
             android:text="@string/log_out"
-            style="@style/button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -39,18 +39,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/logOutButton" />
 
-        <Button
-            android:id="@+id/changeMusicIsOnButton"
-            style="@style/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/warriorImage"
+            android:layout_width="162dp"
+            android:layout_height="157dp"
             android:layout_marginTop="16dp"
-            android:onClick="@{() -> viewModel.logOut()}"
-            android:text="@string/change_language"
+            android:src="@drawable/animation_warrior_idle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/changeLanguageButton" />
+            app:layout_constraintTop_toBottomOf="@+id/changeLanguageButton"
+            tools:src="@tools:sample/avatars" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/warriorImage" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

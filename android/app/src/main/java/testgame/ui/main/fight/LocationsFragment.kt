@@ -15,6 +15,7 @@ import com.example.testgame.databinding.FragmentMainFightLocationsBinding
 import testgame.activities.EntranceActivity
 import testgame.activities.FightActivity
 import testgame.data.GameApp
+import testgame.data.Match
 import timber.log.Timber
 
 class LocationsFragment : Fragment() {
@@ -48,26 +49,31 @@ class LocationsFragment : Fragment() {
 
             binding.lifecycleOwner = this
 
-            viewModel.errorIsCalled.observe(viewLifecycleOwner, Observer { isCalled ->
+            viewModel.infoDisplayIsCalled.observe(viewLifecycleOwner, { isCalled ->
                     if (isCalled) {
-                        val errorString = viewModel.errorString
+                        val errorString = viewModel.toastInfo
                         Timber.i(errorString.value)
                         viewModel.onErrorDisplayed()
                     }
                 }
             )
-            viewModel.chosenLocation.observe(viewLifecycleOwner, Observer { location ->
+            viewModel.chosenLocation.observe(viewLifecycleOwner, { location ->
                 if (location != null) {
                     val locationModule = binding.button3.progressBar
                     locationModule.visibility = View.VISIBLE
                 }
             })
 
-            viewModel.isMatchStarted.observe(viewLifecycleOwner, Observer { isMatchStarted ->
-                if (isMatchStarted) {
-                    viewModel.confirmRoomEntrance()
+            viewModel.matchState.observe(viewLifecycleOwner, { state ->
+                if (state == Match.State.STARTED) {
+                    Timber.i("Accepted match found")
+                    viewModel.confirmMatchEntrance()
+                    val locationModule = binding.button3.progressBar
+                    locationModule.visibility = View.INVISIBLE
                     val intent = Intent(activity, FightActivity::class.java)
                     startActivity(intent)
+                } else if (state == Match.State.SEARCHING) {
+                    Timber.i("Started searching match")
                 }
             })
         }

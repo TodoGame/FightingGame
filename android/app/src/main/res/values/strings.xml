@@ -2,6 +2,7 @@
     <string name="app_name">Fight</string>
     <string name="saved_token_key">com.example.testgame.PREFERENCE_TOKEN_KEY</string>
     <string name="saved_username_key">com.example.testgame.PREFERENCE_USERNAME_KEY</string>
+    <string name="match_finish_winner_extra_key">com.example.testgame.MATCH_WINNER_KEY</string>
 
     <string name="sign_up">Sign up</string>
     <string name="log_in">Log in</string>
@@ -29,7 +30,7 @@
     <string name="sure_to_leave_fight">Do you want to leave fight?</string>
     <string name="clicker_image">ClickerImage</string>
     <string name="no_internet_connection">No internet connection</string>
-    <string name="inventory">inventory</string>
+    <string name="inventory">Inventory</string>
     <string name="score">score</string>
     <string name="log_out">Log out</string>
     <string name="entrance_activity_name">Entrance</string>
@@ -53,4 +54,8 @@
     <string name="myhealth">MyHealth</string>
     <string name="change_language">change language</string>
     <string name="shopitemimage">ShopItemImage</string>
+    <string name="faculty_score">Faculty score</string>
+    <string name="match_win_congradulation">You won! Congradulations!</string>
+    <string name="confirm">Confirm</string>
+    <string name="fireball">Fireball</string>
 </resources>

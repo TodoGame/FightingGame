@@ -1,43 +1,49 @@
 package tests
 
-import io.ktor.client.statement.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
+import match.MatchSnapshot
 import match.Message
+import match.PlayerAction
 import testgame.data.GameApp
+import testgame.data.Match
+import testgame.data.MatchPlayer
 import testgame.network.MatchApi
 import testgame.network.NetworkService
 import testgame.network.SecurityApi
+import kotlin.system.exitProcess
 
 const val AUTHORIZATION_HEADER_NAME = "Authorization"
-val data = TestDataClass
+val match = Match
+lateinit var username: String
 
 @KtorExperimentalAPI
 fun main() {
     runBlocking {
-        var tokenTest: String = ""
-        val myUsername = kotlin.random.Random.nextInt(0, 1000).toString()
-//        val myUsername = "842"
+        var globalToken = ""
+//        val myUsername = kotlin.random.Random.nextInt(0, 1000).toString()
+        val myUsername = "TestUsername3"
+        username = myUsername
         try {
             val userRegisterInput = security.UserRegisterInput(
                     myUsername,
-                    "tdf",
-                    "testUser"
+                    "testPassword",
+                    "testUsername"
             )
             val response = SecurityApi.register(userRegisterInput)
 
 //            val userLoginInput = security.UserLoginInput(
-//                    myUsername, "tdf"
+//                    myUsername, "testPassword"
 //            )
 //            val response = SecurityApi.login(userLoginInput)
             val token = response.headers[AUTHORIZATION_HEADER_NAME]
             if (token != null) {
-                tokenTest = token
-                println("Token is: ${token}")
+                globalToken = token
+                println("Token is: $token")
             } else {
                 println("Wrong token response")
             }
@@ -45,46 +51,90 @@ fun main() {
             println("Some data missed")
         }
 
-        val ticket = MatchApi.getWebSocketTicket(tokenTest)
+        val ticket = MatchApi.getWebSocketTicket(globalToken)
         GlobalScope.launch {
             MatchApi.connectMatchWebSocket(
-                    data,
+                    match,
                     ticket,
                     ::onMatchStarted,
+                    ::onTurnStarted,
+                    ::onPlayerAction,
                     ::onMatchEnded
             )
         }
-        Thread.sleep(5000)
-        val turnSnapshot = data.match.currentSnapshot
-        try {
-            if (turnSnapshot != null) {
-                println("Not null snapshot")
-                val enemy = data.match.currentSnapshot!!.players.find { it.username != myUsername }?.username
-                        ?: ""
-                val action = NetworkService.jsonFormat.encodeToString<Message>(
-                        match.PlayerAction(enemy, myUsername)
-                )
-                GlobalScope.launch {
-                    data.match.webSocketSession?.send(action) ?: throw GameApp.NullAppDataException("Null match webSocketSession")
-                }
+        var command: String
+        while (true) {
+            print("Enter the command: ")
+            command = readLine() ?: ""
+            when (command) {
+                "exit" -> exitProcess(0)
+                else -> runCommand(command)
             }
-            else {
-                println("Null snapshot")
-            }
-        } catch (exception: java.lang.NullPointerException) {
-            println("Null pointer exception")
         }
     }
 }
 
-fun onMatchStarted() {
-    println("Match started")
+private fun runCommand(command: String) {
+    when (command) {
+        "attack" -> attack()
+    }
 }
 
-suspend fun onMatchEnded(winner: String) {
-    println("Match ended. Winner: $winner")
+private fun attack() {
+    try {
+        val enemyUsername = match.enemy!!.username
+        val action = NetworkService.jsonFormat.encodeToString<Message>(
+                PlayerAction(enemyUsername, match.player!!.username)
+        )
+        GlobalScope.launch {
+            match.webSocketSession?.send(action)
+                    ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+        }
+    } catch (exception: java.lang.NullPointerException) {
+        println("Null pointer exception")
+    }
 }
 
-fun responseIsSuccessful(httpResponse: HttpResponse): Boolean {
-    return httpResponse.status.value in 200..299
+private fun onMatchStarted(players: Set<String>) {
+//    callInfo("Match started")
+}
+
+private fun onTurnStarted(matchSnapshot: MatchSnapshot) {
+    val players = matchSnapshot.players
+    val playerSnapshot = players.find { it.username == username }
+            ?: throw GameApp.NullAppDataException("Null playerSnapshot")
+    val enemySnapshot = players.find { it.username != username }
+            ?: throw GameApp.NullAppDataException("Null enemySnapshot")
+    if (match.player == null || match.enemy == null) {
+        match.player = MatchPlayer(playerSnapshot.username, playerSnapshot.health, playerSnapshot.health)
+        match.enemy = MatchPlayer(enemySnapshot.username, enemySnapshot.health, enemySnapshot.health)
+    } else {
+        match.player?.let { it.currentHealth = playerSnapshot.health }
+        match.enemy?.let { it.currentHealth = enemySnapshot.health }
+    }
+    if (playerSnapshot.isActive) {
+        match.state = Match.State.MY_TURN
+    } else {
+        match.state = Match.State.ENEMY_TURN
+    }
+}
+
+private fun onPlayerAction(attackerUsername: String, targetUsername: String) {
+    val attacker = match.findPlayerByUsername(attackerUsername)
+    val target = match.findPlayerByUsername(targetUsername)
+    target.currentHealth -= GameApp.PLAYER_ACTION_DAMAGE
+    callInfo("${attacker.username} hit ${target.username} \n " +
+            "Hitted ${GameApp.PLAYER_ACTION_DAMAGE} health")
+}
+
+private suspend fun onMatchEnded(winner: String) {
+    callInfo("Match ended")
+    match.state = Match.State.NO_MATCH
+    match.webSocketSession?.close()
+            ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+    match.winner = winner
+}
+
+private fun callInfo(info: String) {
+    println(info)
 }

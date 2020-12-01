@@ -15,7 +15,7 @@ import testgame.ui.main.shop.ShopViewModel
 
 class ShopFragment : Fragment() {
     private lateinit var viewModel: ShopViewModel
-    private lateinit var ShopPagerAdapter: ShopPagerAdapter
+    private lateinit var shopPagerAdapter: ShopPagerAdapter
     private lateinit var viewPager: ViewPager
 
     override fun onCreateView(
@@ -36,12 +36,12 @@ class ShopFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
-        ShopPagerAdapter =
+        shopPagerAdapter =
                 ShopPagerAdapter(
                         childFragmentManager
                 )
         viewPager = binding.viewPager
-        viewPager.adapter = ShopPagerAdapter
+        viewPager.adapter = shopPagerAdapter
 
         val viewPager = binding.viewPager
         val tabLayout = binding.tabLayout

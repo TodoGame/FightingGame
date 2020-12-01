@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.WindowInsets
 import android.view.WindowManager
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -13,6 +14,7 @@ import androidx.preference.PreferenceManager
 import com.example.testgame.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import testgame.data.GameApp
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,6 +46,40 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        Timber.i("On stop")
+    }
+    override fun onPause() {
+        super.onPause()
+        Timber.i("On pause")
+        if(mediaPlayer?.isPlaying == true) {
+            mediaPlayer?.pause()
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        Timber.i("On resume")
+        if(mediaPlayer?.isPlaying == false) {
+            mediaPlayer?.start()
+        }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Timber.i("On restart")
+        val winner = intent.getStringExtra(getString(R.string.match_finish_winner_extra_key))
+        if (winner != null && winner == gameApp.user.username) {
+            val builder = AlertDialog.Builder(this)
+            val dialog = builder.setTitle(R.string.sure_to_leave_fight)
+                    .setMessage(R.string.match_win_congradulation)
+                    .setPositiveButton(R.string.confirm) { dialog, _ ->
+                        dialog.cancel()
+                    }.create()
+            dialog.show()
+        }
+    }
+
     private fun setAppProperties() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val token = sharedPreferences.getString(getString(R.string.saved_token_key), null)
@@ -59,14 +95,12 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer?.start()
     }
 
-    override fun onPause() {
-        super.onPause()
-        mediaPlayer?.stop()
+    private fun getUserInformation() {
+
     }
 
-    override fun onResume() {
-        super.onResume()
-        mediaPlayer?.start()
+    private fun getFacultiesInformation() {
+
     }
 
     private fun openMainWebSocketConnection() {

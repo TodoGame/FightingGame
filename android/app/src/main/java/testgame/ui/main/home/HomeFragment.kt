@@ -38,6 +38,13 @@ class HomeFragment : Fragment() {
         binding.lifecycleOwner = this
 
 
+        viewModel.testIsCalled.observe(viewLifecycleOwner, { isCalled ->
+            if (isCalled) {
+                val progressBar = binding.experienceProgressBar
+                progressBar.update(100, 40)
+            }
+        })
+
         val adapter = ShopRecyclerAdapter(10000, arrayOf(
                 ShopItem("testId1", "Sword", 130),
                 ShopItem("testId2", "Saint granade", 30),

@@ -1,6 +1,7 @@
 package testgame.ui.main.settings
 
 import android.content.Intent
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +36,10 @@ class SettingsFragment : Fragment() {
         binding.viewModel = viewModel
 
         binding.lifecycleOwner = this
+
+        val warriorImage = binding.warriorImage
+        val idleWarrior = warriorImage.drawable as AnimationDrawable
+        idleWarrior.start()
 
         viewModel.isLogOutPressed.observe(viewLifecycleOwner, Observer { isPressed ->
             if (isPressed) {

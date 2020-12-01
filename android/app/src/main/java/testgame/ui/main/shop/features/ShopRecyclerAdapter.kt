@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -29,13 +28,13 @@ class ShopRecyclerAdapter(private val usersMoney: Int, private val dataSet: Arra
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater
-                .inflate(R.layout.item_shop_to_buy, parent, false)
+                .inflate(R.layout.item_shop_product, parent, false)
         return ViewHolder(view)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val itemImage = itemView.findViewById<ImageView>(R.id.itemImageView)
-        val itemName = itemView.findViewById<TextView>(R.id.itemNameTextView)
+        val itemImage = itemView.findViewById<ImageView>(R.id.facultyImageView)
+        val itemName = itemView.findViewById<TextView>(R.id.facultyNameTextView)
 
         fun bind(
             item: ShopItem,

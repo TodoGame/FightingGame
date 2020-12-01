@@ -1,6 +1,5 @@
 package testgame.ui.main.fight
 
-import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,8 +8,12 @@ import io.ktor.http.cio.websocket.send
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
+import match.MatchSnapshot
 import match.Message
+import match.PlayerAction
 import testgame.data.GameApp
+import testgame.data.Match
+import testgame.data.MatchPlayer
 import testgame.network.NetworkService
 import testgame.network.MatchApi
 import java.lang.NullPointerException
@@ -18,39 +21,44 @@ import java.net.SocketTimeoutException
 
 class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
 
+    private val match = Match
+
+    val matchWinner: String
+        get() = match.winner ?: ""
+
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    //shared
-    private var _errorString = MutableLiveData<String>()
-    val errorString: LiveData<String>
-        get() = _errorString
+    /* Block for
+     * Shared
+     * data and functions */
+    private var _toastInfo = MutableLiveData<String>()
+    val toastInfo: LiveData<String>
+        get() = _toastInfo
 
-    private val _errorIsCalled = MutableLiveData<Boolean>(false)
-    val errorIsCalled: LiveData<Boolean>
-        get() = _errorIsCalled
+    private val _infoDisplayIsCalled = MutableLiveData(false)
+    val infoDisplayIsCalled: LiveData<Boolean>
+        get() = _infoDisplayIsCalled
 
-    private fun callError(message: String) {
-        _errorString.postValue(message)
-        _errorIsCalled.postValue(true)
+    private fun callInfo(message: String) {
+        _toastInfo.postValue(message)
+        _infoDisplayIsCalled.value = true
     }
+
+    private val _matchState = MutableLiveData(Match.State.SEARCHING)
+    val matchState: LiveData<Match.State>
+        get() = _matchState
 
     fun onErrorDisplayed() {
-        _errorIsCalled.value = false
+        _infoDisplayIsCalled.value = false
     }
 
-    //locations
+    /* Block for
+     * LocationsFragment
+     * data and functions */
     private var _chosenLocation = MutableLiveData<String>()
     val chosenLocation: LiveData<String>
         get() = _chosenLocation
-
-    private var _isMatchStarted = MutableLiveData<Boolean>(false)
-    val isMatchStarted: LiveData<Boolean>
-        get() = _isMatchStarted
-
-    private var _isMatchEnded = MutableLiveData<Boolean>(false)
-    val isMatchEnded: LiveData<Boolean>
-        get() = _isMatchEnded
 
     @KtorExperimentalAPI
     fun findMatch(location: String) {
@@ -58,91 +66,125 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
         coroutineScope.launch {
             try {
                 val webSocketTicket = MatchApi.getWebSocketTicket(app.user.authenticationToken)
-                callError("Got ticket")
+                callInfo("Got ticket")
+                match.state = Match.State.SEARCHING
+                _matchState.postValue(Match.State.SEARCHING)
                 MatchApi.connectMatchWebSocket(
-                        app,
+                        match,
                         webSocketTicket,
-                        ::onMatchStarted,
-                        ::onMatchEnded
+                        ::onMatchStart,
+                        ::onTurnStart,
+                        ::onPlayerAction,
+                        ::onMatchEnd
                 )
-                callError("Connected to match")
             } catch (exception: NullPointerException) {
-                callError("Null Pointer exception")
+                callInfo("Null Pointer exception")
             } catch (exception: SocketTimeoutException) {
-                exception.message?.let { callError(it) }
+                exception.message?.let { callInfo(it) }
             }
         }
     }
 
-    private fun onMatchStarted() {
-        callError("Match started")
-        _isMatchStarted.postValue(true)
+    private fun onMatchStart(players: Set<String>) {
+        match.state = Match.State.STARTED
+        _matchState.value = Match.State.STARTED
+        callInfo("Match started")
     }
 
-
-    private suspend fun onMatchEnded(winner: String) {
-        callError("Match ended")
-        _isMatchEnded.postValue(true)
-        app.match.webSocketSession?.close() ?: throw GameApp.NullAppDataException("Null match webSocketSession")
-        if (winner == app.user.username) {
-
+    private fun onTurnStart(matchSnapshot: MatchSnapshot) {
+        println("Turn started ${matchSnapshot.players}")
+        val players = matchSnapshot.players
+        val playerSnapshot = players.find { it.username == app.user.username }
+                ?: throw GameApp.NullAppDataException("Null playerSnapshot")
+        val enemySnapshot = players.find { it.username != app.user.username }
+                ?: throw GameApp.NullAppDataException("Null enemySnapshot")
+        if (match.player == null || match.enemy == null) {
+            match.player = MatchPlayer(playerSnapshot.username, playerSnapshot.health, playerSnapshot.health)
+            match.enemy = MatchPlayer(enemySnapshot.username, enemySnapshot.health, enemySnapshot.health)
         } else {
-
+            match.player?.let { it.currentHealth = playerSnapshot.health }
+            match.enemy?.let { it.currentHealth = enemySnapshot.health }
         }
-        _isMatchEnded.postValue(true)
+        if (playerSnapshot.isActive) {
+            match.state = Match.State.MY_TURN
+            _matchState.value = Match.State.MY_TURN
+        } else {
+            match.state = Match.State.ENEMY_TURN
+            _matchState.value = Match.State.ENEMY_TURN
+        }
     }
 
-    fun confirmRoomEntrance() {
+    private fun onPlayerAction(attackerUsername: String, targetUsername: String) {
+        println("OnPlayerAction Turn started $attackerUsername $targetUsername")
+        val attacker = match.findPlayerByUsername(attackerUsername)
+        val target = match.findPlayerByUsername(targetUsername)
+        if (attackerUsername == match.player?.username) {
+            _attackingPlayer.value = AttackingPlayer.PLAYER
+        } else {
+            _attackingPlayer.value = AttackingPlayer.ENEMY
+        }
+        target.currentHealth -= GameApp.PLAYER_ACTION_DAMAGE
+        _action.value = "${attacker.username} hit ${target.username} \n " +
+                "Hitted ${GameApp.PLAYER_ACTION_DAMAGE} health"
+        println("Action value: ${action.value}")
+        println("Attacking player: ${attackingPlayer.value}")
+    }
+
+    private fun onMatchEnd(winner: String) {
+        println("Match ended")
+        match.state = Match.State.NO_MATCH
+        _matchState.value = Match.State.NO_MATCH
+        match.winner = winner
+    }
+
+    fun confirmMatchEntrance() {
         _chosenLocation.value = null
-        _isMatchStarted.value = false
     }
 
-    //fight
+    /**Block for
+     * FightFragment
+     * data and functions */
     val time = "0:35"
-    val action = ObservableField("Action: ")
+    private val _action = MutableLiveData("")
+    val action: LiveData<String>
+        get() = _action
 
-    private var _activePlayerId = MutableLiveData<Int>()
-    val activePlayerId: LiveData<Int>
-        get() = _activePlayerId
-
-    private var _currentOption = MutableLiveData<Option>()
-    val currentOption: LiveData<Option>
+    private var _currentOption = MutableLiveData(FightMenuOption.ATTACK)
+    val currentFightMenuOption: LiveData<FightMenuOption>
         get() = _currentOption
 
-    enum class Option() {
+    private var _playerWantToEscape = MutableLiveData(false)
+    val playerWantToEscape: LiveData<Boolean>
+        get() = _playerWantToEscape
+
+    private var _attackingPlayer = MutableLiveData(AttackingPlayer.IDLE)
+    val attackingPlayer: LiveData<AttackingPlayer>
+        get() = _attackingPlayer
+
+    enum class FightMenuOption() {
         ATTACK,
         INVENTORY,
-        DEFEND,
         SKILLS
     }
 
-    fun exitMatch() {
-        _isMatchEnded.postValue(true)
-        coroutineScope.launch {
-            app.match.webSocketSession?.close() ?: throw GameApp.NullAppDataException("Null match webSocketSession")
-        }
-    }
-
-    fun onRoomExit() {
-        _isMatchEnded.value = false
+    enum class AttackingPlayer() {
+        IDLE,
+        PLAYER,
+        ENEMY
     }
 
     fun attackWithPrimaryWeapon() {
-        action.set("Primary attack")
-        val turnSnapshot = app.match.currentSnapshot
         try {
-            if (turnSnapshot != null) {
-                val enemy = app.match.currentSnapshot!!.players.find { it.username != app.user.username }?.username
-                        ?: ""
-                val action = NetworkService.jsonFormat.encodeToString<Message>(
-                        match.PlayerAction(enemy, app.user.username)
-                )
-                coroutineScope.launch {
-                    app.match.webSocketSession?.send(action) ?: throw GameApp.NullAppDataException("Null match webSocketSession")
-                }
+            val enemyUsername = match.enemy!!.username
+            val action = NetworkService.jsonFormat.encodeToString<Message>(
+                    PlayerAction(enemyUsername, app.user.username)
+            )
+            coroutineScope.launch {
+                match.webSocketSession?.send(action)
+                        ?: throw GameApp.NullAppDataException("Null match webSocketSession")
             }
         } catch (exception: NullPointerException) {
-            callError("Null pointer exception")
+            callInfo("Null pointer exception")
         }
     }
 
@@ -150,11 +192,43 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
 
     }
 
+    fun defend() {
+
+    }
+
     fun selectAttackOption() {
-        _currentOption.value = Option.ATTACK
+        _currentOption.postValue(FightMenuOption.ATTACK)
     }
 
     fun selectInventoryOption() {
-        _currentOption.value = Option.INVENTORY
+        _currentOption.postValue(FightMenuOption.INVENTORY)
+    }
+
+    fun selectSkillOption() {
+        _currentOption.postValue(FightMenuOption.SKILLS)
+    }
+
+    fun escape() {
+        _playerWantToEscape.postValue(true)
+    }
+
+    fun confirmMatchEscape() {
+        _playerWantToEscape.postValue(false)
+        refreshMatch()
+    }
+
+    fun confirmMatchRoomExit() {
+        refreshMatch()
+    }
+
+    private fun refreshMatch() {
+        coroutineScope.launch {
+            match.webSocketSession?.close()
+        }
+        match.winner = null
+        match.state = Match.State.NO_MATCH
+        match.enemy = null
+        match.player = null
+        match.webSocketSession = null
     }
 }

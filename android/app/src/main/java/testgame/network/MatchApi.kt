@@ -11,8 +11,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import match.*
-import testgame.data.GameApp
-import tests.TestDataClass
+import testgame.data.Match
 import websocket.WebSocketTicket
 import java.io.IOException
 import java.lang.Exception
@@ -23,7 +22,7 @@ object MatchApi : NetworkService() {
     @KtorExperimentalAPI
     suspend fun getWebSocketTicket(token: String): WebSocketTicket {
         try {
-            val response = client.get<HttpResponse>() {
+            val response = client.get<HttpResponse> {
                 url("${BASE_HTTP_URL}$matchWebSocketTicketEndpoint")
                 header(AUTHORIZATION_HEADER_NAME, token)
             }
@@ -38,9 +37,11 @@ object MatchApi : NetworkService() {
 
     @KtorExperimentalAPI
     suspend fun connectMatchWebSocket(
-            app: GameApp,
+            match: Match,
             ticket: WebSocketTicket,
-            onMatchStart: () -> Unit,
+            onMatchStart: (players: Set<String>) -> Unit,
+            onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
+            onPlayerAction: (attacker: String, target: String) -> Unit,
             onMatchEnd: suspend (winner: String) -> Unit
     ) {
         client.ws(
@@ -50,13 +51,14 @@ object MatchApi : NetworkService() {
                     parameter(TICKET_QUERY_PARAM_KEY, Json.encodeToString(ticket))
                 }
         ) {
-            app.match.webSocketSession = this
+            match.webSocketSession = this
             for (frame in incoming) {
                 if (frame is Frame.Text) {
                     readMessage(
-                            app,
                             jsonFormat.decodeFromString(frame.readText()),
                             onMatchStart,
+                            onTurnStart,
+                            onPlayerAction,
                             onMatchEnd
                     )
                 }
@@ -65,74 +67,27 @@ object MatchApi : NetworkService() {
     }
 
     private suspend fun readMessage(
-            app: GameApp,
             message: Message,
-            onMatchStart: () -> Unit,
+            onMatchStart: (players: Set<String>) -> Unit,
+            onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
+            onPlayerAction: (attacker: String, target: String) -> Unit,
             onMatchEnd: suspend (winner: String) -> Unit
     ) {
         when (message) {
             is MatchStarted -> {
-                app.match.players = message.players
-                onMatchStart()
+                println("MATCH STARTED")
+                onMatchStart(message.players)
             }
             is TurnStarted -> {
-                app.match.currentSnapshot = message.matchSnapshot
+                println("TURN STARTED")
+                onTurnStart(message.matchSnapshot)
             }
             is PlayerAction -> {
-                app.match.lastPlayerAction = message
+                println("PLAYER ACTION")
+                onPlayerAction(message.attacker, message.target)
             }
             is MatchEnded -> {
-                onMatchEnd(message.winner)
-            }
-        }
-    }
-
-    @KtorExperimentalAPI
-    suspend fun connectMatchWebSocket(
-        data: TestDataClass,
-        ticket: WebSocketTicket,
-        onMatchStart: () -> Unit,
-        onMatchEnd: suspend (winner: String) -> Unit
-    ) {
-        client.ws(
-            method = HttpMethod.Get,
-            request = {
-                url("$BASE_WS_URL$matchWebSocketEndpoint")
-                parameter(TICKET_QUERY_PARAM_KEY, Json.encodeToString(ticket))
-            }
-        ) {
-            data.match.webSocketSession = this
-            for (frame in incoming) {
-                if (frame is Frame.Text) {
-                    readMessage(
-                        data,
-                        jsonFormat.decodeFromString(frame.readText()),
-                        onMatchStart,
-                        onMatchEnd
-                    )
-                }
-            }
-        }
-    }
-
-    private suspend fun readMessage(
-        data: TestDataClass,
-        message: Message,
-        onMatchStart: () -> Unit,
-        onMatchEnd: suspend (winner: String) -> Unit
-    ) {
-        when (message) {
-            is MatchStarted -> {
-                data.match.players = message.players
-                onMatchStart()
-            }
-            is TurnStarted -> {
-                data.match.currentSnapshot = message.matchSnapshot
-            }
-            is PlayerAction -> {
-                data.match.lastPlayerAction = message
-            }
-            is MatchEnded -> {
+                println("MATCH ENDED")
                 onMatchEnd(message.winner)
             }
         }
