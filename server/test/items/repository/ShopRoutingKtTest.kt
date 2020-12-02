@@ -5,7 +5,6 @@ import com.somegame.TestUtils.addJsonContentHeader
 import com.somegame.TestUtils.addJwtHeader
 import com.somegame.items.publicData
 import com.somegame.shop.shop
-import com.somegame.user.makeNewTestUser
 import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
@@ -53,7 +52,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
 
     @Test
     fun `should respond with Forbidden if not enough money`() = withApp {
-        userRepository.makeNewTestUser("brokeUser")
+        makeNewTestUser("brokeUser")
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
             method = HttpMethod.Post
@@ -68,7 +67,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
 
     @Test
     fun `should respond with OK if user has enough money`() = withApp {
-        val user = userRepository.makeNewTestUser("testUser")
+        val user = makeNewTestUser("testUser")
         user.acceptMoney(10)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
@@ -84,7 +83,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
 
     @Test
     fun `after buying user should have item1`() = withApp {
-        val user = userRepository.makeNewTestUser("testUser")
+        val user = makeNewTestUser("testUser")
         user.acceptMoney(10)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
@@ -99,7 +98,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
 
     @Test
     fun `after buying user should have item2`() = withApp {
-        val user = userRepository.makeNewTestUser("testUser")
+        val user = makeNewTestUser("testUser")
         user.acceptMoney(10)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
@@ -114,7 +113,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
 
     @Test
     fun `should respond with Conflict if user attempts to buy the same item twice`() = withApp {
-        val user = userRepository.makeNewTestUser("testUser")
+        val user = makeNewTestUser("testUser")
         user.acceptMoney(10)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT

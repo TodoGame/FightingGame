@@ -5,7 +5,6 @@ import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils
 import com.somegame.match.matchmaking.Match
 import com.somegame.match.matchmaking.MockMatchClientThatPlays
-import com.somegame.user.makeNewTestUser
 import io.mockk.*
 import io.mockk.every
 import kotlinx.coroutines.runBlocking
@@ -18,7 +17,7 @@ import user.Username
 
 internal class MatchTest : BaseKoinTest() {
     private fun mockClient(username: Username): MatchRouting.MatchClient {
-        val user = userRepository.makeNewTestUser(username)
+        val user = makeNewTestUser(username)
         val client = mockk<MatchRouting.MatchClient>()
         every { client.username } returns username
         every { client.onJoinMatch(any()) } just Runs

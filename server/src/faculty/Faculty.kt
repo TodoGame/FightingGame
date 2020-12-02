@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object Faculties : IntIdTable() {
     val name = varchar("name", 16)
+    val points = integer("points").default(0)
 }
 
 class FacultyRepository {
@@ -25,8 +26,13 @@ class FacultyRepository {
 class Faculty(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Faculty>(Faculties)
     var name by Faculties.name
+    var points by Faculties.points
 
     fun getId(): Int = id.value
+
+    fun givePoints(amount: Int) {
+        points += amount
+    }
 }
 
 fun Faculty.publicData() = FacultyData(name)

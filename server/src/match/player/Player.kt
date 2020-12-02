@@ -2,6 +2,7 @@ package com.somegame.match.player
 
 import com.somegame.match.MatchRouting
 import com.somegame.match.matchmaking.Match
+import com.somegame.user.awardPointsToUserAndFaculty
 import match.*
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
@@ -49,7 +50,7 @@ class Player(private val client: MatchRouting.MatchClient, val match: Match) {
     suspend fun handleGameEnd(winner: Player) {
         if (!disconnected.get()) {
             if (winner == this) {
-                user.acceptMoney(10)
+                user.awardPointsToUserAndFaculty(10)
             }
             client.sendMessage(MatchEnded(winner.username))
             client.kick("Match Ended")

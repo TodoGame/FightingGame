@@ -12,8 +12,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import testFaculty1
-import testFaculty2
 
 internal class FacultiesRoutingKtTest : SimpleKtorTest() {
     private fun withApp(block: TestApplicationEngine.() -> Unit) = withBaseApp({
@@ -34,7 +32,13 @@ internal class FacultiesRoutingKtTest : SimpleKtorTest() {
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val faculties = response.content?.let { Json.decodeFromString<List<FacultyData>>(it) }
-            assertEquals(listOf(testFaculty1.publicData(), testFaculty2.publicData()), faculties)
+            assertEquals(
+                listOf(
+                    testFaculty1.publicData(),
+                    testFaculty2.publicData()
+                ),
+                faculties
+            )
         }
     }
 
