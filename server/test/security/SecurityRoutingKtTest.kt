@@ -2,8 +2,10 @@ package security
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJsonContentHeader
-import com.somegame.security.SecurityRouting.security
-import com.somegame.user.service.UserService
+import com.somegame.faculty.publicData
+import com.somegame.security.security
+import com.somegame.user.USER_MAX_NAME_LENGTH
+import com.somegame.user.USER_MAX_USERNAME_LENGTH
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -14,7 +16,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.koin.core.inject
+import testFaculty1
 import user.UserData
 
 internal class SecurityRoutingKtTest : SimpleKtorTest() {
@@ -57,7 +59,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val username = "username"
         val password = "password"
         val name = "name"
-        val registerInput = UserRegisterInput(username, password, name)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
@@ -74,8 +76,8 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val username = "username"
         val password = "password"
         val name = "name"
-        val registerInput = UserRegisterInput(username, password, name)
-        val expectedUserData = UserData(username, name)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
+        val expectedUserData = UserData(username, name, listOf(), 0, testFaculty1.publicData())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
@@ -93,7 +95,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val username = "username"
         val password = "password"
         val name = "name"
-        val registerInput = UserRegisterInput(username, password, name)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
@@ -139,7 +141,7 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
         val username = "username"
         val password = "password"
         val name = "name"
-        val registerInput = UserRegisterInput(username, password, name)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
         handleRequest {
             uri = REGISTER_ENDPOINT
             method = HttpMethod.Post
@@ -161,27 +163,36 @@ internal class SecurityRoutingKtTest : SimpleKtorTest() {
     }
 
     @Test
-    fun `login should respond with Authorization header with Bearer token if user was registered (even directly using UserService)`() =
-        withApp {
-            val userService: UserService by inject()
-            val username = "username"
-            val password = "password"
-            val name = "name"
-
-            userService.registerUser(UserRegisterInput(username, password, name))
-
-            val loginInput = UserLoginInput(username, password)
-
-            handleRequest {
-                uri = LOGIN_ENDPOINT
-                method = HttpMethod.Post
-                setBody(Json.encodeToString(loginInput))
-                addJsonContentHeader()
-            }.apply {
-                assert(requestHandled) { "Request not handled" }
-                val authHeaderValue = response.headers["Authorization"]
-                assertNotNull(authHeaderValue)
-                assert(authHeaderValue?.startsWith("Bearer") ?: false)
-            }
+    fun `register should respond with BadRequest if username exceeds max length`() = withApp {
+        val username = "u".repeat(USER_MAX_USERNAME_LENGTH + 1)
+        val password = "password"
+        val name = "name"
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
+        handleRequest {
+            uri = REGISTER_ENDPOINT
+            method = HttpMethod.Post
+            setBody(Json.encodeToString(registerInput))
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            assertEquals(HttpStatusCode.BadRequest, response.status())
         }
+    }
+
+    @Test
+    fun `register should respond with BadRequest if name exceeds max length`() = withApp {
+        val username = "username"
+        val password = "password"
+        val name = "n".repeat(USER_MAX_NAME_LENGTH + 1)
+        val registerInput = UserRegisterInput(username, password, name, testFaculty1.getId())
+        handleRequest {
+            uri = REGISTER_ENDPOINT
+            method = HttpMethod.Post
+            setBody(Json.encodeToString(registerInput))
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            assertEquals(HttpStatusCode.BadRequest, response.status())
+        }
+    }
 }

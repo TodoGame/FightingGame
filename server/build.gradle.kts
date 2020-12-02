@@ -30,10 +30,21 @@ dependencies {
     implementation("io.ktor:ktor-websockets:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
     implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
-    implementation("io.ktor:ktor-jackson:$ktorVersion")
+//    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("commons-codec:commons-codec:1.15")
+    implementation("io.ktor:ktor-serialization:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
     implementation("org.junit.jupiter:junit-jupiter:5.4.2")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
+
+    implementation("org.jetbrains.exposed:exposed-core:0.28.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.28.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.28.1")
+    implementation("org.postgresql:postgresql:42.2.2")
+
+    implementation("org.koin:koin-ktor:2.1.6")
+    testImplementation("org.koin:koin-test:2.1.6")
+    testImplementation("io.mockk:mockk:1.10.2")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

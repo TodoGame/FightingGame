@@ -63,7 +63,6 @@ async function getMatchTicket(token: string): Promise<object | undefined> {
 
 function connect(ticket: object) {
     const ticketString = JSON.stringify(ticket)
-    console.log('Ticket is: ', ticketString)
     const ws = new WebSocket(`${webSocketUrl}?ticket=${ticketString}`)
     ws.on('open', () => {
         console.log('WebSocket connected')
@@ -92,3 +91,4 @@ async function main() {
 }
 
 main()
+

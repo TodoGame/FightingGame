@@ -2,18 +2,14 @@ package com.somegame.match
 
 import com.somegame.match.matchmaking.*
 import com.somegame.match.player.Player
-import com.somegame.match.player.PlayerService
-import com.somegame.security.UnauthorizedException
 import com.somegame.websocket.WebSocketService
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.http.*
+import com.somegame.websocket.WebSocketTicketManager
 import io.ktor.http.cio.websocket.*
-import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.websocket.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import match.Message
 import match.PlayerAction
@@ -25,16 +21,20 @@ class MatchRouting {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     private val webSocketService = WebSocketService("match", 1)
-    val matchService = MatchService(webSocketService)
+    val matchmaker = Matchmaker()
 
     fun setUpMatchRoutes(routing: Routing) {
         routing.webSocket(matchWebSocketEndpoint) {
             logger.info("New connection")
             val webSocketClient = try {
                 webSocketService.tryConnect(this)
-            } catch (e: UnauthorizedException) {
+            } catch (e: WebSocketTicketManager.InvalidTicketException) {
                 logger.info("Connection was not authorized")
                 close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
+                return@webSocket
+            } catch (e: WebSocketTicketManager.MaxNumberOfTicketsReachedException) {
+                logger.info("Client tried to connect but max number of connections is reached")
+                close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Max number of connections reached"))
                 return@webSocket
             }
 
@@ -55,19 +55,27 @@ class MatchRouting {
     inner class MatchClient(private val client: WebSocketService.Client) {
         private val logger = LoggerFactory.getLogger(javaClass)
 
-        private val username
+        val user = client.user
+
+        val username
             get() = client.username
         private var player: Player? = null
 
-        private fun tryGetPlayer(): Player? {
-            if (player == null) {
-                player = PlayerService.getPlayer(username)
-            }
-            return player
+        fun onJoinMatch(player: Player) {
+            this.player = player
+        }
+
+        suspend fun kick(message: String) {
+            client.kick(message)
+        }
+
+        suspend fun sendMessage(message: Message) {
+            val string = Json.encodeToString(message)
+            client.sendText(string)
         }
 
         suspend fun startSearchingForMatch() {
-            matchService.startSearchingForMatch(client)
+            matchmaker.startSearchingForMatch(this)
         }
 
         suspend fun handleFrame(frame: Frame) {
@@ -88,15 +96,16 @@ class MatchRouting {
                 return
             }
             try {
-                tryGetPlayer()?.doAction(message)
-            } catch (e: Match.IllegalAction) {
+                player?.doAction(message)
+            } catch (e: Match.IllegalActionException) {
                 logger.info("Player $player sent an illegal action $e")
             }
         }
 
         suspend fun handleDisconnect() {
-            matchService.stopSearchingForMatch(client)
-            tryGetPlayer()?.handleDisconnect()
+            player?.handleDisconnect() ?: run {
+                matchmaker.stopSearchingForMatch(this)
+            }
             client.handleDisconnect()
         }
 

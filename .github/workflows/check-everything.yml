@@ -3,20 +3,38 @@ name: Kotlin Check Everything
 on: [push]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build with Gradle
-        run: ./gradlew build
-      - name: Test
+      - name: Run Tests
         run: ./gradlew test
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Raw Server Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Server Raw Test Reports
+          path: server/build/test-results
+  check-small-tasks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
       - name: Lint
         run: ./gradlew ktlintCheck
       - name: Check :stage task
         run: ./gradlew checkStage
+

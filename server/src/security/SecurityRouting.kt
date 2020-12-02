@@ -1,64 +1,85 @@
 package com.somegame.security
 
-import com.fasterxml.jackson.databind.JsonMappingException
-import com.somegame.user.UserEntity
+import com.somegame.addJwtToken
+import com.somegame.faculty.FacultyNotFound
+import com.somegame.faculty.FacultyRepository
+import com.somegame.handleReceiveExceptions
+import com.somegame.responseExceptions.BadRequestException
+import com.somegame.responseExceptions.ConflictException
+import com.somegame.responseExceptions.UnauthorizedException
+import com.somegame.user.*
 import io.ktor.application.*
-import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
+import org.apache.commons.codec.digest.DigestUtils
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import security.*
+import user.Username
 
 fun Routing.security() {
+    val securityRoutingHelpers = SecurityRoutingHelpers()
+
     post(LOGIN_ENDPOINT) {
-        val credentials = try {
-            call.receive<UserLoginInput>()
-        } catch (e: ContentTransformationException) {
-            call.response.status(HttpStatusCode.BadRequest)
-            return@post
-        }
-        val user = UserSource.findUserByCredentials(credentials)
-        if (user != null && user.password == credentials.password) {
-            val token = JwtConfig.makeLoginToken(user)
-            call.response.header("Authorization", "Bearer $token")
-            call.respond(user)
-        } else {
-            call.response.status(HttpStatusCode.Unauthorized)
-        }
+        val input = handleReceiveExceptions { call.receive<UserLoginInput>() }
+        val user = securityRoutingHelpers.loginUser(input)
+
+        addJwtToken(user)
+        call.respond(user.publicData())
     }
 
     post(REGISTER_ENDPOINT) {
-        val input = try {
-            call.receive<UserRegisterInput>()
-        } catch (e: io.ktor.features.ContentTransformationException) {
-            call.response.status(HttpStatusCode.BadRequest)
-            return@post
-        } catch (e: JsonMappingException) {
-            call.response.status(HttpStatusCode.BadRequest)
-            return@post
-        }
-        val user = UserEntity(input.username, input.password, input.name)
-        try {
-            UserSource.registerUser(user)
-            val token = JwtConfig.makeLoginToken(user)
-            call.response.headers.append("Authorization", "Bearer $token")
-            call.respond(user)
-        } catch (e: UserSource.UserAlreadyExists) {
-            call.response.status(HttpStatusCode.BadRequest)
+        val input = handleReceiveExceptions { call.receive<UserRegisterInput>() }
+
+        val newUser = securityRoutingHelpers.registerUser(input)
+
+        addJwtToken(newUser)
+        call.response.status(HttpStatusCode.Created)
+        call.respond(newUser.publicData())
+    }
+}
+
+class SecurityRoutingHelpers : KoinComponent {
+    private val userRepository: UserRepository by inject()
+    private val facultyRepository: FacultyRepository by inject()
+
+    fun loginUser(input: UserLoginInput): User {
+        val user = userRepository.findUserByUsername(input.username)
+        if (user != null && user.password == hash(input.password)) {
+            return user
+        } else {
+            throw UnauthorizedException()
         }
     }
 
-    authenticate {
-        post(CHANGE_MY_PASSWORD_ENDPOINT) {
-            val user = call.principal<UserEntity>()
-            val input = call.receive<ChangePasswordInput>()
-            if (user != null && input.oldPassword == user.password) {
-                user.password = input.newPassword
-                call.response.status(HttpStatusCode.Accepted)
-            } else {
-                call.response.status(HttpStatusCode.Unauthorized)
-            }
+    fun registerUser(input: UserRegisterInput): User {
+        validateLengths(input)
+        if (userRepository.doesUserExist(input.username)) {
+            throw UserAlreadyExistsException(input.username)
+        }
+        val faculty = facultyRepository.getFacultyById(input.facultyId) ?: throw FacultyNotFound(input.facultyId)
+        return userRepository.createUser(
+            username = input.username,
+            password = hash(input.password),
+            name = input.name,
+            faculty = faculty
+        )
+    }
+
+    private fun validateLengths(input: UserRegisterInput) {
+        if (input.username.length > USER_MAX_USERNAME_LENGTH) {
+            throw BadRequestException("Username exceeds max length of $USER_MAX_NAME_LENGTH")
+        }
+        if (input.name.length > USER_MAX_NAME_LENGTH) {
+            throw BadRequestException("Name exceeds max length of $USER_MAX_NAME_LENGTH")
         }
     }
+
+    private fun hash(string: String): String = DigestUtils.sha256Hex(string)
+
+    class UserAlreadyExistsException(username: Username) :
+        ConflictException("User with username $username already exists")
 }
