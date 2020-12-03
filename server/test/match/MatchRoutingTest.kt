@@ -163,5 +163,17 @@ class MatchRoutingTest : SimpleKtorTest() {
         assertEquals(10, winner?.money)
     }
 
+    @Test
+    fun `winning player's faculty should have 10 points`() = withApp {
+        val log1 = mutableListOf<Message>()
+        val log2 = mutableListOf<Message>()
+        connect2SimplePlayers("user1", "user2", log1, log2)
+
+        val winnerUsername = log1.filterIsInstance<MatchEnded>().first().winner
+        val winner = userRepository.findUserByUsername(winnerUsername)
+
+        assertEquals(10, winner?.loadFaculty()?.points)
+    }
+
     // TODO: test multiple matches at the same time
 }
