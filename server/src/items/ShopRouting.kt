@@ -1,5 +1,6 @@
 package com.somegame.shop
 
+import com.somegame.UserMoneyManager
 import com.somegame.handleReceiveExceptions
 import com.somegame.items.ItemRepository
 import com.somegame.items.publicData
@@ -19,6 +20,7 @@ import shop.ShopEndpoints
 
 fun Routing.shop() {
     val itemRepository: ItemRepository by inject()
+    val userMoneyManager: UserMoneyManager by inject()
 
     get(ShopEndpoints.GET_ALL_ITEMS_ENDPOINT) {
         val items = itemRepository.getAllItems().map { it.publicData() }
@@ -38,6 +40,7 @@ fun Routing.shop() {
             val item = itemRepository.getItemById(itemId) ?: throw NotFoundException("Item with id=$itemId not found")
             try {
                 user.buyItem(item)
+                userMoneyManager.notify(user)
                 call.respond(user.publicData())
             } catch (e: ItemAlreadyInInventoryException) {
                 throw ConflictException(e.message)

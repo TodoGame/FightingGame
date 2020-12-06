@@ -10,3 +10,7 @@ val databaseRepositoryModule = module {
     single { ItemRepository() }
     single { FacultyRepository() }
 }
+
+val otherModule = module {
+    single { UserMoneyManager() }
+}

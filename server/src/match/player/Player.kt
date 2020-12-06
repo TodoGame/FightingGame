@@ -1,13 +1,18 @@
 package com.somegame.match.player
 
+import com.somegame.UserMoneyManager
 import com.somegame.match.MatchRouting
 import com.somegame.match.matchmaking.Match
-import com.somegame.user.awardPointsToUserAndFaculty
 import match.*
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
 
-class Player(private val client: MatchRouting.MatchClient, val match: Match) {
+class Player(private val client: MatchRouting.MatchClient, val match: Match) : KoinComponent {
+
+    val userMoneyManager: UserMoneyManager by inject()
+
     val username = client.username
 
     val user = client.user
@@ -50,7 +55,9 @@ class Player(private val client: MatchRouting.MatchClient, val match: Match) {
     suspend fun handleGameEnd(winner: Player) {
         if (!disconnected.get()) {
             if (winner == this) {
-                user.awardPointsToUserAndFaculty(10)
+                userMoneyManager.onUserWin(user)
+            } else {
+                userMoneyManager.onUserLose(user)
             }
             client.sendMessage(MatchEnded(winner.username))
             client.kick("Match Ended")
