@@ -7,6 +7,7 @@ import com.somegame.responseExceptions.TransformExceptionsIntoResponses
 import com.somegame.security.JwtConfig
 import com.somegame.security.security
 import com.somegame.shop.shop
+import com.somegame.subscription.subscription
 import com.somegame.user.user
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -43,6 +44,7 @@ object ApplicationConfig {
             MatchRouting().setUpMatchRoutes(this)
             shop()
             faculties()
+            subscription()
         }
     }
 
@@ -63,7 +65,7 @@ object ApplicationConfig {
 
     fun Application.installKoin() {
         install(org.koin.ktor.ext.Koin) {
-            modules(databaseRepositoryModule)
+            modules(databaseRepositoryModule, otherModule)
         }
     }
 

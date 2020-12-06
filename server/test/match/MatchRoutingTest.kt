@@ -2,6 +2,7 @@ package com.somegame.websocket
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
+import com.somegame.faculty.FacultyPointsManager
 import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils.generateActivePlayerLog
 import com.somegame.match.MatchTestUtils.generatePassivePlayerLog
@@ -161,6 +162,18 @@ class MatchRoutingTest : SimpleKtorTest() {
         val winner = userRepository.findUserByUsername(winnerUsername)
 
         assertEquals(10, winner?.money)
+    }
+
+    @Test
+    fun `winning player's faculty should have 10 points`() = withApp {
+        val log1 = mutableListOf<Message>()
+        val log2 = mutableListOf<Message>()
+        connect2SimplePlayers("user1", "user2", log1, log2)
+
+        val winnerUsername = log1.filterIsInstance<MatchEnded>().first().winner
+        val winner = userRepository.findUserByUsername(winnerUsername)
+
+        assertEquals(FacultyPointsManager.WINNING_FACULTY_PRIZE, winner?.loadFaculty()?.points)
     }
 
     // TODO: test multiple matches at the same time
