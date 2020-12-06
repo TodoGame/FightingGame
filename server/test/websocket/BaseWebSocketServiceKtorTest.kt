@@ -2,7 +2,6 @@ package com.somegame.websocket
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
-import com.somegame.user.user1
 import com.somegame.websocket.WebSocketTicketManager.Companion.DEFAULT_TICKET_LIFE_EXPECTANCY
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
@@ -76,7 +75,7 @@ open class BaseWebSocketServiceKtorTest(
             Assertions.assertEquals(HttpStatusCode.OK, response.status())
             val ticket = response.content?.let { Json.decodeFromString<WebSocketTicket>(it) }
             Assertions.assertNotNull(ticket)
-            Assertions.assertEquals(userRepository.user1().username, ticket?.username)
+            Assertions.assertEquals(user1.username, ticket?.username)
         }
     }
 

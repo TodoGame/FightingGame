@@ -1,34 +1,63 @@
 package com.somegame
 
-import com.somegame.items.repository.createMockItemRepository
-import com.somegame.user.createMockUserRepository
-import createMockFacultyRepository
+import com.somegame.faculty.FacultyPointsManager
+import com.somegame.user.UserMoneyManager
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.koin.dsl.module
+import user.Username
 
 @ExtendWith(MockKExtension::class)
 open class SimpleKtorTest : BaseKtorTest() {
-    protected var userRepository = createMockUserRepository()
-    protected var itemRepository = createMockItemRepository()
-    protected var facultyRepository = createMockFacultyRepository()
+    private val repositoriesMock = RepositoriesMock()
 
-    override var applicationModules = makeApplicationModules()
+    protected val userRepository
+        get() = repositoriesMock.userRepository
 
-    private fun makeApplicationModules() = listOf(
+    protected val itemRepository
+        get() = repositoriesMock.itemRepository
+
+    protected val facultyRepository
+        get() = repositoriesMock.facultyRepository
+
+    private var repositoriesModule = repositoriesMock.repositoriesModule
+
+    override var applicationModules = listOf(
+        repositoriesMock.repositoriesModule,
         module {
-            single { userRepository }
-            single { itemRepository }
-            single { facultyRepository }
+            single { UserMoneyManager() }
+            single { FacultyPointsManager() }
         }
     )
 
+    protected val testItem1
+        get() = itemRepository.testItem1()
+
+    protected val testItem2
+        get() = itemRepository.testItem2()
+
+    protected val testFaculty1
+        get() = facultyRepository.testFaculty1()
+
+    protected val testFaculty2
+        get() = facultyRepository.testFaculty2()
+
+    protected val user1
+        get() = userRepository.user1()
+
+    protected val user2
+        get() = userRepository.user2()
+
+    fun makeNewTestUser(username: Username) = repositoriesMock.makeNewTestUser(username)
+
     @BeforeEach
     fun clearRepositories() {
-        userRepository = createMockUserRepository()
-        itemRepository = createMockItemRepository()
-        facultyRepository = createMockFacultyRepository()
-        applicationModules = makeApplicationModules()
+        repositoriesMock.clear()
+        val managersModule = module {
+            single { UserMoneyManager() }
+            single { FacultyPointsManager() }
+        }
+        applicationModules = listOf(repositoriesMock.repositoriesModule, managersModule)
     }
 }

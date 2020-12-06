@@ -4,8 +4,6 @@ import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
 import com.somegame.user.publicData
 import com.somegame.user.user
-import com.somegame.user.user1
-import com.somegame.user.user2
 import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
@@ -57,7 +55,7 @@ internal class UserRoutingKtTest : SimpleKtorTest() {
             assert(requestHandled) { "Request not handled" }
             assertEquals(HttpStatusCode.OK, response.status())
             val userData = response.content?.let { Json.decodeFromString<UserData>(it) }
-            assertEquals(userRepository.user1().publicData(), userData)
+            assertEquals(user1.publicData(), userData)
         }
     }
 
@@ -70,7 +68,7 @@ internal class UserRoutingKtTest : SimpleKtorTest() {
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val userData = response.content?.let { Json.decodeFromString<UserData>(it) }
-            assertEquals(userRepository.user1().publicData(), userData)
+            assertEquals(user1.publicData(), userData)
         }
     }
 
@@ -83,7 +81,7 @@ internal class UserRoutingKtTest : SimpleKtorTest() {
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val userData = response.content?.let { Json.decodeFromString<UserData>(it) }
-            assertEquals(userRepository.user2().publicData(), userData)
+            assertEquals(user2.publicData(), userData)
         }
     }
 

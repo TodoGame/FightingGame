@@ -16,7 +16,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import testFaculty1
 import user.UserData
 
 internal class SecurityRoutingKtTest : SimpleKtorTest() {

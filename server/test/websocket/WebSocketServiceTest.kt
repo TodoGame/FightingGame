@@ -1,7 +1,6 @@
 package websocket
 
 import com.somegame.BaseKoinTest
-import com.somegame.user.makeNewTestUser
 import com.somegame.user.principal
 import com.somegame.websocket.WebSocketService
 import com.somegame.websocket.WebSocketTicketManager
@@ -34,13 +33,13 @@ internal class WebSocketServiceTest : BaseKoinTest() {
 
     @Test
     fun `should make ticket for user`(): Unit = runBlocking {
-        val principal = userRepository.makeNewTestUser("user1").principal()
+        val principal = makeNewTestUser("user1").principal()
         webSocketService.makeTicket(principal)
     }
 
     @Test
     fun `should make at least 2 different tickets for user`() = runBlocking {
-        val principal = userRepository.makeNewTestUser("user1").principal()
+        val principal = makeNewTestUser("user1").principal()
         val ticket1 = webSocketService.makeTicket(principal)
         val ticket2 = webSocketService.makeTicket(principal)
 
@@ -69,7 +68,7 @@ internal class WebSocketServiceTest : BaseKoinTest() {
 
     @Test
     fun `tryConnect should throw if given invalid ticket`(): Unit = runBlocking {
-        val principal = userRepository.makeNewTestUser("user1").principal()
+        val principal = makeNewTestUser("user1").principal()
         val ticket = singleConnectionWebSocketService.makeTicket(principal)
         val session = mockSession(Json.encodeToString(ticket))
         assertThrows(WebSocketTicketManager.InvalidTicketException::class.java) {
@@ -81,7 +80,7 @@ internal class WebSocketServiceTest : BaseKoinTest() {
 
     @Test
     fun `tryConnect should return user entity if session has valid ticket`(): Unit = runBlocking {
-        val principal = userRepository.makeNewTestUser("user1").principal()
+        val principal = makeNewTestUser("user1").principal()
         val ticket = webSocketService.makeTicket(principal)
         val session = mockSession(Json.encodeToString(ticket))
         webSocketService.tryConnect(session)
@@ -90,7 +89,7 @@ internal class WebSocketServiceTest : BaseKoinTest() {
     @Test
     fun `single connection tryConnect should throw if second session of the same user tries to connect while first session is connected`(): Unit =
         runBlocking {
-            val principal = userRepository.makeNewTestUser("user1").principal()
+            val principal = makeNewTestUser("user1").principal()
             val ticket1 = singleConnectionWebSocketService.makeTicket(principal)
             val session1 = mockSession(Json.encodeToString(ticket1))
             val ticket2 = singleConnectionWebSocketService.makeTicket(principal)
@@ -105,7 +104,7 @@ internal class WebSocketServiceTest : BaseKoinTest() {
 
     @Test
     fun `tryConnect should connect second session of the same user if the first session is already disconnected`(): Unit = runBlocking {
-        val principal = userRepository.makeNewTestUser("user1").principal()
+        val principal = makeNewTestUser("user1").principal()
         val ticket1 = webSocketService.makeTicket(principal)
         val session1 = mockSession(Json.encodeToString(ticket1))
         val ticket2 = webSocketService.makeTicket(principal)
