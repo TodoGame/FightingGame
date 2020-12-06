@@ -1,8 +1,8 @@
 package com.somegame.match.player
 
-import com.somegame.UserMoneyManager
 import com.somegame.match.MatchRouting
 import com.somegame.match.matchmaking.Match
+import com.somegame.user.UserMoneyManager
 import match.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject

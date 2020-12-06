@@ -1,6 +1,5 @@
 package com.somegame.shop
 
-import com.somegame.UserMoneyManager
 import com.somegame.handleReceiveExceptions
 import com.somegame.items.ItemRepository
 import com.somegame.items.publicData
@@ -10,6 +9,7 @@ import com.somegame.responseExceptions.ForbiddenException
 import com.somegame.responseExceptions.NotFoundException
 import com.somegame.security.SecurityUtils.user
 import com.somegame.user.*
+import com.somegame.user.UserMoneyManager
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.request.*

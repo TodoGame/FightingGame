@@ -1,9 +1,12 @@
 package com.somegame
 
+import com.somegame.faculty.FacultyPointsManager
+import com.somegame.user.UserMoneyManager
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.koin.test.KoinTest
 import user.Username
 
@@ -44,8 +47,12 @@ open class BaseKoinTest : KoinTest {
     @BeforeEach
     fun clearRepositories() {
         repositoriesMock.clear()
+        val managersModule = module {
+            single { UserMoneyManager() }
+            single { FacultyPointsManager() }
+        }
         startKoin {
-            modules(repositoriesModule)
+            modules(repositoriesModule, managersModule)
         }
     }
 

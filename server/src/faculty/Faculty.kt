@@ -23,6 +23,8 @@ class FacultyRepository {
     }
 }
 
+fun FacultyRepository.getLeadingFaculty(): Faculty? = getAllFaculties().maxByOrNull { it.points }
+
 class Faculty(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Faculty>(Faculties)
     var name by Faculties.name

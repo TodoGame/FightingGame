@@ -1,15 +1,19 @@
-package com.somegame
+package com.somegame.user
 
+import com.somegame.faculty.FacultyPointsManager
 import com.somegame.subscription.MoneyUpdateListener
 import com.somegame.subscription.UserMoneySubscriptionsManager
-import com.somegame.user.User
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import user.Username
 
-class UserMoneyManager {
+class UserMoneyManager : KoinComponent {
     companion object {
         val WINNING_USER_PRIZE = 10
         val LOSING_USER_PRIZE = 3
     }
+
+    private val facultyPointsManager: FacultyPointsManager by inject()
 
     private val subscriptionsManager = UserMoneySubscriptionsManager()
 
@@ -34,6 +38,7 @@ class UserMoneyManager {
     suspend fun onUserWin(user: User) {
         user.acceptMoney(WINNING_USER_PRIZE)
         subscriptionsManager.notify(user.username, user.money)
+        facultyPointsManager.onFacultyMemberWin(user)
     }
 
     suspend fun onUserLose(user: User) {

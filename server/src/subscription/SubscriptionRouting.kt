@@ -1,6 +1,7 @@
 package com.somegame.subscription
 
-import com.somegame.UserMoneyManager
+import com.somegame.faculty.FacultyPointsManager
+import com.somegame.user.UserMoneyManager
 import com.somegame.websocket.WebSocketService
 import com.somegame.websocket.WebSocketTicketManager
 import io.ktor.http.cio.websocket.*
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory
 import subscription.*
 import user.Username
 
-val SUBSCRIPTIONS_WEBSOCKET_NAME = "sub"
+const val SUBSCRIPTIONS_WEBSOCKET_NAME = "sub"
 
 fun Routing.subscription() {
     val logger = LoggerFactory.getLogger("subscriptions websocket")
@@ -60,14 +61,27 @@ class SubscriptionRoutingHelper : KoinComponent {
     val logger = LoggerFactory.getLogger(javaClass)
 
     private val moneyPointsManager: UserMoneyManager by inject()
+    private val facultyPointsManager: FacultyPointsManager by inject()
 
     inner class SubscriptionClient(private val client: WebSocketService.Client) {
-        private suspend fun WebSocketService.Client.sendSubscriptionEvent(event: SubscriptionEvent) {
+        private suspend fun WebSocketService.Client.sendSubscriptionEvent(event: SubscriptionUpdate) {
             sendText(Json.encodeToString(event))
         }
 
         private suspend fun onUserMoneyUpdate(username: Username, money: Int) {
-            client.sendSubscriptionEvent(UserMoneyUpdate(username, money))
+            val update = UserMoneyUpdate(username, money)
+            logger.info("Notifying $client about $update")
+            client.sendSubscriptionEvent(update)
+        }
+
+        private suspend fun onFacultyPointsUpdate(event: FacultyPointsUpdate) {
+            logger.info("Notifying $client about $event")
+            client.sendSubscriptionEvent(event)
+        }
+
+        private suspend fun onLeadingFacultyUpdate(event: LeadingFacultyUpdate) {
+            logger.info("Notifying $client about $event")
+            client.sendSubscriptionEvent(event)
         }
 
         suspend fun handleSubscriptionMessage(message: SubscriptionMessage) {
@@ -82,11 +96,32 @@ class SubscriptionRoutingHelper : KoinComponent {
                         moneyPointsManager.unsubscribe(username, this::onUserMoneyUpdate)
                     }
                 }
+                is AllFacultiesPointsSubscription -> {
+                    if (message.subscribe) {
+                        logger.info("Subscribing $client to all faculties points updates")
+                        facultyPointsManager.subscribeOnAllFacultiesPointsUpdates(this::onFacultyPointsUpdate)
+                    } else {
+                        logger.info("Unsubscribing $client from all faculties points updates")
+                        facultyPointsManager.unsubscribeFromAllFacultiesPointsUpdates(this::onFacultyPointsUpdate)
+                    }
+                }
+                is LeadingFacultySubscription -> {
+                    if (message.subscribe) {
+                        logger.info("Subscribing $client to leading faculty points updates")
+                        facultyPointsManager.subscribeOnLeadingFacultyUpdates(this::onLeadingFacultyUpdate)
+                    } else {
+                        logger.info("Unsubscribing $client from leading faculty points updates")
+                        facultyPointsManager.unsubscribeFromLeadingFacultyUpdates(this::onLeadingFacultyUpdate)
+                    }
+                }
             }
         }
 
         suspend fun handleDisconnect() {
+            logger.info("Unsubscribing $client from all events")
             moneyPointsManager.unsubscribeFromAll(this::onUserMoneyUpdate)
+            facultyPointsManager.unsubscribeFromAllFacultiesPointsUpdates(this::onFacultyPointsUpdate)
+            facultyPointsManager.unsubscribeFromLeadingFacultyUpdates(this::onLeadingFacultyUpdate)
             client.handleDisconnect()
         }
     }
