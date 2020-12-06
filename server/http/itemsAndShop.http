@@ -19,3 +19,10 @@ Content-Type: application/json
 GET {{host}}/shop/getAllItems
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
+
+###
+
+# Get all not owned items
+GET {{host}}/shop/getNotOwnedItems
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json

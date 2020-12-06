@@ -139,7 +139,6 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         handleRequest {
             uri = ShopEndpoints.GET_ALL_ITEMS_ENDPOINT
             method = HttpMethod.Get
-            addJwtHeader("user1")
             addJsonContentHeader()
         }.apply {
             assert(requestHandled) { "Request not handled" }
@@ -153,7 +152,6 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         handleRequest {
             uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=1"
             method = HttpMethod.Get
-            addJwtHeader("user1")
             addJsonContentHeader()
         }.apply {
             assert(requestHandled) { "Request not handled" }
@@ -167,7 +165,6 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         handleRequest {
             uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=2"
             method = HttpMethod.Get
-            addJwtHeader("user1")
             addJsonContentHeader()
         }.apply {
             assert(requestHandled) { "Request not handled" }
@@ -181,7 +178,6 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         handleRequest {
             uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=3"
             method = HttpMethod.Get
-            addJwtHeader("user1")
             addJsonContentHeader()
         }.apply {
             assert(requestHandled) { "Request not handled" }
@@ -194,11 +190,100 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         handleRequest {
             uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=stringValue"
             method = HttpMethod.Get
-            addJwtHeader("user1")
             addJsonContentHeader()
         }.apply {
             assert(requestHandled) { "Request not handled" }
             assertEquals(HttpStatusCode.BadRequest, response.status())
+        }
+    }
+
+    @Test
+    fun `getNotOwnedItems should initially return all items`() = withApp {
+        handleRequest {
+            uri = ShopEndpoints.GET_NOT_OWNED_ITEMS
+            method = HttpMethod.Get
+            addJwtHeader("user1")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
+            assertEquals(listOf(testItem1.publicData(), testItem2.publicData()), items)
+        }
+    }
+
+    @Test
+    fun `getNotOwnedItems should respond with second item if first item is bought`() = withApp {
+        val user = makeNewTestUser("richUser")
+        user.acceptMoney(10)
+        handleRequest {
+            uri = ShopEndpoints.BUY_ITEM_ENDPOINT
+            method = HttpMethod.Post
+            addJwtHeader("richUser")
+            addJsonContentHeader()
+            setBody("1")
+        }
+        handleRequest {
+            uri = ShopEndpoints.GET_NOT_OWNED_ITEMS
+            method = HttpMethod.Get
+            addJwtHeader("richUser")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
+            assertEquals(listOf(testItem2.publicData()), items)
+        }
+    }
+
+    @Test
+    fun `getNotOwnedItems should respond with first item if second item is bought`() = withApp {
+        val user = makeNewTestUser("richUser")
+        user.acceptMoney(10)
+        handleRequest {
+            uri = ShopEndpoints.BUY_ITEM_ENDPOINT
+            method = HttpMethod.Post
+            addJwtHeader("richUser")
+            addJsonContentHeader()
+            setBody("2")
+        }
+        handleRequest {
+            uri = ShopEndpoints.GET_NOT_OWNED_ITEMS
+            method = HttpMethod.Get
+            addJwtHeader("richUser")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
+            assertEquals(listOf(testItem1.publicData()), items)
+        }
+    }
+
+    @Test
+    fun `getNotOwnedItems should respond with empty list if all items are bought`() = withApp {
+        val user = makeNewTestUser("richUser")
+        user.acceptMoney(10)
+        handleRequest {
+            uri = ShopEndpoints.BUY_ITEM_ENDPOINT
+            method = HttpMethod.Post
+            addJwtHeader("richUser")
+            addJsonContentHeader()
+            setBody("1")
+        }
+        handleRequest {
+            uri = ShopEndpoints.BUY_ITEM_ENDPOINT
+            method = HttpMethod.Post
+            addJwtHeader("richUser")
+            addJsonContentHeader()
+            setBody("2")
+        }
+        handleRequest {
+            uri = ShopEndpoints.GET_NOT_OWNED_ITEMS
+            method = HttpMethod.Get
+            addJwtHeader("richUser")
+            addJsonContentHeader()
+        }.apply {
+            assert(requestHandled) { "Request not handled" }
+            val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
+            assertEquals(listOf<ItemData>(), items)
         }
     }
 }
