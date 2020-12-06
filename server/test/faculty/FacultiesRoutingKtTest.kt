@@ -2,7 +2,6 @@ package faculty
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJsonContentHeader
-import com.somegame.TestUtils.addJwtHeader
 import com.somegame.faculty.faculties
 import com.somegame.faculty.publicData
 import io.ktor.http.*
@@ -28,7 +27,6 @@ internal class FacultiesRoutingKtTest : SimpleKtorTest() {
             uri = GET_ALL_FACULTIES_ENDPOINT
             method = HttpMethod.Get
             addJsonContentHeader()
-            addJwtHeader("user1")
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val faculties = response.content?.let { Json.decodeFromString<List<FacultyData>>(it) }
@@ -48,7 +46,6 @@ internal class FacultiesRoutingKtTest : SimpleKtorTest() {
             uri = "$GET_SINGLE_FACULTY_ENDPOINT?id=1"
             method = HttpMethod.Get
             addJsonContentHeader()
-            addJwtHeader("user1")
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val faculty = response.content?.let { Json.decodeFromString<FacultyData>(it) }
@@ -62,7 +59,6 @@ internal class FacultiesRoutingKtTest : SimpleKtorTest() {
             uri = "$GET_SINGLE_FACULTY_ENDPOINT?id=2"
             method = HttpMethod.Get
             addJsonContentHeader()
-            addJwtHeader("user1")
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val faculty = response.content?.let { Json.decodeFromString<FacultyData>(it) }
@@ -76,7 +72,6 @@ internal class FacultiesRoutingKtTest : SimpleKtorTest() {
             uri = "$GET_SINGLE_FACULTY_ENDPOINT?id=3"
             method = HttpMethod.Get
             addJsonContentHeader()
-            addJwtHeader("user1")
         }.apply {
             assert(requestHandled) { "Request not handled" }
             assertEquals(HttpStatusCode.NotFound, response.status())
@@ -89,7 +84,6 @@ internal class FacultiesRoutingKtTest : SimpleKtorTest() {
             uri = "$GET_SINGLE_FACULTY_ENDPOINT?id=stringValue"
             method = HttpMethod.Get
             addJsonContentHeader()
-            addJwtHeader("user1")
         }.apply {
             assert(requestHandled) { "Request not handled" }
             assertEquals(HttpStatusCode.BadRequest, response.status())

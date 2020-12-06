@@ -26,7 +26,7 @@ abstract class BaseKtorTest : KoinTest {
     protected fun <R> withBaseApp(setUpApp: Application.() -> Unit, block: TestApplicationEngine.() -> R) =
         withTestApplication({
             install(WebSockets) {
-                pingPeriod = Duration.ofSeconds(1)
+                pingPeriod = null
                 timeout = Duration.ofSeconds(15)
                 maxFrameSize = Long.MAX_VALUE
                 masking = false

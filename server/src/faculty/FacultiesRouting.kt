@@ -13,17 +13,15 @@ import org.koin.ktor.ext.inject
 fun Routing.faculties() {
     val facultyRepository: FacultyRepository by inject()
 
-    authenticate {
-        get(GET_ALL_FACULTIES_ENDPOINT) {
-            val faculties = facultyRepository.getAllFaculties()
-            call.respond(faculties.map { it.publicData() })
-        }
+    get(GET_ALL_FACULTIES_ENDPOINT) {
+        val faculties = facultyRepository.getAllFaculties()
+        call.respond(faculties.map { it.publicData() })
+    }
 
-        get(GET_SINGLE_FACULTY_ENDPOINT) {
-            val facultyId = call.requiredIdParameter()
-            val faculty = facultyRepository.getFacultyById(facultyId)
-                ?: throw NotFoundException("Faculty with id=$facultyId not found")
-            call.respond(faculty.publicData())
-        }
+    get(GET_SINGLE_FACULTY_ENDPOINT) {
+        val facultyId = call.requiredIdParameter()
+        val faculty = facultyRepository.getFacultyById(facultyId)
+            ?: throw NotFoundException("Faculty with id=$facultyId not found")
+        call.respond(faculty.publicData())
     }
 }

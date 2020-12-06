@@ -53,15 +53,19 @@ class WebSocketTicketManager(
         logger.info("Ticket $ticket registered")
     }
 
-    private suspend fun unregisterTicket(ticket: WebSocketTicket) = mutex.withLock {
+    private fun unregisterTicket(ticket: WebSocketTicket) {
         tickets.remove(ticket.code)
         logger.info("Ticket $ticket unregistered")
     }
 
     suspend fun authorize(ticket: WebSocketTicket): User {
+        useTicket(ticket)
+        return userRepository.findUserByUsername(ticket.username) ?: throw InvalidTicketException("User not found")
+    }
+
+    private suspend fun useTicket(ticket: WebSocketTicket) = mutex.withLock {
         validateTicket(ticket)
         unregisterTicket(ticket)
-        return userRepository.findUserByUsername(ticket.username) ?: throw InvalidTicketException("User not found")
     }
 
     private fun getTokenExpiration(): Long {
@@ -75,7 +79,7 @@ class WebSocketTicketManager(
             .joinToString("")
     }
 
-    private suspend fun validateTicket(ticket: WebSocketTicket) {
+    private fun validateTicket(ticket: WebSocketTicket) {
         if (isTicketExpired(ticket)) {
             throw InvalidTicketException("Ticket is expired")
         }
@@ -86,9 +90,7 @@ class WebSocketTicketManager(
 
     private fun isTicketExpired(ticket: WebSocketTicket) = ticket.expiresAt <= System.currentTimeMillis()
 
-    private suspend fun isTicketRegistered(ticket: WebSocketTicket) = mutex.withLock {
-        tickets[ticket.code] == ticket
-    }
+    private fun isTicketRegistered(ticket: WebSocketTicket): Boolean = tickets[ticket.code] == ticket
 
     class InvalidTicketException(msg: String) : UnauthorizedException(msg)
 
