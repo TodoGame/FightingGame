@@ -26,6 +26,8 @@ class FacultyPointsManager : KoinComponent {
     private val leadingFacultyMutex = Mutex()
     private val leadingFacultyListeners = mutableSetOf<suspend (LeadingFacultyUpdate) -> Unit>()
 
+    fun getLeadingFaculty() = leadingFaculty
+
     suspend fun onFacultyMemberWin(user: User) {
         val faculty = user.loadFaculty()
         val id = faculty.getId()

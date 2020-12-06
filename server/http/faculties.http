@@ -11,3 +11,11 @@ Content-Type: application/json
 GET {{host}}/faculties/getAll
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
+
+###
+
+# get leading faculty
+# Responds with FacultyData
+GET {{host}}/leadingFaculty
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
