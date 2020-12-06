@@ -35,6 +35,6 @@ class Faculty(id: EntityID<Int>) : IntEntity(id) {
     }
 }
 
-fun Faculty.publicData() = FacultyData(name)
+fun Faculty.publicData() = FacultyData(getId(), name, points)
 
 class FacultyNotFound(id: Int) : NotFoundException("Faculty with id=$id not found")

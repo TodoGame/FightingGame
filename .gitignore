@@ -27,4 +27,4 @@ local.properties
 /server/build
 
 # http
-/server/http/http-client.env.private.json
+/**/http-client.private.env.json

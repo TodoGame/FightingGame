@@ -12,6 +12,7 @@ import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import item.ItemType
 import org.jetbrains.exposed.sql.SizedCollection
 import org.koin.dsl.module
 import user.Username
@@ -35,8 +36,8 @@ class RepositoriesMock {
         items.clear()
         items.addAll(
             listOf(
-                createMockItem(1, "Bat", 1),
-                createMockItem(2, "Sword", 2)
+                createMockItem(1, ItemType.MainWeapon, "Bat", 1, 10),
+                createMockItem(2, ItemType.MainWeapon, "Sword", 2, 100),
             )
         )
         faculties.clear()
@@ -81,12 +82,14 @@ class RepositoriesMock {
         return facultyRepository
     }
 
-    fun createMockItem(id: Int, name: String, price: Int): Item {
+    fun createMockItem(id: Int, type: ItemType, name: String, price: Int, damage: Int): Item {
         val item = mockk<Item>()
 
         every { item.getId() } returns id
+        every { item.type } returns type
         every { item.name } returns name
         every { item.price } returns price
+        every { item.damage } returns damage
 
         return item
     }
