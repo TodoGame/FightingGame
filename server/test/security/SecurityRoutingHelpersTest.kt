@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import security.UserLoginInput
 import security.UserRegisterInput
-import testFaculty1
 
 internal class SecurityRoutingHelpersTest : BaseKoinTest() {
     private var securityRoutingHelpers = SecurityRoutingHelpers()
@@ -30,7 +29,8 @@ internal class SecurityRoutingHelpersTest : BaseKoinTest() {
     @Test
     fun `register should throw if user already exists`() {
         val input = UserRegisterInput("username", "password", "name", testFaculty1.getId())
-        val inputWithTheSameUsername = UserRegisterInput("username", "pass", "othername", testFaculty1.getId())
+        val inputWithTheSameUsername =
+            UserRegisterInput("username", "pass", "othername", testFaculty1.getId())
 
         securityRoutingHelpers.registerUser(input)
         assertThrows(ConflictException::class.java) {

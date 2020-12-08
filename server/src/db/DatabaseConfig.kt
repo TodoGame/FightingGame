@@ -1,9 +1,11 @@
 package com.somegame.db
 
 import com.somegame.faculty.Faculties
+import com.somegame.faculty.Faculty
 import com.somegame.items.Items
 import com.somegame.items.UserItems
 import com.somegame.user.Users
+import faculty.FixedFaculties
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -24,11 +26,18 @@ class DatabaseConfig(private val dbUrl: String) {
 
     private fun createTables() {
         transaction {
-//            SchemaUtils.drop(Users, Items, UserItems, Faculties)
-            SchemaUtils.create(Users, Items, UserItems, Faculties)
-//            SchemaUtils.create(Users)
-//            SchemaUtils.create(Items)
-//            SchemaUtils.create(UserItems)
+            SchemaUtils.createMissingTablesAndColumns(Users, Items, UserItems, Faculties)
+            addFaculties()
+        }
+    }
+
+    private fun addFaculties() {
+        for (faculty in FixedFaculties.values()) {
+            if (Faculty.findById(faculty.id) == null) {
+                Faculty.new(faculty.id) {
+                    name = faculty.name
+                }
+            }
         }
     }
 }

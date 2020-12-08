@@ -104,6 +104,11 @@ fun User.buyItem(item: Item) {
     }
 }
 
+fun User.awardPointsToUserAndFaculty(amount: Int) {
+    acceptMoney(amount)
+    loadFaculty().givePoints(amount)
+}
+
 class NotEnoughMoneyException(item: Item) : IllegalStateException("Not enough money to buy ${item.publicData()}")
 
 class ItemAlreadyInInventoryException(item: Item) :
