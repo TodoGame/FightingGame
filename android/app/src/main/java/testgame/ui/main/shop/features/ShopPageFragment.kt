@@ -21,11 +21,11 @@ class ShopPageFragment: Fragment() {
         )
         binding.lifecycleOwner = this
         val adapter = ShopRecyclerAdapter(10000, arrayOf(
-                ShopItem("testId1", "Sword", 130),
-                ShopItem("testId2", "Saint granade", 30),
-                ShopItem("testId3", "Hill", 30),
-                ShopItem("testId4", "Bomb", 30),
-                ShopItem("testId5", "Knife", 30)
+                ShopItem("1", "Sword", 130),
+                ShopItem("2", "Saint grenade", 30),
+                ShopItem("3", "Hill", 30),
+                ShopItem("4", "Bomb", 30),
+                ShopItem("5", "Knife", 30)
         ))
         binding.shopListRecyclerView.adapter = adapter
 

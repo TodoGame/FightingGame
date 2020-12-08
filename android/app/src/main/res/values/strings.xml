@@ -24,17 +24,19 @@
     <string name="no">No</string>
 
     <string name="match_mech">MathMech</string>
+    <string name="pm_pu">PmPu</string>
+    <string name="chemistry_fuc">ChemFac</string>
+    <string name="physics_fac">PhysFac</string>
+    <string name="biology_fac">BioFac</string>
 
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="you_will_lose_progress">You will lose your fight progress</string>
     <string name="sure_to_leave_fight">Do you want to leave fight?</string>
     <string name="clicker_image">ClickerImage</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="inventory">Inventory</string>
-    <string name="score">score</string>
+    <string name="score">Score</string>
     <string name="log_out">Log out</string>
     <string name="entrance_activity_name">Entrance</string>
-    <string name="fight_acivity_name">Fight</string>
     <string name="fight_activity_name">Fight</string>
     <string name="main_activity_name">Main</string>
     <string name="user_avatar">User_Avatar</string>
@@ -42,20 +44,22 @@
     <string name="level">Level</string>
     <string name="faculty">Faculty</string>
     <string name="leading_faculty">Leading faculty</string>
-    <string name="tap_on_a_donkey_to_earn_some_scores">tap on a donkey to earn some scores</string>
+    <string name="tap_on_a_donkey_to_earn_some_scores">Tap on a donkey to earn some scores</string>
     <string name="try_to_open_game">Try to open game</string>
     <string name="locations">Locations</string>
     <string name="primary_weapon">Primary weapon</string>
     <string name="skills">Skills</string>
     <string name="time">Time</string>
-    <string name="imageofenemy">ImageOfEnemy</string>
-    <string name="enemyhealth">EnemyHealth</string>
-    <string name="imageofme">ImageOfMe</string>
-    <string name="myhealth">MyHealth</string>
-    <string name="change_language">change language</string>
-    <string name="shopitemimage">ShopItemImage</string>
+    <string name="image_of_enemy">ImageOfEnemy</string>
+    <string name="enemy_health">EnemyHealth</string>
+    <string name="image_of_player">ImageOfMe</string>
+    <string name="player_health">MyHealth</string>
+    <string name="change_language">Change language</string>
+    <string name="shop_item_image">ShopItemImage</string>
     <string name="faculty_score">Faculty score</string>
-    <string name="match_win_congradulation">You won! Congradulations!</string>
+    <string name="match_win_congratulation">You won! Congratulations!</string>
+    <string name="match_defeat_congratulation">You loose! Congratulations!</string>
     <string name="confirm">Confirm</string>
     <string name="fireball">Fireball</string>
+    <string name="choose_faculty">Choose faculty</string>
 </resources>

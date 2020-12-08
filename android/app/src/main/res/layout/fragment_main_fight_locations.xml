@@ -24,9 +24,10 @@
             android:gravity="center"
             android:text="@string/locations"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/rightBackgroundGuideline"
+            app:layout_constraintStart_toStartOf="@+id/leftBackgroundGuideline"
             app:layout_constraintTop_toTopOf="@+id/topBackgroundGuideline" />
 
         <androidx.constraintlayout.widget.Guideline
@@ -34,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.08" />
+            app:layout_constraintGuide_percent="0.09" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/bottomBackgroundGuideline"
@@ -65,73 +66,51 @@
             app:layout_constraintStart_toStartOf="@+id/leftBackgroundGuideline"
             app:layout_constraintTop_toBottomOf="@+id/textView">
 
-            <!--        <include-->
-            <!--            layout="@layout/location_match_button"-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="match_parent"-->
-            <!--            android:textSize="36sp"-->
-            <!--            app:location="@{@string/mm}"-->
-            <!--            app:viewModel="@{viewModel}" />-->
-
             <include
-                android:id="@+id/button3"
+                android:id="@+id/MatMechLocationButton"
                 layout="@layout/item_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/button4"
+                app:layout_constraintBottom_toTopOf="@+id/PmPuLocationButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:viewModel="@{viewModel}"
                 app:locationString="@{@string/match_mech}"/>
 
-<!--            <Button-->
-<!--                android:id="@+id/button3"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="32dp"-->
-<!--                android:layout_marginLeft="32dp"-->
-<!--                android:onClick="@{() -> viewModel.findMatch()}"-->
-<!--                android:text="МатМех"-->
-<!--                app:layout_constraintBottom_toTopOf="@+id/button4"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-            <Button
-                android:id="@+id/button4"
+            <include
+                android:id="@+id/PmPuLocationButton"
+                layout="@layout/item_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ПМ-ПУ"
-                app:layout_constraintBottom_toTopOf="@+id/button5"
-                app:layout_constraintStart_toStartOf="@+id/button3"
-                app:layout_constraintTop_toBottomOf="@+id/button3" />
+                app:layout_constraintBottom_toTopOf="@+id/ChemistryFacultyLocationButton"
+                app:layout_constraintStart_toStartOf="@+id/MatMechLocationButton"
+                app:layout_constraintTop_toBottomOf="@+id/MatMechLocationButton"
+                app:layout_constraintEnd_toEndOf="@+id/MatMechLocationButton"
+                app:locationString="@{@string/pm_pu}"
+                app:viewModel="@{viewModel}" />
 
-            <Button
-                android:id="@+id/button5"
+            <include
+                android:id="@+id/ChemistryFacultyLocationButton"
+                layout="@layout/item_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ФизФак"
-                app:layout_constraintBottom_toTopOf="@+id/button6"
-                app:layout_constraintStart_toStartOf="@+id/button4"
-                app:layout_constraintTop_toBottomOf="@+id/button4" />
+                app:layout_constraintBottom_toTopOf="@+id/PhysicsFacultyLocationButton"
+                app:layout_constraintTop_toBottomOf="@+id/MatMechLocationButton"
+                app:layout_constraintStart_toStartOf="@+id/PmPuLocationButton"
+                app:viewModel="@{viewModel}"
+                app:locationString="@{@string/chemistry_fuc}"/>
 
-            <Button
-                android:id="@+id/button6"
+            <include
+                android:id="@+id/PhysicsFacultyLocationButton"
+                layout="@layout/item_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ХимФак"
-                app:layout_constraintBottom_toTopOf="@+id/button7"
-                app:layout_constraintStart_toStartOf="@+id/button5"
-                app:layout_constraintTop_toBottomOf="@+id/button5" />
-
-            <Button
-                android:id="@+id/button7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Button"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/button6"
-                app:layout_constraintTop_toBottomOf="@+id/button6" />
+                app:layout_constraintTop_toBottomOf="@+id/ChemistryFacultyLocationButton"
+                app:layout_constraintStart_toStartOf="@+id/ChemistryFacultyLocationButton"
+                app:viewModel="@{viewModel}"
+                app:locationString="@{@string/physics_fac}"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

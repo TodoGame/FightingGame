@@ -2,13 +2,18 @@ package testgame.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.features.*
 import io.ktor.client.features.json.GsonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.websocket.WebSockets
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.*
 import io.ktor.http.HttpStatusCode
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.util.*
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import security.UserRegisterInput
+import java.io.IOException
 import java.lang.IllegalStateException
 import java.net.UnknownHostException
 
@@ -42,10 +47,14 @@ abstract class NetworkService {
                 responseIsSuccessful(response) -> return response
                 response.status == HttpStatusCode.BadRequest -> throw BadRequestException("Bad request")
                 response.status == HttpStatusCode.Unauthorized -> throw UnauthorisedException("Unauthorized")
-                else -> throw UnknownNetworkException("Unknown exception")
+                else -> {
+                    throw UnknownNetworkException("Unknown exception. ${response.readText()}")
+                }
             }
         } catch (exception: UnknownHostException) {
             throw NoResponseException("Enable to connect ot server")
+        } catch (exception: IOException) {
+            throw NoResponseException("Check your Internet connection and try again")
         }
     }
 

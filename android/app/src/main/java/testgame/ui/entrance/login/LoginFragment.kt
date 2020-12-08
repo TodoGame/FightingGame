@@ -17,6 +17,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentEntranceLoginBinding
+import io.ktor.util.*
 //import com.example.testgame.ui.entrance.login.LoginFragmentArgs
 //import com.example.testgame.ui.entrance.login.LoginFragmentDirections
 import testgame.activities.EntranceActivity
@@ -26,6 +27,7 @@ class LoginFragment : Fragment() {
 
     private lateinit var viewModel: LoginViewModel
 
+    @KtorExperimentalAPI
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,7 +58,7 @@ class LoginFragment : Fragment() {
             }
         }
 
-        binding.usernameInput.setOnEditorActionListener { _: TextView, actionId: Int, _: KeyEvent ->
+        binding.usernameInput.setOnEditorActionListener { _: TextView, actionId: Int, _: KeyEvent? ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 binding.passwordInput.requestFocus()
                 binding.passwordInput.isCursorVisible = true
@@ -65,7 +67,7 @@ class LoginFragment : Fragment() {
             return@setOnEditorActionListener false
         }
 
-        binding.passwordInput.setOnEditorActionListener { _: TextView, actionId: Int, _: KeyEvent ->
+        binding.passwordInput.setOnEditorActionListener { _: TextView, actionId: Int, _: KeyEvent? ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.logIn()
                 return@setOnEditorActionListener true
@@ -74,24 +76,21 @@ class LoginFragment : Fragment() {
         }
 
         viewModel.usernameInputErrorHint.observe(
-            viewLifecycleOwner,
-            Observer { hint ->
+            viewLifecycleOwner, { hint ->
                 binding.usernameInputLayout.error = hint
                 binding.usernameInput.error = hint
             }
         )
 
         viewModel.passwordInputErrorHint.observe(
-            viewLifecycleOwner,
-            Observer { hint ->
+            viewLifecycleOwner, { hint ->
                 binding.passwordInputLayout.error = hint
                 binding.passwordInput.error = hint
             }
         )
 
         viewModel.errorIsCalled.observe(
-            viewLifecycleOwner,
-            Observer { isCalled ->
+            viewLifecycleOwner, { isCalled ->
                 if (isCalled) {
                     val errorString = viewModel.errorString
                     Toast.makeText(this.activity, errorString, Toast.LENGTH_SHORT).show()
@@ -101,11 +100,9 @@ class LoginFragment : Fragment() {
         )
 
         viewModel.loginCompleted.observe(
-            viewLifecycleOwner,
-            Observer { isCompleted ->
+            viewLifecycleOwner, { isCompleted ->
                 if (isCompleted) {
                     viewModel.onLoginConfirm()
-                    Toast.makeText(this.activity, "FUCK", Toast.LENGTH_SHORT).show()
                     setUpAppData()
                     val intent = Intent(activity, EntranceActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
@@ -115,7 +112,7 @@ class LoginFragment : Fragment() {
             }
         )
 
-        viewModel.signUpCalled.observe(viewLifecycleOwner, Observer { isCalled ->
+        viewModel.signUpCalled.observe(viewLifecycleOwner, { isCalled ->
                 if (isCalled) {
                     viewModel.onSignUpConfirm()
                     val action = LoginFragmentDirections.actionLoginFragmentToRegisterFragment()

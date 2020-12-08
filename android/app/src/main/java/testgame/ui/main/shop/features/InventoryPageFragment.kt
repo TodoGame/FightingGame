@@ -10,9 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.testgame.R
 import com.example.testgame.databinding.PageMainShopInventoryBinding
-import testgame.ui.main.InventoryItemsAdapter
-import testgame.ui.main.fight.FightViewModel
-import testgame.ui.main.home.HomeViewModel
+import testgame.ui.main.inventory.InventoryRecyclerAdapter
 import testgame.ui.main.shop.ShopViewModel
 
 class InventoryPageFragment: Fragment() {

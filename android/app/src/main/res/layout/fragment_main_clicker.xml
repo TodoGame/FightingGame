@@ -31,20 +31,28 @@
             android:id="@+id/noInternetConnectionTextView"
             style="@style/textView.Primary"
             android:layout_width="0dp"
-            android:layout_height="61dp"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
             android:text="@string/no_internet_connection"
-            app:autoSizeTextType="uniform"
+            android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tapInstractionTextView"
+            style="@style/textView.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="@string/tap_on_a_donkey_to_earn_some_scores"
-            app:layout_constraintBottom_toTopOf="@+id/topGuidelineForPicture"
+            android:gravity="center"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="@+id/noInternetConnectionTextView"
             app:layout_constraintStart_toStartOf="@+id/noInternetConnectionTextView"
             app:layout_constraintTop_toBottomOf="@+id/noInternetConnectionTextView" />
@@ -64,16 +72,32 @@
         </ImageView>
 
         <TextView
+            android:id="@+id/scoreHeaderTextView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="@string/score"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/scoreTextView"
+            app:layout_constraintEnd_toStartOf="@+id/scoreTextView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/image"
+            app:layout_constraintTop_toTopOf="@+id/scoreTextView" />
+
+        <TextView
             android:id="@+id/scoreTextView"
+            style="@style/textView.Primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:gravity="center_horizontal|center_vertical"
             android:text="@={viewModel.score}"
             app:autoSizeTextType="uniform"
+            android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/enterGameActivity"
             app:layout_constraintEnd_toEndOf="@+id/image"
-            app:layout_constraintStart_toStartOf="@+id/image"
-            app:layout_constraintTop_toTopOf="@+id/horizontalGuidelineForPicture"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/scoreHeaderTextView"
+            app:layout_constraintTop_toTopOf="@+id/bottomGuidelineForPicture"
             tools:text="179000" />
 
         <Button

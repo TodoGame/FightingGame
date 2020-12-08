@@ -21,18 +21,14 @@ object MatchApi : NetworkService() {
 
     @KtorExperimentalAPI
     suspend fun getWebSocketTicket(token: String): WebSocketTicket {
-        try {
-            val response = client.get<HttpResponse> {
+        val response = getSuccessfulResponseOrException {
+            client.get {
                 url("${BASE_HTTP_URL}$matchWebSocketTicketEndpoint")
                 header(AUTHORIZATION_HEADER_NAME, token)
             }
-            val stringResponse = response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: ""
-            return Json.decodeFromString(stringResponse)
-        } catch (exception: IOException) {
-            throw GetWebSocketTicketException("Unexpected end of server stream")
-        } catch (exception: Exception) {
-            throw GetWebSocketTicketException(exception.message ?: "Receiving ticket error")
         }
+        val stringResponse = response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: ""
+        return Json.decodeFromString(stringResponse)
     }
 
     @KtorExperimentalAPI
@@ -42,7 +38,7 @@ object MatchApi : NetworkService() {
             onMatchStart: (players: Set<String>) -> Unit,
             onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
             onPlayerAction: (attacker: String, target: String) -> Unit,
-            onMatchEnd: suspend (winner: String) -> Unit
+            onMatchEnd: (winner: String) -> Unit
     ) {
         client.ws(
                 method = HttpMethod.Get,
@@ -66,28 +62,24 @@ object MatchApi : NetworkService() {
         }
     }
 
-    private suspend fun readMessage(
+    private fun readMessage(
             message: Message,
             onMatchStart: (players: Set<String>) -> Unit,
             onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
             onPlayerAction: (attacker: String, target: String) -> Unit,
-            onMatchEnd: suspend (winner: String) -> Unit
+            onMatchEnd: (winner: String) -> Unit
     ) {
         when (message) {
             is MatchStarted -> {
-                println("MATCH STARTED")
                 onMatchStart(message.players)
             }
             is TurnStarted -> {
-                println("TURN STARTED")
                 onTurnStart(message.matchSnapshot)
             }
             is PlayerAction -> {
-                println("PLAYER ACTION")
                 onPlayerAction(message.attacker, message.target)
             }
             is MatchEnded -> {
-                println("MATCH ENDED")
                 onMatchEnd(message.winner)
             }
         }

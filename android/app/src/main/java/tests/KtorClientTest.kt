@@ -1,5 +1,6 @@
 package tests
 
+import io.ktor.client.statement.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.GlobalScope
@@ -26,21 +27,27 @@ fun main() {
     runBlocking {
         var globalToken = ""
 //        val myUsername = kotlin.random.Random.nextInt(0, 1000).toString()
-        val myUsername = "TestUsername3"
+        val myUsername = "TestUsername5"
+        val myFacultyId = 1
         username = myUsername
         try {
-            val userRegisterInput = security.UserRegisterInput(
-                    myUsername,
-                    "testPassword",
-                    "testUsername"
-            )
-            val response = SecurityApi.register(userRegisterInput)
-
-//            val userLoginInput = security.UserLoginInput(
-//                    myUsername, "testPassword"
+//            val userRegisterInput = security.UserRegisterInput(
+//                    myUsername,
+//                    "testPassword",
+//                    "testUsername",
+//                    myFacultyId
 //            )
-//            val response = SecurityApi.login(userLoginInput)
-            val token = response.headers[AUTHORIZATION_HEADER_NAME]
+//            var response: HttpResponse? = null
+//            try {
+//                response = SecurityApi.register(userRegisterInput)
+//            } catch (e: NetworkService.UnknownNetworkException) {
+//                println(e.message)
+//            }
+            val userLoginInput = security.UserLoginInput(
+                    myUsername, "testPassword"
+            )
+            val response = SecurityApi.login(userLoginInput)
+            val token = response!!.headers[AUTHORIZATION_HEADER_NAME]
             if (token != null) {
                 globalToken = token
                 println("Token is: $token")
@@ -127,12 +134,15 @@ private fun onPlayerAction(attackerUsername: String, targetUsername: String) {
             "Hitted ${GameApp.PLAYER_ACTION_DAMAGE} health")
 }
 
-private suspend fun onMatchEnded(winner: String) {
+private fun onMatchEnded(winner: String) {
     callInfo("Match ended")
     match.state = Match.State.NO_MATCH
-    match.webSocketSession?.close()
-            ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+    GlobalScope.launch {
+        match.webSocketSession?.close()
+                ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+    }
     match.winner = winner
+    exitProcess(0)
 }
 
 private fun callInfo(info: String) {

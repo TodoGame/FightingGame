@@ -11,11 +11,13 @@ import kotlinx.serialization.encodeToString
 import match.MatchSnapshot
 import match.Message
 import match.PlayerAction
+import testgame.data.FightAction
 import testgame.data.GameApp
 import testgame.data.Match
 import testgame.data.MatchPlayer
 import testgame.network.NetworkService
 import testgame.network.MatchApi
+import testgame.ui.main.inventory.InventoryItem
 import java.lang.NullPointerException
 import java.net.SocketTimeoutException
 
@@ -32,26 +34,17 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
     /* Block for
      * Shared
      * data and functions */
-    private var _toastInfo = MutableLiveData<String>()
-    val toastInfo: LiveData<String>
-        get() = _toastInfo
-
-    private val _infoDisplayIsCalled = MutableLiveData(false)
-    val infoDisplayIsCalled: LiveData<Boolean>
-        get() = _infoDisplayIsCalled
+    private var _logInfo = MutableLiveData<String>()
+    val logInfo: LiveData<String>
+        get() = _logInfo
 
     private fun callInfo(message: String) {
-        _toastInfo.postValue(message)
-        _infoDisplayIsCalled.value = true
+        _logInfo.postValue(message)
     }
 
     private val _matchState = MutableLiveData(Match.State.SEARCHING)
     val matchState: LiveData<Match.State>
         get() = _matchState
-
-    fun onErrorDisplayed() {
-        _infoDisplayIsCalled.value = false
-    }
 
     /* Block for
      * LocationsFragment
@@ -62,7 +55,7 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
 
     @KtorExperimentalAPI
     fun findMatch(location: String) {
-        _chosenLocation.value = location
+        _chosenLocation.postValue(location)
         coroutineScope.launch {
             try {
                 val webSocketTicket = MatchApi.getWebSocketTicket(app.user.authenticationToken)
@@ -77,6 +70,8 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
                         ::onPlayerAction,
                         ::onMatchEnd
                 )
+            } catch (exception: NetworkService.NoResponseException) {
+                exception.message?.let { callInfo(it) }
             } catch (exception: NullPointerException) {
                 callInfo("Null Pointer exception")
             } catch (exception: SocketTimeoutException) {
@@ -92,7 +87,7 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
     }
 
     private fun onTurnStart(matchSnapshot: MatchSnapshot) {
-        println("Turn started ${matchSnapshot.players}")
+        _logInfo.postValue("TurnStarted")
         val players = matchSnapshot.players
         val playerSnapshot = players.find { it.username == app.user.username }
                 ?: throw GameApp.NullAppDataException("Null playerSnapshot")
@@ -106,35 +101,30 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
             match.enemy?.let { it.currentHealth = enemySnapshot.health }
         }
         if (playerSnapshot.isActive) {
-            match.state = Match.State.MY_TURN
             _matchState.value = Match.State.MY_TURN
         } else {
-            match.state = Match.State.ENEMY_TURN
             _matchState.value = Match.State.ENEMY_TURN
         }
     }
 
     private fun onPlayerAction(attackerUsername: String, targetUsername: String) {
-        println("OnPlayerAction Turn started $attackerUsername $targetUsername")
         val attacker = match.findPlayerByUsername(attackerUsername)
         val target = match.findPlayerByUsername(targetUsername)
         if (attackerUsername == match.player?.username) {
-            _attackingPlayer.value = AttackingPlayer.PLAYER
+            _fightAction.value = FightAction.PLAYER_ATTACK
         } else {
-            _attackingPlayer.value = AttackingPlayer.ENEMY
+            _fightAction.value = FightAction.ENEMY_ATTACK
         }
         target.currentHealth -= GameApp.PLAYER_ACTION_DAMAGE
-        _action.value = "${attacker.username} hit ${target.username} \n " +
-                "Hitted ${GameApp.PLAYER_ACTION_DAMAGE} health"
-        println("Action value: ${action.value}")
-        println("Attacking player: ${attackingPlayer.value}")
+        _action.postValue("${attacker.username} hit ${target.username} \n " +
+                "${GameApp.PLAYER_ACTION_DAMAGE} health")
     }
 
     private fun onMatchEnd(winner: String) {
-        println("Match ended")
         match.state = Match.State.NO_MATCH
         _matchState.value = Match.State.NO_MATCH
         match.winner = winner
+        callInfo("Match ended. Winner : $winner")
     }
 
     fun confirmMatchEntrance() {
@@ -157,20 +147,24 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
     val playerWantToEscape: LiveData<Boolean>
         get() = _playerWantToEscape
 
-    private var _attackingPlayer = MutableLiveData(AttackingPlayer.IDLE)
-    val attackingPlayer: LiveData<AttackingPlayer>
-        get() = _attackingPlayer
+    private var _fightAction = MutableLiveData<FightAction>()
+    val fightAction: LiveData<FightAction>
+        get() = _fightAction
+
+    private var _inventoryItems = MutableLiveData(listOf(
+            InventoryItem("1", "Bubble"),
+            InventoryItem("2", "Aid kit"),
+            InventoryItem("3", "Gun"),
+            InventoryItem("4", "Banana"),
+            InventoryItem("5", "Card"),
+    ))
+    val inventoryItems: LiveData<List<InventoryItem>>
+        get() = _inventoryItems
 
     enum class FightMenuOption() {
         ATTACK,
         INVENTORY,
         SKILLS
-    }
-
-    enum class AttackingPlayer() {
-        IDLE,
-        PLAYER,
-        ENEMY
     }
 
     fun attackWithPrimaryWeapon() {
@@ -183,6 +177,7 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
                 match.webSocketSession?.send(action)
                         ?: throw GameApp.NullAppDataException("Null match webSocketSession")
             }
+            _fightAction.postValue(FightAction.PLAYER_ATTACK)
         } catch (exception: NullPointerException) {
             callInfo("Null pointer exception")
         }
@@ -194,6 +189,10 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
 
     fun defend() {
 
+    }
+
+    fun onActionHandled() {
+        _fightAction.postValue(null)
     }
 
     fun selectAttackOption() {

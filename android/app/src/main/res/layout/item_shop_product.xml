@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_bottom_nav_shop"
-        android:contentDescription="@string/shopitemimage" />
+        android:contentDescription="@string/shop_item_image" />
 
     <TextView
         android:id="@+id/facultyNameTextView"

@@ -15,6 +15,7 @@ import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainClickerBinding
 import testgame.data.GameApp
 import testgame.activities.MainActivity
+import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 class ClickerFragment : Fragment() {
@@ -40,7 +41,7 @@ class ClickerFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
-        viewModel.isImageClicked.observe(viewLifecycleOwner, Observer { isClicked ->
+        viewModel.isImageClicked.observe(viewLifecycleOwner, { isClicked ->
             if (isClicked) {
                 val image = binding.image
                 val bounceAnimation = AnimationUtils.loadAnimation(activity, R.anim.bounce_animation)
@@ -50,11 +51,13 @@ class ClickerFragment : Fragment() {
             }
         })
 
-        viewModel.isStartActivityClicked.observe(viewLifecycleOwner, Observer { isClicked ->
+        viewModel.isStartActivityClicked.observe(viewLifecycleOwner, { isClicked ->
             try {
                 if (isClicked && gameApp.isInternetAvailable(context)) {
                     val intent = Intent(activity, MainActivity::class.java)
                     startActivity(intent)
+                } else {
+                    Toast.makeText(this.activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             } catch (exception: IllegalArgumentException) {
                 Toast.makeText(this.activity, "Something went wrong", Toast.LENGTH_SHORT).show()

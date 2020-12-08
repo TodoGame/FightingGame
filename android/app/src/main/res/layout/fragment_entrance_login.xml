@@ -32,6 +32,9 @@
                 android:hint="@string/username"
                 android:text="@={viewModel.username}"
                 style="@style/textView.Entrance"
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -56,6 +59,9 @@
                 android:hint="@string/password"
                 android:text="@={viewModel.password}"
                 style="@style/textView.Entrance"
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
                 app:layout_constraintTop_toTopOf="parent" />

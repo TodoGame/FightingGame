@@ -15,7 +15,7 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
+            android:id="@+id/header_end_guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -25,8 +25,8 @@
             android:id="@+id/user_info_header"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/background_home_header"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
+            android:background="@drawable/background_home_round_corners"
+            app:layout_constraintBottom_toTopOf="@+id/header_end_guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +55,7 @@
                 app:layout_constraintGuide_percent="0.43" />
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/roghtHeaderGuideline"
+                android:id="@+id/rightHeaderGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -109,14 +109,14 @@
                 app:layout_constraintStart_toEndOf="@+id/levelHeaderTextView"
                 tools:text="7" />
 
-            <testgame.ui.main.home.ProgressBar
+            <testgame.ui.main.ProgressBar
                 android:id="@+id/experienceProgressBar"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 app:layout_constraintBottom_toBottomOf="@+id/levelTextView"
-                app:layout_constraintEnd_toStartOf="@+id/roghtHeaderGuideline"
+                app:layout_constraintEnd_toStartOf="@+id/rightHeaderGuideline"
                 app:layout_constraintStart_toEndOf="@+id/levelTextView"
                 app:layout_constraintTop_toTopOf="@+id/levelTextView"
                 app:layout_constraintVertical_bias="0.0" />
@@ -172,14 +172,15 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/leadingFacultyLayout"
+            android:id="@+id/newsLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@drawable/background_home_round_corners"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="@+id/header_end_guideline"
             app:layout_constraintVertical_bias="1.0">
 
             <androidx.constraintlayout.widget.Guideline
@@ -188,6 +189,20 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.15" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/left_border_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/round_border_radius_dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/right_border_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="@dimen/round_border_radius_dp" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/facultiesInfoBottomGuideline"
@@ -226,9 +241,11 @@
                 android:layout_height="0dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@+id/facultiesInfoBottomGuideline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/facultiesInfoTopGuideline" />
+                app:layout_constraintEnd_toStartOf="@+id/right_border_guideline"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/left_border_guideline"
+                app:layout_constraintTop_toTopOf="@+id/facultiesInfoTopGuideline"
+                app:layout_constraintVertical_bias="1.0" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/newsRecyclerView"
@@ -236,8 +253,8 @@
                 android:layout_height="0dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/right_border_guideline"
+                app:layout_constraintStart_toStartOf="@+id/left_border_guideline"
                 app:layout_constraintTop_toTopOf="@+id/facultiesInfoBottomGuideline" />
 
             <Button

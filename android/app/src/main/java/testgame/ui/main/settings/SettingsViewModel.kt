@@ -3,6 +3,7 @@ package testgame.ui.main.settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import org.intellij.lang.annotations.Language
 
 class SettingsViewModel : ViewModel() {
 

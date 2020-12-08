@@ -65,7 +65,7 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$version_timber"
 
     // serialization
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
 
     // preferences (for data storage)
     implementation 'androidx.preference:preference-ktx:1.1.1'
@@ -74,7 +74,6 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.2.5"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     // navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.1'

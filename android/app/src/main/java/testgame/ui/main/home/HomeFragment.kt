@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainHomeBinding
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.data.*
 import testgame.ui.main.shop.features.ShopItem
 import testgame.ui.main.shop.features.ShopRecyclerAdapter
 
@@ -42,6 +40,7 @@ class HomeFragment : Fragment() {
             if (isCalled) {
                 val progressBar = binding.experienceProgressBar
                 progressBar.update(100, 40)
+                progressBar.invalidate()
             }
         })
 

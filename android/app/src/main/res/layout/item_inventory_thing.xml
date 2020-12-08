@@ -7,35 +7,29 @@
     <data>
         <variable
             name="inventoryItem"
-            type="testgame.ui.main.shop.features.InventoryItem" />
+            type="testgame.ui.inventory.InventoryItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_news">
 
         <TextView
             android:id="@+id/inventoryItemTextView"
             android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:gravity="center_vertical"
-            android:text="testText"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:text="@{inventoryItem.name}"
+            tools:text="InventoryItem"
+            style="@style/textView"
+            android:textSize="40sp"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/inventoryItemImageView"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/inventoryItemImageView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="InventoryItemText"
-            android:src="@drawable/brick_wall"
-            app:layout_constraintBottom_toBottomOf="@+id/inventoryItemTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/inventoryItemTextView"
-            app:layout_constraintTop_toTopOf="@id/inventoryItemTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

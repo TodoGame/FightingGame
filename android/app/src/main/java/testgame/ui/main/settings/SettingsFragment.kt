@@ -1,7 +1,9 @@
 package testgame.ui.main.settings
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.drawable.AnimationDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +15,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainSettingsBinding
+import kotlinx.coroutines.*
 import testgame.activities.EntranceActivity
+import testgame.data.GameApp
+import testgame.data.Language
+import java.util.*
 
 class SettingsFragment : Fragment() {
 
     private lateinit var viewModel: SettingsViewModel
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,9 +45,42 @@ class SettingsFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
+        val languageOptionDialogBuilder = activity?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+        val languages = Language.values()
+        val languagesOptionDialog = languageOptionDialogBuilder?.setTitle("Choose your faculty")
+                ?.setItems(languages.map { it.languageName }.toTypedArray()) { dialog, which ->
+                    when (languages[which]) {
+                        Language.RUSSIAN -> {
+                            val configuration = Configuration(context?.resources?.configuration)
+                            configuration.locale = Locale("ru")
+                            context?.resources?.updateConfiguration(configuration, requireContext().resources.displayMetrics)
+                        }
+                        Language.ENGLISH -> {
+                            val configuration = Configuration(context?.resources?.configuration)
+                            configuration.locale = Locale.ENGLISH
+                            context?.resources?.updateConfiguration(configuration, requireContext().resources.displayMetrics)
+                        }
+                    }
+                    dialog.cancel()
+                }
+        binding.changeLanguageButton.setOnClickListener {
+            languagesOptionDialog?.show()
+        }
+
         val warriorImage = binding.warriorImage
         val idleWarrior = warriorImage.drawable as AnimationDrawable
         idleWarrior.start()
+
+        binding.changeAnimationButton.setOnClickListener {
+            coroutineScope.launch {
+                idleWarrior.stop()
+                warriorImage.setImageResource(R.drawable.animation_warrior_attack)
+                (warriorImage.drawable as AnimationDrawable).start()
+                delay(GameApp.ATTACK_ANIMATION_PLAY_DELAY)
+                warriorImage.setImageResource(R.drawable.animation_warrior_idle)
+                (warriorImage.drawable as AnimationDrawable).start()
+            }
+        }
 
         viewModel.isLogOutPressed.observe(viewLifecycleOwner, Observer { isPressed ->
             if (isPressed) {
@@ -49,11 +90,17 @@ class SettingsFragment : Fragment() {
                     remove(getString(R.string.saved_username_key))
                     apply()
                 }
+                viewModel.onLogOutConfirmed()
                 val intent = Intent(activity, EntranceActivity::class.java)
                 startActivity(intent)
             }
         })
 
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineScope.cancel()
     }
 }

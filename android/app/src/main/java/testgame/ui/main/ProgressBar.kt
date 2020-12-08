@@ -1,4 +1,4 @@
-package testgame.ui.main.home
+package testgame.ui.main
 
 import android.content.Context
 import android.graphics.Canvas

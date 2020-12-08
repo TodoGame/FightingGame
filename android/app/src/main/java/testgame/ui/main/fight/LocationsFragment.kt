@@ -9,11 +9,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainFightLocationsBinding
 import testgame.activities.EntranceActivity
-import testgame.activities.FightActivity
+import testgame.activities.MainActivity
 import testgame.data.GameApp
 import testgame.data.Match
 import timber.log.Timber
@@ -43,23 +44,18 @@ class LocationsFragment : Fragment() {
         } else {
             val app: GameApp = this.activity?.application as GameApp
             viewModelFactory = FightViewModelFactory(app, token)
-            viewModel = ViewModelProvider(this, viewModelFactory).get(FightViewModel::class.java)
+            viewModel = ViewModelProvider(requireActivity(), viewModelFactory).get(FightViewModel::class.java)
 
             binding.viewModel = viewModel
 
             binding.lifecycleOwner = this
 
-            viewModel.infoDisplayIsCalled.observe(viewLifecycleOwner, { isCalled ->
-                    if (isCalled) {
-                        val errorString = viewModel.toastInfo
-                        Timber.i(errorString.value)
-                        viewModel.onErrorDisplayed()
-                    }
-                }
-            )
+            viewModel.logInfo.observe(viewLifecycleOwner,  Observer {
+                Timber.i(viewModel.logInfo.value)
+            })
             viewModel.chosenLocation.observe(viewLifecycleOwner, { location ->
                 if (location != null) {
-                    val locationModule = binding.button3.progressBar
+                    val locationModule = binding.MatMechLocationButton.progressBar
                     locationModule.visibility = View.VISIBLE
                 }
             })
@@ -68,10 +64,14 @@ class LocationsFragment : Fragment() {
                 if (state == Match.State.STARTED) {
                     Timber.i("Accepted match found")
                     viewModel.confirmMatchEntrance()
-                    val locationModule = binding.button3.progressBar
+                    val locationModule = binding.MatMechLocationButton.progressBar
                     locationModule.visibility = View.INVISIBLE
-                    val intent = Intent(activity, FightActivity::class.java)
-                    startActivity(intent)
+                    val activityMediaPlayer = (activity as MainActivity).mediaPlayer
+                    if(activityMediaPlayer?.isPlaying == true) {
+                        activityMediaPlayer.pause()
+                    }
+                    val action = LocationsFragmentDirections.actionLocationsFragmentToFightFragment()
+                    NavHostFragment.findNavController(this).navigate(action)
                 } else if (state == Match.State.SEARCHING) {
                     Timber.i("Started searching match")
                 }
@@ -79,5 +79,13 @@ class LocationsFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val activityMediaPlayer = (activity as MainActivity).mediaPlayer
+        if(activityMediaPlayer?.isPlaying == false) {
+            activityMediaPlayer.start()
+        }
     }
 }

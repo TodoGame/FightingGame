@@ -3,7 +3,7 @@ package testgame.ui.main.shop
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import testgame.ui.main.shop.features.InventoryItem
+import testgame.ui.main.inventory.InventoryItem
 import testgame.ui.main.shop.features.ShopItem
 
 class ShopViewModel : ViewModel() {

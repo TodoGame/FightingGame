@@ -3,6 +3,7 @@ package testgame.activities
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
@@ -42,6 +43,18 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
             val navController: NavController = navHostFragment.navController
             bottomNavigationView.setupWithNavController(navController)
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                when (destination.id) {
+                    R.id.fightFragment -> {
+                        bottomNavigationView.visibility = View.GONE
+                    }
+                    else -> {
+                        if (bottomNavigationView.visibility == View.GONE) {
+                            bottomNavigationView.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
             setMusic()
         }
     }
@@ -72,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         if (winner != null && winner == gameApp.user.username) {
             val builder = AlertDialog.Builder(this)
             val dialog = builder.setTitle(R.string.sure_to_leave_fight)
-                    .setMessage(R.string.match_win_congradulation)
+                    .setMessage(R.string.match_win_congratulation)
                     .setPositiveButton(R.string.confirm) { dialog, _ ->
                         dialog.cancel()
                     }.create()
@@ -93,6 +106,15 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer = MediaPlayer.create(this, R.raw.main_activity_music)
         mediaPlayer?.isLooping = true
         mediaPlayer?.start()
+    }
+
+    fun buildOnEscapeDialog():  AlertDialog.Builder {
+        val builder = AlertDialog.Builder(this)
+        return builder.setTitle(R.string.sure_to_leave_fight)
+                .setMessage(R.string.you_will_lose_progress)
+                .setNegativeButton(R.string.no) { dialog, _ ->
+                    dialog.cancel()
+                }
     }
 
     private fun getUserInformation() {

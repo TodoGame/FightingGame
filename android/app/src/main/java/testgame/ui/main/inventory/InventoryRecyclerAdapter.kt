@@ -1,4 +1,4 @@
-package testgame.ui.main.shop.features
+package testgame.ui.main.inventory
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
