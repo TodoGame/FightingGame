@@ -17,7 +17,7 @@ import testgame.data.Match
 import testgame.data.MatchPlayer
 import testgame.network.NetworkService
 import testgame.network.MatchApi
-import testgame.ui.main.inventory.InventoryItem
+import testgame.ui.main.featuresInventory.InventoryItem
 import java.lang.NullPointerException
 import java.net.SocketTimeoutException
 
@@ -62,7 +62,7 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
                 callInfo("Got ticket")
                 match.state = Match.State.SEARCHING
                 _matchState.postValue(Match.State.SEARCHING)
-                MatchApi.connectMatchWebSocket(
+                MatchApi.connectToMatchWebSocket(
                         match,
                         webSocketTicket,
                         ::onMatchStart,
@@ -152,11 +152,11 @@ class FightViewModel(val app: GameApp, val token: String) : ViewModel() {
         get() = _fightAction
 
     private var _inventoryItems = MutableLiveData(listOf(
-            InventoryItem("1", "Bubble"),
-            InventoryItem("2", "Aid kit"),
-            InventoryItem("3", "Gun"),
-            InventoryItem("4", "Banana"),
-            InventoryItem("5", "Card"),
+            InventoryItem(1, "Bubble"),
+            InventoryItem(2, "Aid kit"),
+            InventoryItem(3, "Gun"),
+            InventoryItem(4, "Banana"),
+            InventoryItem(5, "Card"),
     ))
     val inventoryItems: LiveData<List<InventoryItem>>
         get() = _inventoryItems

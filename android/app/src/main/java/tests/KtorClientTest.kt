@@ -1,6 +1,5 @@
 package tests
 
-import io.ktor.client.statement.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.GlobalScope
@@ -60,7 +59,7 @@ fun main() {
 
         val ticket = MatchApi.getWebSocketTicket(globalToken)
         GlobalScope.launch {
-            MatchApi.connectMatchWebSocket(
+            MatchApi.connectToMatchWebSocket(
                     match,
                     ticket,
                     ::onMatchStarted,

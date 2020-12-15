@@ -1,6 +1,5 @@
 package testgame.ui.main.home
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,13 +9,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainHomeBinding
-import testgame.ui.main.shop.features.ShopItem
-import testgame.ui.main.shop.features.ShopRecyclerAdapter
+import io.ktor.util.*
+import testgame.ui.main.featuresNews.NewsItemListener
+import testgame.ui.main.featuresNews.NewsRecyclerAdapter
+import timber.log.Timber
 
 class HomeFragment : Fragment() {
 
     private lateinit var viewModel: HomeViewModel
 
+    @KtorExperimentalAPI
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +37,9 @@ class HomeFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
+//        viewModel.getUserData()
+//        viewModel.getLeadingFacultyData()
+//        viewModel.makeSubscriptions()
 
         viewModel.testIsCalled.observe(viewLifecycleOwner, { isCalled ->
             if (isCalled) {
@@ -44,14 +49,16 @@ class HomeFragment : Fragment() {
             }
         })
 
-        val adapter = ShopRecyclerAdapter(10000, arrayOf(
-                ShopItem("testId1", "Sword", 130),
-                ShopItem("testId2", "Saint granade", 30),
-                ShopItem("testId3", "Hill", 30),
-                ShopItem("testId4", "Bomb", 30),
-                ShopItem("testId5", "Knife", 30)
-        ))
+        val adapter = NewsRecyclerAdapter(NewsItemListener {
+            itemId -> Timber.i("Inventory item with $itemId was clicked")
+        })
         binding.newsRecyclerView.adapter = adapter
+
+        viewModel.newsItems.observe(viewLifecycleOwner, {
+            it?.let {
+                adapter.submitList(it)
+            }
+        })
 
         return binding.root
     }

@@ -7,13 +7,33 @@
     <data>
         <variable
             name="inventoryItem"
-            type="testgame.ui.inventory.InventoryItem" />
+            type="testgame.ui.main.featuresInventory.InventoryItem" />
+        <variable
+            name="clickListener"
+            type="testgame.ui.main.featuresInventory.InventoryItemListener"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_news">
+        android:background="@drawable/background_news"
+        android:onClick="@{() -> clickListener.onClick(inventoryItem)}">
+
+        <ImageView
+            android:id="@+id/inventoryItemImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:scaleType="fitCenter"
+            android:scaleX="2"
+            android:scaleY="2"
+            app:srcCompat="@drawable/banana"
+            android:foregroundGravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/shop_item_image" />
 
         <TextView
             android:id="@+id/inventoryItemTextView"
@@ -21,15 +41,13 @@
             android:layout_height="60dp"
             android:gravity="center"
             android:text="@{inventoryItem.name}"
-            tools:text="InventoryItem"
-            style="@style/textView"
-            android:textSize="40sp"
             android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/inventoryItemImageView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="InventoryItem" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

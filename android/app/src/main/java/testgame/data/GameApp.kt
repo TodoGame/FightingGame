@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.multidex.MultiDexApplication
+import com.example.testgame.R
 import io.ktor.client.features.websocket.DefaultClientWebSocketSession
 import kotlinx.serialization.json.Json
 import timber.log.Timber
@@ -12,7 +13,7 @@ import kotlin.IllegalArgumentException
 
 class GameApp : MultiDexApplication() {
 
-    val user = User
+    var user = User
 
     companion object {
         const val PLAYER_ACTION_DAMAGE = 5
@@ -55,6 +56,16 @@ class GameApp : MultiDexApplication() {
             }
         }
         return result
+    }
+
+    fun getItemImageIdFromItemId(id: Int) : Int {
+        return when (id) {
+            1 -> R.drawable.club
+            2 -> R.drawable.sword
+            3 -> R.drawable.banana
+            4 -> R.drawable.dice
+            else -> 0
+        }
     }
 
     class NullAppDataException(message: String) : IllegalStateException(message)

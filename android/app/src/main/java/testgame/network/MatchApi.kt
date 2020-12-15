@@ -32,7 +32,7 @@ object MatchApi : NetworkService() {
     }
 
     @KtorExperimentalAPI
-    suspend fun connectMatchWebSocket(
+    suspend fun connectToMatchWebSocket(
             match: Match,
             ticket: WebSocketTicket,
             onMatchStart: (players: Set<String>) -> Unit,
@@ -71,19 +71,21 @@ object MatchApi : NetworkService() {
     ) {
         when (message) {
             is MatchStarted -> {
+                println("MatchStarted")
                 onMatchStart(message.players)
             }
             is TurnStarted -> {
+                println("TurnStarted")
                 onTurnStart(message.matchSnapshot)
             }
             is PlayerAction -> {
+                println("PlayerAction")
                 onPlayerAction(message.attacker, message.target)
             }
             is MatchEnded -> {
+                println("MatchEnded")
                 onMatchEnd(message.winner)
             }
         }
     }
-
-    class GetWebSocketTicketException(message: String) : IllegalArgumentException(message)
 }

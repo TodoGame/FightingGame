@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainShopBinding
-import testgame.ui.main.shop.features.ShopPagerAdapter
+import testgame.ui.main.shop.ShopPagerAdapter
 import testgame.ui.main.shop.ShopViewModel
 
 class ShopFragment : Fragment() {
@@ -36,10 +36,7 @@ class ShopFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
-        shopPagerAdapter =
-                ShopPagerAdapter(
-                        childFragmentManager
-                )
+        shopPagerAdapter = ShopPagerAdapter(childFragmentManager)
         viewPager = binding.viewPager
         viewPager.adapter = shopPagerAdapter
 

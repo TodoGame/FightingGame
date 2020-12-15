@@ -68,42 +68,43 @@
 
             <include
                 android:id="@+id/MatMechLocationButton"
-                layout="@layout/item_location"
+                layout="@layout/include_faculty_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/PmPuLocationButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread"
                 app:viewModel="@{viewModel}"
                 app:locationString="@{@string/match_mech}"/>
 
             <include
                 android:id="@+id/PmPuLocationButton"
-                layout="@layout/item_location"
+                layout="@layout/include_faculty_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toTopOf="@+id/ChemistryFacultyLocationButton"
-                app:layout_constraintStart_toStartOf="@+id/MatMechLocationButton"
                 app:layout_constraintTop_toBottomOf="@+id/MatMechLocationButton"
+                app:layout_constraintStart_toStartOf="@+id/MatMechLocationButton"
                 app:layout_constraintEnd_toEndOf="@+id/MatMechLocationButton"
                 app:locationString="@{@string/pm_pu}"
                 app:viewModel="@{viewModel}" />
 
             <include
                 android:id="@+id/ChemistryFacultyLocationButton"
-                layout="@layout/item_location"
+                layout="@layout/include_faculty_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toTopOf="@+id/PhysicsFacultyLocationButton"
-                app:layout_constraintTop_toBottomOf="@+id/MatMechLocationButton"
+                app:layout_constraintTop_toBottomOf="@+id/PmPuLocationButton"
                 app:layout_constraintStart_toStartOf="@+id/PmPuLocationButton"
                 app:viewModel="@{viewModel}"
                 app:locationString="@{@string/chemistry_fuc}"/>
 
             <include
                 android:id="@+id/PhysicsFacultyLocationButton"
-                layout="@layout/item_location"
+                layout="@layout/include_faculty_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"

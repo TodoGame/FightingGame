@@ -24,10 +24,16 @@ abstract class NetworkService {
             ignoreUnknownKeys = true
         }
         const val RESPONSE_CONTENT_READ_LIMIT = 300
+
         const val BASE_HTTP_URL = "https://fighting-game-server.herokuapp.com"
         const val BASE_WS_URL = "ws://fighting-game-server.herokuapp.com"
+
         const val AUTHORIZATION_HEADER_NAME = "Authorization"
+
         const val TICKET_QUERY_PARAM_KEY = "ticket"
+        const val ITEM_ID_QUERY_PARAM_KEY = "itemId"
+        const val FACULTY_QUERY_PARAM_KEY = "faculty"
+        const val USERNAME_QUERY_PARAM_KEY = "username"
     }
 
     @KtorExperimentalAPI

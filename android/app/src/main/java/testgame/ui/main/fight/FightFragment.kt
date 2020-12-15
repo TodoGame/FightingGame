@@ -26,7 +26,8 @@ import testgame.data.GameApp
 import testgame.data.GameApp.Companion.ATTACK_ANIMATION_PLAY_DELAY
 import testgame.data.Match
 import testgame.ui.main.ProgressBar
-import testgame.ui.main.inventory.InventoryRecyclerAdapter
+import testgame.ui.main.featuresInventory.InventoryItemListener
+import testgame.ui.main.featuresInventory.InventoryRecyclerAdapter
 import timber.log.Timber
 
 class FightFragment : Fragment() {
@@ -228,7 +229,9 @@ class FightFragment : Fragment() {
 
     private fun setUpInventory(binding: FragmentMainFightRoomBinding) {
         try {
-            val adapter = InventoryRecyclerAdapter()
+            val adapter = InventoryRecyclerAdapter(InventoryItemListener {
+                itemId -> Timber.i("Inventory item with $itemId was clicked")
+            })
             val manager = GridLayoutManager(activity, 3)
             binding.inventoryRecyclerView.layoutManager = manager
             binding.inventoryRecyclerView.adapter = adapter

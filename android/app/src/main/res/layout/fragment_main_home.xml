@@ -162,7 +162,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:text="@={viewModel.facultyScore}"
+                android:text="@{Integer.toString(viewModel.facultyScore)}"
                 style="@style/textView.Home"
                 app:layout_constraintBottom_toBottomOf="@+id/facultyScoreHeaderTextView"
                 app:layout_constraintStart_toEndOf="@+id/facultyScoreHeaderTextView"
@@ -236,7 +236,7 @@
 
             <include
                 android:id="@+id/leadingFacultyInclude"
-                layout="@layout/item_faculty_score"
+                layout="@layout/include_leading_faculty"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -252,6 +252,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_faculty_news"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/right_border_guideline"
                 app:layout_constraintStart_toStartOf="@+id/left_border_guideline"
@@ -262,6 +263,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Test"
+                android:visibility="gone"
                 android:onClick="@{() -> viewModel.test()}"
                 app:layout_constraintBottom_toTopOf="@+id/facultiesInfoTopGuideline"
                 app:layout_constraintEnd_toEndOf="parent"
