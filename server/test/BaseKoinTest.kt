@@ -42,7 +42,7 @@ open class BaseKoinTest : KoinTest {
     protected val user2
         get() = userRepository.user2()
 
-    fun makeNewTestUser(username: Username) = repositoriesMock.makeNewTestUser(username)
+    fun makeNewTestUser(username: Username, facultyId: Int = 1) = repositoriesMock.makeNewTestUser(username, facultyId)
 
     @BeforeEach
     fun clearRepositories() {
