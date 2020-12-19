@@ -32,7 +32,7 @@ class Faculty(id: EntityID<Int>) : IntEntity(id) {
 
     fun getId(): Int = id.value
 
-    fun givePoints(amount: Int) {
+    fun givePoints(amount: Int) = transaction {
         points += amount
     }
 }

@@ -11,7 +11,7 @@ import org.koin.test.KoinTest
 import user.Username
 
 open class BaseKoinTest : KoinTest {
-    private val repositoriesMock = RepositoriesMock()
+    protected val repositoriesMock = RepositoriesMock()
 
     protected val userRepository
         get() = repositoriesMock.userRepository
@@ -52,7 +52,7 @@ open class BaseKoinTest : KoinTest {
             single { FacultyPointsManager() }
         }
         startKoin {
-            modules(repositoriesModule, managersModule)
+            modules(repositoriesModule, managersModule, randomProviderMockModule)
         }
     }
 

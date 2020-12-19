@@ -1,17 +1,28 @@
 package com.somegame.match.matchmaking
 
+import com.somegame.items.Item
+import com.somegame.items.ItemRepository
+import com.somegame.match.DICE_ID
+import com.somegame.match.HANDS_DAMAGE
 import com.somegame.match.MatchRouting
+import com.somegame.match.RandomProvider
 import com.somegame.match.player.Player
-import match.MatchSnapshot
-import match.PlayerAction
+import match.*
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import org.slf4j.LoggerFactory
 import user.Username
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.floor
 
-class Match(clients: List<MatchRouting.MatchClient>) {
+class Match(clients: List<MatchRouting.MatchClient>) : KoinComponent {
     private val logger = LoggerFactory.getLogger(javaClass)
 
+    private val randomProvider: RandomProvider by inject()
+
     private val players = clients.map { Player(it, this) }
+
+    val itemRepository: ItemRepository by inject()
 
     val playersUsernames
         get() = players.map { it.username }
@@ -29,7 +40,7 @@ class Match(clients: List<MatchRouting.MatchClient>) {
         for (player in players) {
             player.onMatchStart()
         }
-        val activePlayer = players.first()
+        val activePlayer = randomProvider.getRandomPlayer(players)
         activePlayer.changeIsActive()
         logger.info("Match $this started with first active player $activePlayer")
         handleTurnStart()
@@ -45,17 +56,50 @@ class Match(clients: List<MatchRouting.MatchClient>) {
 
     private fun getPlayer(username: Username) = players.find { it.username == username }
 
-    suspend fun handlePlayerAction(action: PlayerAction) {
+    suspend fun handlePlayerDecision(decision: PlayerDecision) {
+        val calculatedPlayerDecision = when (decision) {
+            is PlayerAction -> calculatePlayerAction(decision)
+            is SkipTurn -> calculateSkipTurn(decision)
+        }
+        for (player in players) {
+            player.handleCalculatedDecision(calculatedPlayerDecision)
+        }
+        handleTurnEnd()
+    }
+
+    private fun calculateSkipTurn(skipTurn: SkipTurn): CalculatedSkipTurn {
+        val activePlayer = getActivePlayer() ?: throw IllegalActionException(skipTurn)
+        return CalculatedSkipTurn(activePlayer.username, skipTurn.isDefenced)
+    }
+
+    private fun calculatePlayerAction(action: PlayerAction): CalculatedPlayerAction {
+        val item = action.itemId?.let { itemRepository.getItemById(it) }
         val target = getPlayer(action.target)
         val attacker = getPlayer(action.attacker)
         if (target == null || attacker == null || !target.isAlive || !attacker.isActive) {
             throw IllegalActionException(action)
         }
-        val playersExceptAttacker = players.filter { it.username != attacker.username }
-        for (player in playersExceptAttacker) {
-            player.handleAction(action)
+        return if (item?.getId() == DICE_ID) {
+            val randomTarget = randomProvider.getRandomPlayer(players)
+            CalculatedPlayerAction(
+                target = randomTarget.username,
+                attacker = action.attacker,
+                itemId = item.getId(),
+                damage = calculateItemDamage(item)
+            )
+        } else {
+            CalculatedPlayerAction(
+                target = action.target,
+                attacker = action.attacker,
+                itemId = item?.getId(),
+                damage = calculateItemDamage(item)
+            )
         }
-        handleTurnEnd()
+    }
+
+    private fun calculateItemDamage(item: Item?): Int {
+        val damage = item?.damage ?: HANDS_DAMAGE
+        return floor(randomProvider.nextDouble(0.5, 1.2) * damage).toInt()
     }
 
     private suspend fun handleTurnEnd() {
@@ -102,6 +146,8 @@ class Match(clients: List<MatchRouting.MatchClient>) {
         }
     }
 
+    private fun getActivePlayer() = players.find { it.isActive }
+
     private fun getCurrentlyInActivePlayer() = players.find { !it.isActive }
 
     private fun getCurrentlyActivePlayer() = players.find { it.isActive }
@@ -110,5 +156,5 @@ class Match(clients: List<MatchRouting.MatchClient>) {
 
     override fun toString() = "Match(users=${players.map { it.username }})"
 
-    class IllegalActionException(action: PlayerAction) : IllegalStateException(action.toString())
+    class IllegalActionException(decision: PlayerDecision) : IllegalStateException(decision.toString())
 }

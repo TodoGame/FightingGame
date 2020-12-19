@@ -15,11 +15,18 @@ export type UserData = {
     facultyId: number
 }
 
-export const user1 = {
+export const user1: UserData = {
     username: 'username',
     password: 'password',
     name: 'name',
     facultyId: 1,
+}
+
+export const user2: UserData = {
+    username: 'username2',
+    password: 'password',
+    name: 'name2',
+    facultyId: 2,
 }
 
 // ws
@@ -32,4 +39,9 @@ export type WsConfig = {
 export const subWsConfig: WsConfig = {
     wsEndpoint: `${wsHost}/ws/sub`,
     getTicketEndpoint: `${host}/getWebSocketTicket/sub`
+}
+
+export const matchWsConfig: WsConfig = {
+    wsEndpoint: `${wsHost}/ws/match`,
+    getTicketEndpoint: `${host}/getWebSocketTicket/match`
 }

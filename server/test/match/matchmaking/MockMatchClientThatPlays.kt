@@ -50,7 +50,7 @@ class MockMatchClientThatPlays(
                 val active = amIActive(message)
                 if (alwaysHits || active) {
                     try {
-                        player.captured.doAction(PlayerAction(opponentUsername, username))
+                        player.captured.makeDecision(PlayerAction(opponentUsername, username))
                     } catch (e: Match.IllegalActionException) {
                         // do nothing
                     }
