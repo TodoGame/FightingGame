@@ -28,7 +28,8 @@ open class SimpleKtorTest : BaseKtorTest() {
         module {
             single { UserMoneyManager() }
             single { FacultyPointsManager() }
-        }
+        },
+        randomProviderMockModule
     )
 
     protected val testItem1
@@ -58,6 +59,6 @@ open class SimpleKtorTest : BaseKtorTest() {
             single { UserMoneyManager() }
             single { FacultyPointsManager() }
         }
-        applicationModules = listOf(repositoriesMock.repositoriesModule, managersModule)
+        applicationModules = listOf(repositoriesMock.repositoriesModule, managersModule, randomProviderMockModule)
     }
 }

@@ -2,10 +2,10 @@ package com.somegame.websocket
 
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
-import com.somegame.faculty.FacultyPointsManager
+import com.somegame.match.LOSING_USER_PRIZE
 import com.somegame.match.MatchRouting
-import com.somegame.match.MatchTestUtils.generateActivePlayerLog
-import com.somegame.match.MatchTestUtils.generatePassivePlayerLog
+import com.somegame.match.WINNING_FACULTY_PRIZE
+import com.somegame.match.WINNING_USER_PRIZE
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.routing.*
@@ -17,7 +17,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import match.*
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import user.Username
 import websocket.WebSocketTicket
@@ -78,82 +77,7 @@ class MatchRoutingTest : SimpleKtorTest() {
     }
 
     @Test
-    fun `active player should receive a predictable log of messages`() = withApp {
-        val log1 = mutableListOf<Message>()
-        val log2 = mutableListOf<Message>()
-        connect2SimplePlayers("user1", "user2", log1, log2)
-
-        val activePlayerUsername =
-            log1.filterIsInstance<TurnStarted>().first().matchSnapshot.players.find { it.isActive }?.username!!
-        val passivePlayerUsername = if (activePlayerUsername == "user1") "user2" else "user1"
-
-        val activePlayerLog = generateActivePlayerLog(activePlayerUsername, passivePlayerUsername)
-
-        if (activePlayerUsername == "user1") {
-            assertEquals(activePlayerLog, log1)
-        } else {
-            assertEquals(activePlayerLog, log2)
-        }
-    }
-
-    @Test
-    fun `passive player should receive a predictable log of messages`() = withApp {
-        val log1 = mutableListOf<Message>()
-        val log2 = mutableListOf<Message>()
-        connect2SimplePlayers("user1", "user2", log1, log2)
-
-        val activePlayerUsername =
-            log1.filterIsInstance<TurnStarted>().first().matchSnapshot.players.find { it.isActive }?.username!!
-        val passivePlayerUsername = if (activePlayerUsername == "user1") "user2" else "user1"
-
-        val passivePlayerLog = generatePassivePlayerLog(activePlayerUsername, passivePlayerUsername)
-
-        if (activePlayerUsername == "user1") {
-            assertEquals(passivePlayerLog, log2)
-        } else {
-            assertEquals(passivePlayerLog, log1)
-        }
-    }
-
-    @Disabled
-    @Test
-    fun `players that always hit should have the same logs as the normal players`() = withApp {
-        val username1 = "user1"
-        val username2 = "user2"
-
-        val log1 = mutableListOf<Message>()
-        val log2 = mutableListOf<Message>()
-
-        connect(username1) { incoming1, outgoing1 ->
-            val job = launch {
-                connect(username2) { incoming2, outgoing2 ->
-                    val player2 = SimplePlayerThatAlwaysHits(username2, username1, log2, incoming2, outgoing2)
-                    player2.start()
-                }
-            }
-            val player1 = SimplePlayerThatAlwaysHits(username1, username2, log1, incoming1, outgoing1)
-            player1.start()
-            job.join()
-        }
-
-        val activePlayerUsername =
-            log1.filterIsInstance<TurnStarted>().first().matchSnapshot.players.find { it.isActive }?.username!!
-        val passivePlayerUsername = if (activePlayerUsername == "user1") "user2" else "user1"
-
-        val activePlayerLog = generateActivePlayerLog(activePlayerUsername, passivePlayerUsername)
-        val passivePlayerLog = generatePassivePlayerLog(activePlayerUsername, passivePlayerUsername)
-
-        if (activePlayerUsername == "user1") {
-            assertEquals(activePlayerLog, log1)
-            assertEquals(passivePlayerLog, log2)
-        } else {
-            assertEquals(activePlayerLog, log2)
-            assertEquals(passivePlayerLog, log1)
-        }
-    }
-
-    @Test
-    fun `winning player should have 10 money`() = withApp {
+    fun `winning player should have WINNING_USER_PRIZE money`() = withApp {
         val log1 = mutableListOf<Message>()
         val log2 = mutableListOf<Message>()
         connect2SimplePlayers("user1", "user2", log1, log2)
@@ -161,11 +85,25 @@ class MatchRoutingTest : SimpleKtorTest() {
         val winnerUsername = log1.filterIsInstance<MatchEnded>().first().winner
         val winner = userRepository.findUserByUsername(winnerUsername)
 
-        assertEquals(10, winner?.money)
+        assertEquals(WINNING_USER_PRIZE, winner?.money)
     }
 
     @Test
-    fun `winning player's faculty should have 10 points`() = withApp {
+    fun `losing player should have LOSING_USER_PRIZE money`() = withApp {
+        val log1 = mutableListOf<Message>()
+        val log2 = mutableListOf<Message>()
+        connect2SimplePlayers("user1", "user2", log1, log2)
+
+        val winnerUsername = log1.filterIsInstance<MatchEnded>().first().winner
+
+        val loserUsername = if (winnerUsername == "user1") "user2" else "user1"
+        val loser = userRepository.findUserByUsername(loserUsername)
+
+        assertEquals(LOSING_USER_PRIZE, loser?.money)
+    }
+
+    @Test
+    fun `winning player's faculty should have WINNING_FACULTY_PRIZE points`() = withApp {
         val log1 = mutableListOf<Message>()
         val log2 = mutableListOf<Message>()
         connect2SimplePlayers("user1", "user2", log1, log2)
@@ -173,7 +111,7 @@ class MatchRoutingTest : SimpleKtorTest() {
         val winnerUsername = log1.filterIsInstance<MatchEnded>().first().winner
         val winner = userRepository.findUserByUsername(winnerUsername)
 
-        assertEquals(FacultyPointsManager.WINNING_FACULTY_PRIZE, winner?.loadFaculty()?.points)
+        assertEquals(WINNING_FACULTY_PRIZE, winner?.loadFaculty()?.points)
     }
 
     // TODO: test multiple matches at the same time

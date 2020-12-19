@@ -33,6 +33,8 @@ class ItemRepository {
     }
 }
 
+fun ItemRepository.getAllPublicItemData(): List<ItemData> = getAllItems().map { it.publicData() }
+
 class Item(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Item>(Items)
 

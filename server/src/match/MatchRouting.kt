@@ -12,7 +12,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import match.Message
-import match.PlayerAction
+import match.PlayerDecision
 import match.matchWebSocketEndpoint
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -92,11 +92,11 @@ class MatchRouting {
         }
 
         private suspend fun handleMessage(message: Message) {
-            if (message !is PlayerAction) {
+            if (message !is PlayerDecision) {
                 return
             }
             try {
-                player?.doAction(message)
+                player?.makeDecision(message)
             } catch (e: Match.IllegalActionException) {
                 logger.info("Player $player sent an illegal action $e")
             }

@@ -1,6 +1,7 @@
 package com.somegame.match.player
 
 import com.somegame.match.MatchRouting
+import com.somegame.match.START_HEALTH
 import com.somegame.match.matchmaking.Match
 import com.somegame.user.UserMoneyManager
 import match.*
@@ -18,7 +19,7 @@ class Player(private val client: MatchRouting.MatchClient, val match: Match) : K
     val user = client.user
 
     var isActive = false
-    private var health = 15
+    private var health = START_HEALTH
 
     private val disconnected = AtomicBoolean(false)
 
@@ -41,14 +42,17 @@ class Player(private val client: MatchRouting.MatchClient, val match: Match) : K
         client.sendMessage(TurnStarted(matchSnapshot))
     }
 
-    suspend fun doAction(action: PlayerAction) {
-        match.handlePlayerAction(action)
+    suspend fun makeDecision(playerDecision: PlayerDecision) {
+        if (!isActive) {
+            throw Match.IllegalActionException(playerDecision)
+        }
+        match.handlePlayerDecision(playerDecision)
     }
 
-    suspend fun handleAction(action: PlayerAction) {
-        client.sendMessage(action)
-        if (action.target == username) {
-            takeDamage(10)
+    suspend fun handleCalculatedDecision(decision: CalculatedPlayerDecision) {
+        client.sendMessage(decision)
+        if (decision is CalculatedPlayerAction && decision.target == username) {
+            takeDamage(decision.damage)
         }
     }
 
