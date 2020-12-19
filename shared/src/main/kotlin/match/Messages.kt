@@ -19,10 +19,10 @@ data class MatchStarted(val players: Set<String>) : Message()
 data class MatchEnded(val winner: String) : Message()
 
 @Serializable
-data class PlayerAction(val target: String, val attacker: String, val itemId: Int?) : PlayerDecision()
+data class PlayerAction(val target: String, val attacker: String, val itemId: Int? = null) : PlayerDecision()
 
 @Serializable
-data class SkipTurn(val isDefenced: Boolean) : PlayerDecision()
+data class SkipTurn(val isDefenced: Boolean = true) : PlayerDecision()
 
 @Serializable
 data class CalculatedPlayerAction(

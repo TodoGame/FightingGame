@@ -2,7 +2,10 @@ package com.somegame.match.matchmaking
 
 import com.somegame.items.Item
 import com.somegame.items.ItemRepository
+import com.somegame.match.DICE_ID
+import com.somegame.match.HANDS_DAMAGE
 import com.somegame.match.MatchRouting
+import com.somegame.match.RandomProvider
 import com.somegame.match.player.Player
 import match.*
 import org.koin.core.KoinComponent
@@ -11,10 +14,11 @@ import org.slf4j.LoggerFactory
 import user.Username
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.floor
-import kotlin.random.Random
 
 class Match(clients: List<MatchRouting.MatchClient>) : KoinComponent {
     private val logger = LoggerFactory.getLogger(javaClass)
+
+    private val randomProvider: RandomProvider by inject()
 
     private val players = clients.map { Player(it, this) }
 
@@ -24,11 +28,6 @@ class Match(clients: List<MatchRouting.MatchClient>) : KoinComponent {
         get() = players.map { it.username }
 
     private val state = AtomicInteger(State.IDLE.code)
-
-    companion object {
-        const val HANDS_DAMAGE = 15
-        const val DICE_ID = 4
-    }
 
     enum class State(val code: Int) {
         IDLE(0),
@@ -41,7 +40,7 @@ class Match(clients: List<MatchRouting.MatchClient>) : KoinComponent {
         for (player in players) {
             player.onMatchStart()
         }
-        val activePlayer = players.first()
+        val activePlayer = randomProvider.getRandomPlayer(players)
         activePlayer.changeIsActive()
         logger.info("Match $this started with first active player $activePlayer")
         handleTurnStart()
@@ -81,7 +80,7 @@ class Match(clients: List<MatchRouting.MatchClient>) : KoinComponent {
             throw IllegalActionException(action)
         }
         return if (item?.getId() == DICE_ID) {
-            val randomTarget = players.random()
+            val randomTarget = randomProvider.getRandomPlayer(players)
             CalculatedPlayerAction(
                 target = randomTarget.username,
                 attacker = action.attacker,
@@ -100,7 +99,7 @@ class Match(clients: List<MatchRouting.MatchClient>) : KoinComponent {
 
     private fun calculateItemDamage(item: Item?): Int {
         val damage = item?.damage ?: HANDS_DAMAGE
-        return floor(Random.Default.nextDouble(0.5, 1.2) * damage).toInt()
+        return floor(randomProvider.nextDouble(0.5, 1.2) * damage).toInt()
     }
 
     private suspend fun handleTurnEnd() {

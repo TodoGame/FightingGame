@@ -1,6 +1,7 @@
 package com.somegame.match.player
 
 import com.somegame.match.MatchRouting
+import com.somegame.match.START_HEALTH
 import com.somegame.match.matchmaking.Match
 import com.somegame.user.UserMoneyManager
 import match.*
@@ -18,7 +19,7 @@ class Player(private val client: MatchRouting.MatchClient, val match: Match) : K
     val user = client.user
 
     var isActive = false
-    private var health = 100
+    private var health = START_HEALTH
 
     private val disconnected = AtomicBoolean(false)
 

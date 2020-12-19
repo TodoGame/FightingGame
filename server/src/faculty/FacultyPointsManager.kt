@@ -1,5 +1,6 @@
 package com.somegame.faculty
 
+import com.somegame.match.WINNING_FACULTY_PRIZE
 import com.somegame.user.User
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -10,10 +11,6 @@ import subscription.FacultyPointsUpdate
 import subscription.LeadingFacultyUpdate
 
 class FacultyPointsManager : KoinComponent {
-    companion object {
-        const val WINNING_FACULTY_PRIZE = 5
-    }
-
     private val logger = LoggerFactory.getLogger(javaClass)
 
     private val facultyRepository: FacultyRepository by inject()
