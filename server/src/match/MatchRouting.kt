@@ -1,5 +1,7 @@
 package com.somegame.match
 
+import com.somegame.faculty.FacultyRepository
+import com.somegame.faculty.doesFacultyExist
 import com.somegame.match.matchmaking.*
 import com.somegame.match.player.Player
 import com.somegame.websocket.WebSocketService
@@ -11,17 +13,19 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import match.Message
-import match.PlayerDecision
-import match.matchWebSocketEndpoint
+import match.*
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class MatchRouting {
+class MatchRouting : KoinComponent {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     private val webSocketService = WebSocketService("match", 1)
     val matchmaker = Matchmaker()
+
+    val facultyRepository: FacultyRepository by inject()
 
     fun setUpMatchRoutes(routing: Routing) {
         routing.webSocket(matchWebSocketEndpoint) {
@@ -32,14 +36,21 @@ class MatchRouting {
                 logger.info("Connection was not authorized")
                 close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
                 return@webSocket
-            } catch (e: WebSocketTicketManager.MaxNumberOfTicketsReachedException) {
+            } catch (e: WebSocketService.MaximumNumberOfConnectionsReached) {
                 logger.info("Client tried to connect but max number of connections is reached")
                 close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Max number of connections reached"))
                 return@webSocket
             }
 
+            val opponentFacultyId = call.request.queryParameters[MATCH_PREFERRED_OPPONENT_FACULTY_ID]?.toIntOrNull()
+
+            if (opponentFacultyId != null && !facultyRepository.doesFacultyExist(opponentFacultyId)) {
+                close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Faculty with id=$opponentFacultyId not found"))
+                return@webSocket
+            }
+
             val client = MatchClient(webSocketClient)
-            client.startSearchingForMatch()
+            client.startSearchingForMatch(opponentFacultyId)
             try {
                 for (frame in incoming) {
                     logger.info("Received frame from $client")
@@ -74,8 +85,8 @@ class MatchRouting {
             client.sendText(string)
         }
 
-        suspend fun startSearchingForMatch() {
-            matchmaker.startSearchingForMatch(this)
+        suspend fun startSearchingForMatch(opponentFacultyId: Int?) {
+            matchmaker.startSearchingForMatch(this, opponentFacultyId)
         }
 
         suspend fun handleFrame(frame: Frame) {
@@ -103,10 +114,12 @@ class MatchRouting {
         }
 
         suspend fun handleDisconnect() {
-            player?.handleDisconnect() ?: run {
-                matchmaker.stopSearchingForMatch(this)
-            }
             client.handleDisconnect()
+            if (player == null) {
+                matchmaker.stopSearchingForMatch(this)
+            } else {
+                player?.handleDisconnect()
+            }
         }
 
         override fun toString() = "MatchClient(username=$username)"

@@ -58,8 +58,8 @@ class RepositoriesMock {
         )
     }
 
-    fun makeNewTestUser(username: Username) =
-        userRepository.createUser(username, "testPassword", username.capitalize(), faculties[0])
+    fun makeNewTestUser(username: Username, facultyId: Int = 1) =
+        userRepository.createUser(username, "testPassword", username.capitalize(), faculties[facultyId - 1])
 
     fun createMockFaculty(id: Int, name: String): Faculty {
         val faculty = mockk<Faculty>()

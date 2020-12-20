@@ -102,6 +102,19 @@ open class BaseWebSocketServiceKtorTest(
     }
 
     @Test
+    fun `webSocket connection should close if connected with not complete string of json`() = withApp {
+        val ticket = WebSocketTicket(webSocketName, "user1", System.currentTimeMillis() + 100000, "code")
+        val ticketString = Json.encodeToString(ticket)
+        handleWebSocketConversation("$endpoint?ticket=$ticketString$1", {}) { incoming, _ ->
+            val frame = incoming.receive()
+            assert(frame is Frame.Close)
+            if (frame is Frame.Close) {
+                Assertions.assertEquals(CloseReason.Codes.CANNOT_ACCEPT, frame.readReason()?.knownReason)
+            }
+        }
+    }
+
+    @Test
     fun `webSocket connection should close if connected with invalid ticket`() = withApp {
         val ticket = WebSocketTicket(webSocketName, "user1", System.currentTimeMillis() + 100000, "code")
         val ticketString = Json.encodeToString(ticket)

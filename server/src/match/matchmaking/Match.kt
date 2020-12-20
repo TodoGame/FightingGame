@@ -118,8 +118,8 @@ class Match(clients: List<MatchRouting.MatchClient>) : KoinComponent {
     private suspend fun endGame(winner: Player) {
         state.set(State.ENDED.code)
         logger.info("Match ended $this")
-        // the players list
-        for (player in players.toList()) {
+        for (player in players) {
+            println("calling handle game end for $player")
             player.handleGameEnd(winner)
         }
     }
