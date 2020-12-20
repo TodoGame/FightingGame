@@ -10,7 +10,6 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import org.slf4j.LoggerFactory
 import websocket.WebSocketTicket
-import java.lang.IllegalStateException
 
 class WebSocketTicketManager(
     private val webSocketName: String,
@@ -93,6 +92,4 @@ class WebSocketTicketManager(
     private fun isTicketRegistered(ticket: WebSocketTicket): Boolean = tickets[ticket.code] == ticket
 
     class InvalidTicketException(msg: String) : UnauthorizedException(msg)
-
-    class MaxNumberOfTicketsReachedException : IllegalStateException()
 }
