@@ -3,6 +3,7 @@ package com.somegame.items.repository
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJsonContentHeader
 import com.somegame.TestUtils.addJwtHeader
+import com.somegame.items.getAllPublicItemData
 import com.somegame.items.publicData
 import com.somegame.shop.shop
 import io.ktor.http.*
@@ -68,7 +69,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
     @Test
     fun `should respond with OK if user has enough money`() = withApp {
         val user = makeNewTestUser("testUser")
-        user.acceptMoney(10)
+        user.acceptMoney(1000)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
             method = HttpMethod.Post
@@ -84,7 +85,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
     @Test
     fun `after buying user should have item1`() = withApp {
         val user = makeNewTestUser("testUser")
-        user.acceptMoney(10)
+        user.acceptMoney(1000)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
             method = HttpMethod.Post
@@ -99,7 +100,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
     @Test
     fun `after buying user should have item2`() = withApp {
         val user = makeNewTestUser("testUser")
-        user.acceptMoney(10)
+        user.acceptMoney(1000)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
             method = HttpMethod.Post
@@ -114,7 +115,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
     @Test
     fun `should respond with Conflict if user attempts to buy the same item twice`() = withApp {
         val user = makeNewTestUser("testUser")
-        user.acceptMoney(10)
+        user.acceptMoney(1000)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
             method = HttpMethod.Post
@@ -143,7 +144,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
-            assertEquals(listOf(testItem1.publicData(), testItem2.publicData()), items)
+            assertEquals(itemRepository.getAllPublicItemData(), items)
         }
     }
 
@@ -174,9 +175,9 @@ class ShopRoutingKtTest : SimpleKtorTest() {
     }
 
     @Test
-    fun `getItem with id=3 should respond with 404`() = withApp {
+    fun `getItem with id=100 should respond with 404`() = withApp {
         handleRequest {
-            uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=3"
+            uri = "${ShopEndpoints.GET_ITEM_ENDPOINT}?id=100"
             method = HttpMethod.Get
             addJsonContentHeader()
         }.apply {
@@ -207,20 +208,21 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
-            assertEquals(listOf(testItem1.publicData(), testItem2.publicData()), items)
+            assertEquals(itemRepository.getAllPublicItemData(), items)
         }
     }
 
     @Test
-    fun `getNotOwnedItems should respond with second item if first item is bought`() = withApp {
+    fun `getNotOwnedItems should respond with list that does not contain first item if it is bought`() = withApp {
         val user = makeNewTestUser("richUser")
-        user.acceptMoney(10)
+        val itemId = 1
+        user.acceptMoney(1000)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
             method = HttpMethod.Post
             addJwtHeader("richUser")
             addJsonContentHeader()
-            setBody("1")
+            setBody(itemId.toString())
         }
         handleRequest {
             uri = ShopEndpoints.GET_NOT_OWNED_ITEMS
@@ -230,20 +232,25 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
-            assertEquals(listOf(testItem2.publicData()), items)
+            val item = itemRepository.getItemById(itemId)!!
+            assertNotNull(items)
+            if (items != null) {
+                assert(!items.contains(item.publicData()))
+            }
         }
     }
 
     @Test
-    fun `getNotOwnedItems should respond with first item if second item is bought`() = withApp {
+    fun `getNotOwnedItems should respond with list that does not contain the second item if it is bought`() = withApp {
         val user = makeNewTestUser("richUser")
-        user.acceptMoney(10)
+        val itemId = 2
+        user.acceptMoney(1000)
         handleRequest {
             uri = ShopEndpoints.BUY_ITEM_ENDPOINT
             method = HttpMethod.Post
             addJwtHeader("richUser")
             addJsonContentHeader()
-            setBody("2")
+            setBody(itemId.toString())
         }
         handleRequest {
             uri = ShopEndpoints.GET_NOT_OWNED_ITEMS
@@ -253,27 +260,26 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
-            assertEquals(listOf(testItem1.publicData()), items)
+            val item = itemRepository.getItemById(itemId)!!
+            assertNotNull(items)
+            if (items != null) {
+                assert(!items.contains(item.publicData()))
+            }
         }
     }
 
     @Test
     fun `getNotOwnedItems should respond with empty list if all items are bought`() = withApp {
         val user = makeNewTestUser("richUser")
-        user.acceptMoney(10)
-        handleRequest {
-            uri = ShopEndpoints.BUY_ITEM_ENDPOINT
-            method = HttpMethod.Post
-            addJwtHeader("richUser")
-            addJsonContentHeader()
-            setBody("1")
-        }
-        handleRequest {
-            uri = ShopEndpoints.BUY_ITEM_ENDPOINT
-            method = HttpMethod.Post
-            addJwtHeader("richUser")
-            addJsonContentHeader()
-            setBody("2")
+        user.acceptMoney(10000)
+        for (i in 1..4) {
+            handleRequest {
+                uri = ShopEndpoints.BUY_ITEM_ENDPOINT
+                method = HttpMethod.Post
+                addJwtHeader("richUser")
+                addJsonContentHeader()
+                setBody(i.toString())
+            }
         }
         handleRequest {
             uri = ShopEndpoints.GET_NOT_OWNED_ITEMS
@@ -283,6 +289,7 @@ class ShopRoutingKtTest : SimpleKtorTest() {
         }.apply {
             assert(requestHandled) { "Request not handled" }
             val items = response.content?.let { Json.decodeFromString<List<ItemData>>(it) }
+            assertNotNull(items)
             assertEquals(listOf<ItemData>(), items)
         }
     }

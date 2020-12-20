@@ -25,6 +25,8 @@ class FacultyRepository {
 
 fun FacultyRepository.getLeadingFaculty(): Faculty? = getAllFaculties().maxByOrNull { it.points }
 
+fun FacultyRepository.doesFacultyExist(id: Int): Boolean = getFacultyById(id) != null
+
 class Faculty(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Faculty>(Faculties)
     var name by Faculties.name
@@ -32,7 +34,7 @@ class Faculty(id: EntityID<Int>) : IntEntity(id) {
 
     fun getId(): Int = id.value
 
-    fun givePoints(amount: Int) {
+    fun givePoints(amount: Int) = transaction {
         points += amount
     }
 }

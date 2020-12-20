@@ -3,6 +3,9 @@ package subscription
 import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJwtHeader
 import com.somegame.faculty.FacultyPointsManager
+import com.somegame.match.LOSING_USER_PRIZE
+import com.somegame.match.WINNING_FACULTY_PRIZE
+import com.somegame.match.WINNING_USER_PRIZE
 import com.somegame.subscription.subscription
 import com.somegame.user.UserMoneyManager
 import io.ktor.http.*
@@ -58,7 +61,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             val frame = incoming.receive()
             assert(frame is Frame.Text) { "Received not Frame.Text" }
             val update = Json.decodeFromString<SubscriptionUpdate>((frame as Frame.Text).readText())
-            assertEquals(UserMoneyUpdate("testUser", UserMoneyManager.WINNING_USER_PRIZE), update)
+            assertEquals(UserMoneyUpdate("testUser", WINNING_USER_PRIZE), update)
         }
     }
 
@@ -75,7 +78,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             val frame = incoming.receive()
             assert(frame is Frame.Text) { "Received not Frame.Text" }
             val update = Json.decodeFromString<SubscriptionUpdate>((frame as Frame.Text).readText())
-            assertEquals(UserMoneyUpdate("testUser", UserMoneyManager.LOSING_USER_PRIZE), update)
+            assertEquals(UserMoneyUpdate("testUser", LOSING_USER_PRIZE), update)
         }
     }
 
@@ -100,7 +103,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             assertEquals(
                 UserMoneyUpdate(
                     "testUser",
-                    UserMoneyManager.LOSING_USER_PRIZE + UserMoneyManager.WINNING_USER_PRIZE
+                    LOSING_USER_PRIZE + WINNING_USER_PRIZE
                 ),
                 update
             )
@@ -123,7 +126,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             assertEquals(
                 FacultyPointsUpdate(
                     1,
-                    FacultyPointsManager.WINNING_FACULTY_PRIZE,
+                    WINNING_FACULTY_PRIZE,
                     "user1"
                 ),
                 update
@@ -147,7 +150,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             assertEquals(
                 FacultyPointsUpdate(
                     2,
-                    FacultyPointsManager.WINNING_FACULTY_PRIZE,
+                    WINNING_FACULTY_PRIZE,
                     "user2"
                 ),
                 update
@@ -171,7 +174,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             assertEquals(
                 FacultyPointsUpdate(
                     2,
-                    FacultyPointsManager.WINNING_FACULTY_PRIZE,
+                    WINNING_FACULTY_PRIZE,
                     "user2"
                 ),
                 update
@@ -195,7 +198,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             assertEquals(
                 LeadingFacultyUpdate(
                     1,
-                    FacultyPointsManager.WINNING_FACULTY_PRIZE
+                    WINNING_FACULTY_PRIZE
                 ),
                 update
             )
@@ -220,7 +223,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             assertEquals(
                 LeadingFacultyUpdate(
                     2,
-                    FacultyPointsManager.WINNING_FACULTY_PRIZE * 2
+                    WINNING_FACULTY_PRIZE * 2
                 ),
                 update
             )
@@ -244,7 +247,7 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
             assertEquals(
                 LeadingFacultyUpdate(
                     1,
-                    FacultyPointsManager.WINNING_FACULTY_PRIZE * 2
+                    WINNING_FACULTY_PRIZE * 2
                 ),
                 update
             )
@@ -275,8 +278,8 @@ internal class SubscriptionRoutingKtTest : SimpleKtorTest() {
                 }
             }
             val expectedLog = listOf(
-                LeadingFacultyUpdate(2, FacultyPointsManager.WINNING_FACULTY_PRIZE * 2),
-                LeadingFacultyUpdate(1, FacultyPointsManager.WINNING_FACULTY_PRIZE * 3)
+                LeadingFacultyUpdate(2, WINNING_FACULTY_PRIZE * 2),
+                LeadingFacultyUpdate(1, WINNING_FACULTY_PRIZE * 3)
             )
             assertEquals(expectedLog, log)
         }

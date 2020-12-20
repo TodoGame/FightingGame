@@ -15,8 +15,8 @@ import user.Username
 internal class MatchmakerTest : BaseKoinTest() {
     var matchmaker = Matchmaker()
 
-    private fun mockClient(username: Username): MatchRouting.MatchClient {
-        val user = makeNewTestUser(username)
+    private fun mockClient(username: Username, facultyId: Int = 1): MatchRouting.MatchClient {
+        val user = makeNewTestUser(username, facultyId)
         val client = mockk<MatchRouting.MatchClient>()
         every { client.username } returns username
         every { client.user } returns user
@@ -129,5 +129,125 @@ internal class MatchmakerTest : BaseKoinTest() {
         val matches = players.map { it.match }.toSet()
 
         assertEquals(50, matches.size)
+    }
+
+    @Test
+    fun `should match easygoing client with picky if easygoing's faculty is the one that picky selected`() {
+        val easygoing = mockClient("easy", 1)
+        val picky = mockClient("picky", 2)
+
+        val easygoingPlayer = slot<Player>()
+        val pickyPlayer = slot<Player>()
+
+        coEvery { easygoing.onJoinMatch(capture(easygoingPlayer)) } just Runs
+        coEvery { picky.onJoinMatch(capture(pickyPlayer)) } just Runs
+
+        runBlocking {
+            matchmaker.startSearchingForMatch(easygoing)
+            matchmaker.startSearchingForMatch(picky, 1)
+        }
+
+        assertNotNull(easygoingPlayer.captured)
+        assertEquals(easygoingPlayer.captured.match, pickyPlayer.captured.match)
+    }
+
+    @Test
+    fun `should match picky client with easygoing (commutative) if easygoing's faculty is the one that picky selected`() {
+        val easygoing = mockClient("easy", 1)
+        val picky = mockClient("picky", 2)
+
+        val easygoingPlayer = slot<Player>()
+        val pickyPlayer = slot<Player>()
+
+        coEvery { easygoing.onJoinMatch(capture(easygoingPlayer)) } just Runs
+        coEvery { picky.onJoinMatch(capture(pickyPlayer)) } just Runs
+
+        runBlocking {
+            matchmaker.startSearchingForMatch(picky, 1)
+            matchmaker.startSearchingForMatch(easygoing)
+        }
+
+        assertNotNull(easygoingPlayer.captured)
+        assertEquals(easygoingPlayer.captured.match, pickyPlayer.captured.match)
+    }
+
+    @Test
+    fun `should not match easygoing client with picky if easygoing's faculty is not the one that picky selected`() {
+        val easygoing = mockClient("easy", 1)
+        val picky = mockClient("picky", 2)
+
+        val easygoingPlayer = slot<Player>()
+        val pickyPlayer = slot<Player>()
+
+        coEvery { easygoing.onJoinMatch(capture(easygoingPlayer)) } just Runs
+        coEvery { picky.onJoinMatch(capture(pickyPlayer)) } just Runs
+
+        runBlocking {
+            matchmaker.startSearchingForMatch(easygoing)
+            matchmaker.startSearchingForMatch(picky, 2)
+        }
+
+        assert(!easygoingPlayer.isCaptured)
+        assert(!pickyPlayer.isCaptured)
+    }
+
+    @Test
+    fun `should match picky with picky if they both want to play with each other`() {
+        val picky1 = mockClient("picky1", 1)
+        val picky2 = mockClient("picky2", 2)
+
+        val pickyPlayer1 = slot<Player>()
+        val pickyPlayer2 = slot<Player>()
+
+        coEvery { picky1.onJoinMatch(capture(pickyPlayer1)) } just Runs
+        coEvery { picky2.onJoinMatch(capture(pickyPlayer2)) } just Runs
+
+        runBlocking {
+            matchmaker.startSearchingForMatch(picky1, 2)
+            matchmaker.startSearchingForMatch(picky2, 1)
+        }
+
+        assertNotNull(pickyPlayer1.captured)
+        assertEquals(pickyPlayer1.captured.match, pickyPlayer2.captured.match)
+    }
+
+    @Test
+    fun `should not match picky with picky if one of them does not want to play with other`() {
+        val picky1 = mockClient("picky1", 1)
+        val picky2 = mockClient("picky2", 2)
+
+        val pickyPlayer1 = slot<Player>()
+        val pickyPlayer2 = slot<Player>()
+
+        coEvery { picky1.onJoinMatch(capture(pickyPlayer1)) } just Runs
+        coEvery { picky2.onJoinMatch(capture(pickyPlayer2)) } just Runs
+
+        runBlocking {
+            matchmaker.startSearchingForMatch(picky1, 2)
+            matchmaker.startSearchingForMatch(picky2, 3)
+        }
+
+        assert(!pickyPlayer1.isCaptured)
+        assert(!pickyPlayer2.isCaptured)
+    }
+
+    @Test
+    fun `should not match picky with picky if both dont want to play with each other`() {
+        val picky1 = mockClient("picky1", 1)
+        val picky2 = mockClient("picky2", 2)
+
+        val pickyPlayer1 = slot<Player>()
+        val pickyPlayer2 = slot<Player>()
+
+        coEvery { picky1.onJoinMatch(capture(pickyPlayer1)) } just Runs
+        coEvery { picky2.onJoinMatch(capture(pickyPlayer2)) } just Runs
+
+        runBlocking {
+            matchmaker.startSearchingForMatch(picky1, 4)
+            matchmaker.startSearchingForMatch(picky2, 3)
+        }
+
+        assert(!pickyPlayer1.isCaptured)
+        assert(!pickyPlayer2.isCaptured)
     }
 }

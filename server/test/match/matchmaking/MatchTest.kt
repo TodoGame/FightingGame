@@ -1,16 +1,16 @@
 package match.matchmaking
 
 import com.somegame.BaseKoinTest
+import com.somegame.match.HANDS_DAMAGE
 import com.somegame.match.MatchRouting
 import com.somegame.match.MatchTestUtils
+import com.somegame.match.START_HEALTH
 import com.somegame.match.matchmaking.Match
-import com.somegame.match.matchmaking.MockMatchClientThatPlays
+import com.somegame.match.matchmaking.MockSimpleClient
 import io.mockk.*
 import io.mockk.every
 import kotlinx.coroutines.runBlocking
-import match.MatchStarted
-import match.Message
-import match.TurnStarted
+import match.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import user.Username
@@ -140,94 +140,366 @@ internal class MatchTest : BaseKoinTest() {
     }
 
     @Test
-    fun `passive client should receive a predicted log of messages`() {
-        val log1 = mutableListOf<Message>()
-        val log2 = mutableListOf<Message>()
+    fun `attacking with the hand should result in first client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
 
-        val client1 = MockMatchClientThatPlays("user1", log1).build()
-        val client2 = MockMatchClientThatPlays("user2", log2).build()
+        val itemId = null
 
         runBlocking {
-            Match(listOf(client1, client2)).start()
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
         }
 
-        val activePlayerUsername = MatchTestUtils.getActivePlayerUsernameFromLog(log1)
+        val answer = client1.log.filterIsInstance<CalculatedPlayerAction>().first()
+        assertEquals(CalculatedPlayerAction("testUser2", "testUser1", itemId, HANDS_DAMAGE), answer)
+    }
 
-        if (activePlayerUsername == "user1") {
-            assertEquals(MatchTestUtils.generatePassivePlayerLog("user1", "user2"), log2)
-        } else if (activePlayerUsername == "user2") {
-            assertEquals(MatchTestUtils.generatePassivePlayerLog("user2", "user1"), log1)
-        } else {
-            throw Exception("Did not find active player")
+    @Test
+    fun `attacking with the hand should result in second client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = null
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client2.log.filterIsInstance<CalculatedPlayerAction>().first()
+        assertEquals(CalculatedPlayerAction("testUser2", "testUser1", itemId, HANDS_DAMAGE), answer)
+    }
+
+    @Test
+    fun `attacking with item1 should result in first client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 1
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client1.log.filterIsInstance<CalculatedPlayerAction>().first()
+        val damage = itemRepository.getItemById(itemId)!!.damage
+        assertEquals(CalculatedPlayerAction("testUser2", "testUser1", itemId, damage), answer)
+    }
+
+    @Test
+    fun `attacking with item1 should result in second client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 1
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client2.log.filterIsInstance<CalculatedPlayerAction>().first()
+        val damage = itemRepository.getItemById(itemId)!!.damage
+        assertEquals(CalculatedPlayerAction("testUser2", "testUser1", itemId, damage), answer)
+    }
+
+    @Test
+    fun `attacking with item2 should result in first client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 2
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client1.log.filterIsInstance<CalculatedPlayerAction>().first()
+        val damage = itemRepository.getItemById(itemId)!!.damage
+        assertEquals(CalculatedPlayerAction("testUser2", "testUser1", itemId, damage), answer)
+    }
+
+    @Test
+    fun `attacking with item2 should result in second client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 2
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client2.log.filterIsInstance<CalculatedPlayerAction>().first()
+        val damage = itemRepository.getItemById(itemId)!!.damage
+        assertEquals(CalculatedPlayerAction("testUser2", "testUser1", itemId, damage), answer)
+    }
+
+    @Test
+    fun `attacking with banana should result in first client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 3
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client1.log.filterIsInstance<CalculatedPlayerAction>().first()
+        val damage = itemRepository.getItemById(itemId)!!.damage
+        assertEquals(CalculatedPlayerAction("testUser2", "testUser1", itemId, damage), answer)
+    }
+
+    @Test
+    fun `attacking with banana should result in second client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 3
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client2.log.filterIsInstance<CalculatedPlayerAction>().first()
+        val damage = itemRepository.getItemById(itemId)!!.damage
+        assertEquals(CalculatedPlayerAction("testUser2", "testUser1", itemId, damage), answer)
+    }
+
+    @Test
+    fun `attacking with dice should result in first client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 4
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client1.log.filterIsInstance<CalculatedPlayerAction>().first()
+        val damage = itemRepository.getItemById(itemId)!!.damage
+        assertEquals(CalculatedPlayerAction("testUser1", "testUser1", itemId, damage), answer)
+    }
+
+    @Test
+    fun `attacking with dice should result in second client receiving CalculatedPlayerAction`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 4
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val answer = client2.log.filterIsInstance<CalculatedPlayerAction>().first()
+        val damage = itemRepository.getItemById(itemId)!!.damage
+        assertEquals(CalculatedPlayerAction("testUser1", "testUser1", itemId, damage), answer)
+    }
+
+    @Test
+    fun `skipping a turn should result in first client receiving CalculatedSkipTurn`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(SkipTurn())
+        }
+
+        val answer = client1.log.filterIsInstance<CalculatedSkipTurn>().first()
+        assertEquals(CalculatedSkipTurn("testUser1", true), answer)
+    }
+
+    @Test
+    fun `skipping a turn should result in second client receiving CalculatedSkipTurn`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(SkipTurn())
+        }
+
+        val answer = client2.log.filterIsInstance<CalculatedSkipTurn>().first()
+        assertEquals(CalculatedSkipTurn("testUser1", true), answer)
+    }
+
+    @Test
+    fun `passive player cannot attack`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = null
+
+        assertThrows(Match.IllegalActionException::class.java) {
+            runBlocking {
+                Match(listOf(client1.client, client2.client)).start()
+                client2.makeDecision(PlayerAction("testUser1", "testUser2", itemId))
+            }
         }
     }
 
     @Test
-    fun `active client should receive a predicted log of messages`() {
-        val log1 = mutableListOf<Message>()
-        val log2 = mutableListOf<Message>()
+    fun `passive player send a fake attack as an active player`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
 
-        val client1 = MockMatchClientThatPlays("user1", log1).build()
-        val client2 = MockMatchClientThatPlays("user2", log2).build()
+        val itemId = null
 
-        runBlocking {
-            Match(listOf(client1, client2)).start()
-        }
-
-        val activePlayerUsername = MatchTestUtils.getActivePlayerUsernameFromLog(log1)
-
-        if (activePlayerUsername == "user1") {
-            assertEquals(MatchTestUtils.generateActivePlayerLog("user1", "user2"), log1)
-        } else if (activePlayerUsername == "user2") {
-            assertEquals(MatchTestUtils.generateActivePlayerLog("user2", "user1"), log2)
-        } else {
-            throw Exception("Did not find active player")
+        assertThrows(Match.IllegalActionException::class.java) {
+            runBlocking {
+                Match(listOf(client1.client, client2.client)).start()
+                client2.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+            }
         }
     }
 
     @Test
-    fun `passive client that always hits should receive a predicted log of messages`() {
-        val log1 = mutableListOf<Message>()
-        val log2 = mutableListOf<Message>()
+    fun `player attached with hand should have the predicted health`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
 
-        val client1 = MockMatchClientThatPlays("user1", log1, true).build()
-        val client2 = MockMatchClientThatPlays("user2", log2, true).build()
+        val itemId = null
 
         runBlocking {
-            Match(listOf(client1, client2)).start()
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
         }
 
-        val activePlayerUsername = MatchTestUtils.getActivePlayerUsernameFromLog(log1)
-
-        if (activePlayerUsername == "user1") {
-            assertEquals(MatchTestUtils.generatePassivePlayerLog("user1", "user2"), log2)
-        } else if (activePlayerUsername == "user2") {
-            assertEquals(MatchTestUtils.generatePassivePlayerLog("user2", "user1"), log1)
-        } else {
-            throw Exception("Did not find active player")
-        }
+        val answer = client2.log.filterIsInstance<TurnStarted>().last()
+        val expected = TurnStarted(
+            MatchSnapshot(
+                setOf(
+                    PlayerSnapshot("testUser1", false, START_HEALTH),
+                    PlayerSnapshot("testUser2", true, START_HEALTH - HANDS_DAMAGE)
+                )
+            )
+        )
+        assertEquals(expected, answer)
     }
 
     @Test
-    fun `active client that always hits should receive a predicted log of messages`() {
-        val log1 = mutableListOf<Message>()
-        val log2 = mutableListOf<Message>()
+    fun `player attached with item1 should have the predicted health`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
 
-        val client1 = MockMatchClientThatPlays("user1", log1, true).build()
-        val client2 = MockMatchClientThatPlays("user2", log2, true).build()
+        val itemId = 1
 
         runBlocking {
-            Match(listOf(client1, client2)).start()
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
         }
 
-        val activePlayerUsername = MatchTestUtils.getActivePlayerUsernameFromLog(log1)
+        val damage = itemRepository.getItemById(itemId)!!.damage
 
-        if (activePlayerUsername == "user1") {
-            assertEquals(MatchTestUtils.generateActivePlayerLog("user1", "user2"), log1)
-        } else if (activePlayerUsername == "user2") {
-            assertEquals(MatchTestUtils.generateActivePlayerLog("user2", "user1"), log2)
-        } else {
-            throw Exception("Did not find active player")
+        val answer = client2.log.filterIsInstance<TurnStarted>().last()
+        val expected = TurnStarted(
+            MatchSnapshot(
+                setOf(
+                    PlayerSnapshot("testUser1", false, START_HEALTH),
+                    PlayerSnapshot("testUser2", true, START_HEALTH - damage)
+                )
+            )
+        )
+        assertEquals(expected, answer)
+    }
+
+    @Test
+    fun `player attached with item2 should have the predicted health`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 2
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
         }
+
+        val damage = itemRepository.getItemById(itemId)!!.damage
+
+        val answer = client2.log.filterIsInstance<TurnStarted>().last()
+        val expected = TurnStarted(
+            MatchSnapshot(
+                setOf(
+                    PlayerSnapshot("testUser1", false, START_HEALTH),
+                    PlayerSnapshot("testUser2", true, START_HEALTH - damage)
+                )
+            )
+        )
+        assertEquals(expected, answer)
+    }
+
+    @Test
+    fun `player attached with item3 should have the predicted health`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 3
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+
+        val damage = itemRepository.getItemById(itemId)!!.damage
+
+        val answer = client2.log.filterIsInstance<TurnStarted>().last()
+        val expected = TurnStarted(
+            MatchSnapshot(
+                setOf(
+                    PlayerSnapshot("testUser1", false, START_HEALTH),
+                    PlayerSnapshot("testUser2", true, START_HEALTH - damage)
+                )
+            )
+        )
+        assertEquals(expected, answer)
+    }
+
+    @Test
+    fun `after attack with dice the second player should be the winner`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = 4
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+        val answer = client2.log.filterIsInstance<MatchEnded>().last()
+        val expected = MatchEnded("testUser2")
+        assertEquals(expected, answer)
+    }
+
+    @Test
+    fun `only hands match should end when the first player kills the second`() {
+        val client1 = MockSimpleClient(repositoriesMock, "testUser1")
+        val client2 = MockSimpleClient(repositoriesMock, "testUser2")
+
+        val itemId = null
+
+        runBlocking {
+            Match(listOf(client1.client, client2.client)).start()
+            repeat(6) {
+                client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+                client2.makeDecision(PlayerAction("testUser1", "testUser2", itemId))
+            }
+            client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
+        }
+        val answer = client2.log.filterIsInstance<MatchEnded>().last()
+        val expected = MatchEnded("testUser1")
+        assertEquals(expected, answer)
     }
 }

@@ -45,6 +45,7 @@ dependencies {
     implementation("org.koin:koin-ktor:2.1.6")
     testImplementation("org.koin:koin-test:2.1.6")
     testImplementation("io.mockk:mockk:1.10.2")
+    implementation(kotlin("script-runtime"))
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

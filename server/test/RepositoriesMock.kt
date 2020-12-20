@@ -36,8 +36,10 @@ class RepositoriesMock {
         items.clear()
         items.addAll(
             listOf(
-                createMockItem(1, ItemType.MainWeapon, "Bat", 1, 10),
-                createMockItem(2, ItemType.MainWeapon, "Sword", 2, 100),
+                createMockItem(1, ItemType.MainWeapon, "Bat", 30, 20),
+                createMockItem(2, ItemType.MainWeapon, "Sword", 100, 40),
+                createMockItem(3, ItemType.Additional, "Banana", 10, -40),
+                createMockItem(4, ItemType.Additional, "Dice", 150, 1000)
             )
         )
         faculties.clear()
@@ -56,8 +58,8 @@ class RepositoriesMock {
         )
     }
 
-    fun makeNewTestUser(username: Username) =
-        userRepository.createUser(username, "testPassword", username.capitalize(), faculties[0])
+    fun makeNewTestUser(username: Username, facultyId: Int = 1) =
+        userRepository.createUser(username, "testPassword", username.capitalize(), faculties[facultyId - 1])
 
     fun createMockFaculty(id: Int, name: String): Faculty {
         val faculty = mockk<Faculty>()
