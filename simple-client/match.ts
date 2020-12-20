@@ -2,6 +2,12 @@ import {makeWebSocketConnection} from "./ws.ts";
 import {matchWsConfig, user1, user2} from "./config.ts";
 import {ask} from "./ask.ts";
 
+const user1OpponentFacultyId = 2
+const user2OpponentFacultyId = 1
+
+const user1AdditionalParam = user1OpponentFacultyId == null ? '' : `&opponentFacultyId=${user1OpponentFacultyId}`
+const user2AdditionalParam = user2OpponentFacultyId == null ? '' : `&opponentFacultyId=${user2OpponentFacultyId}`
+
 function makePlayerAction(attacker: String, target: String, itemId: number | null): string {
     return JSON.stringify({
         type: 'match.PlayerAction',
@@ -19,7 +25,10 @@ function makeSkipTurn() {
 }
 
 async function main() {
-    const ws1 = await makeWebSocketConnection(matchWsConfig, user1)
+    console.log('user1', user1)
+    console.log('user2', user2)
+
+    const ws1 = await makeWebSocketConnection(matchWsConfig, user1, user1AdditionalParam)
     ws1.on('open', () => {
         console.log('user1 connected')
     })
@@ -29,7 +38,7 @@ async function main() {
     ws1.on('close', () => {
         console.log('user1 disconnected')
     })
-    const ws2 =  await makeWebSocketConnection(matchWsConfig, user2)
+    const ws2 =  await makeWebSocketConnection(matchWsConfig, user2, user2AdditionalParam)
     ws2.on('open', () => {
         console.log('user2 connected')
     })
@@ -43,7 +52,7 @@ async function main() {
     const websockets = [ws1, ws2]
     console.log("-->Commands syntax: \n--> <userNumber> hit [itemId] \n--> <userNumber> skip")
     while (true) {
-        const command = await ask("Command:")
+        const command = await ask("")
         const parts = command.split(" ")
         const user = users[parseInt(parts[0]) - 1]
         const otherUser = users[2 - parseInt(parts[0])]

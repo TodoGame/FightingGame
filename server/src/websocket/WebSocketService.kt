@@ -74,6 +74,8 @@ class WebSocketService(
             Json.decodeFromString<WebSocketTicket>(ticketString)
         } catch (e: SerializationException) {
             throw WebSocketTicketManager.InvalidTicketException("Could not deserialize ticket: $e")
+        } catch (e: IllegalStateException) {
+            throw WebSocketTicketManager.InvalidTicketException("Could not deserialize ticket: $e")
         }
         return ticketManager.authorize(ticket)
     }
