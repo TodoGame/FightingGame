@@ -492,7 +492,7 @@ internal class MatchTest : BaseKoinTest() {
 
         runBlocking {
             Match(listOf(client1.client, client2.client)).start()
-            repeat(6) {
+            repeat(3) {
                 client1.makeDecision(PlayerAction("testUser2", "testUser1", itemId))
                 client2.makeDecision(PlayerAction("testUser1", "testUser2", itemId))
             }
