@@ -1,5 +1,6 @@
 package com.somegame.user
 
+import USERNAME_QUERY_PARAM_KEY
 import com.somegame.responseExceptions.BadRequestException
 import com.somegame.responseExceptions.NotFoundException
 import com.somegame.security.SecurityUtils.user
@@ -11,8 +12,6 @@ import org.koin.ktor.ext.inject
 import user.GET_ME_ENDPOINT
 import user.GET_USER_ENDPOINT
 
-const val USERNAME_PARAMETER = "username"
-
 fun Routing.user() {
     val userRepository: UserRepository by inject()
 
@@ -23,7 +22,7 @@ fun Routing.user() {
         }
 
         get(GET_USER_ENDPOINT) {
-            val username = call.request.queryParameters[USERNAME_PARAMETER]
+            val username = call.request.queryParameters[USERNAME_QUERY_PARAM_KEY]
                 ?: throw BadRequestException("Request must have a query parameter `username`")
             val user = userRepository.findUserByUsername(username)
                 ?: throw NotFoundException("User with username=$username not found")

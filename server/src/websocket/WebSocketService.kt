@@ -19,6 +19,7 @@ import kotlinx.serialization.json.Json
 import match.Message
 import org.slf4j.LoggerFactory
 import user.Username
+import websocket.TICKET_QUERY_PARAM_KEY
 import websocket.WebSocketTicket
 import websocket.getWebSocketTicketEndpoint
 
@@ -28,10 +29,6 @@ class WebSocketService(
     ticketLifeExpectancyMillis: Long = DEFAULT_TICKET_LIFE_EXPECTANCY
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
-
-    companion object {
-        private const val TICKET_QUERY_PARAM_KEY = "ticket"
-    }
 
     private val ticketManager = WebSocketTicketManager(webSocketName, ticketLifeExpectancyMillis)
 

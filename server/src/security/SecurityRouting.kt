@@ -13,11 +13,12 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.util.pipeline.*
 import org.apache.commons.codec.digest.DigestUtils
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import security.*
+import user.USER_MAX_NAME_LENGTH
+import user.USER_MAX_USERNAME_LENGTH
 import user.Username
 
 fun Routing.security() {

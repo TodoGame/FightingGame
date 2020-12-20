@@ -4,11 +4,7 @@ import com.somegame.SimpleKtorTest
 import com.somegame.TestUtils.addJsonContentHeader
 import com.somegame.faculty.publicData
 import com.somegame.security.security
-import com.somegame.user.USER_MAX_NAME_LENGTH
-import com.somegame.user.USER_MAX_USERNAME_LENGTH
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.decodeFromString
@@ -16,6 +12,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import user.USER_MAX_NAME_LENGTH
+import user.USER_MAX_USERNAME_LENGTH
 import user.UserData
 
 internal class SecurityRoutingKtTest : SimpleKtorTest() {

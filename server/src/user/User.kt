@@ -14,12 +14,12 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.KoinComponent
+import user.USER_MAX_NAME_LENGTH
+import user.USER_MAX_USERNAME_LENGTH
 import user.UserData
 import user.Username
 
-val USER_MAX_USERNAME_LENGTH = 16
-val USER_MAX_PASSWORD_LENGTH = 100
-val USER_MAX_NAME_LENGTH = 30
+const val USER_MAX_PASSWORD_LENGTH = 100
 
 object Users : IntIdTable() {
     val username = varchar("username", USER_MAX_USERNAME_LENGTH).uniqueIndex()
