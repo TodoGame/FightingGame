@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainHomeBinding
 import io.ktor.util.*
+import kotlinx.coroutines.*
 import testgame.ui.main.featuresNews.NewsItemListener
 import testgame.ui.main.featuresNews.NewsRecyclerAdapter
 import timber.log.Timber
@@ -17,6 +18,8 @@ import timber.log.Timber
 class HomeFragment : Fragment() {
 
     private lateinit var viewModel: HomeViewModel
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     @KtorExperimentalAPI
     override fun onCreateView(
@@ -37,16 +40,16 @@ class HomeFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
-//        viewModel.getUserData()
-//        viewModel.getLeadingFacultyData()
-//        viewModel.makeSubscriptions()
+        coroutineScope.launch {
+            viewModel.getUserData()
+            viewModel.getLeadingFacultyData()
+            viewModel.makeSubscriptions()
+        }
 
-        viewModel.testIsCalled.observe(viewLifecycleOwner, { isCalled ->
-            if (isCalled) {
-                val progressBar = binding.experienceProgressBar
-                progressBar.update(100, 40)
-                progressBar.invalidate()
-            }
+        viewModel.testProgress.observe(viewLifecycleOwner, { progress ->
+            val progressBar = binding.experienceProgressBar
+            progressBar.update(100, progress)
+            progressBar.invalidate()
         })
 
         val adapter = NewsRecyclerAdapter(NewsItemListener {
@@ -55,6 +58,10 @@ class HomeFragment : Fragment() {
         binding.newsRecyclerView.adapter = adapter
 
         viewModel.newsItems.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                binding.emptyRecyclerView.visibility = View.GONE
+                binding.newsRecyclerView.visibility = View.VISIBLE
+            }
             it?.let {
                 adapter.submitList(it)
             }

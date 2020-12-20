@@ -34,7 +34,7 @@
     <string name="clicker_image">ClickerImage</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="inventory">Inventory</string>
-    <string name="score">Score</string>
+    <string name="score">Score:</string>
     <string name="log_out">Log out</string>
     <string name="entrance_activity_name">Entrance</string>
     <string name="fight_activity_name">Fight</string>
@@ -63,4 +63,7 @@
     <string name="fireball">Fireball</string>
     <string name="choose_faculty">Choose faculty</string>
     <string name="buy">Buy</string>
+    <string name="news">News</string>
+    <string name="there_is_no_news_yet">There is no news yet</string>
+    <string name="location_hint">Choose the faculty you want to fight with</string>
 </resources>

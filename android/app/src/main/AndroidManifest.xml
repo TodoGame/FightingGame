@@ -20,24 +20,17 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Launcher"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name="testgame.activities.FightActivity"
-            android:label="@string/fight_activity_name"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            android:screenOrientation="portrait">
         </activity>
 
         <activity
             android:name="testgame.activities.MainActivity"
             android:label="@string/main_activity_name"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            android:theme="@style/AppTheme.Launcher"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

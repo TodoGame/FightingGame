@@ -12,17 +12,18 @@ import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainFightEndDialogBinding
 import testgame.activities.MainActivity
 import testgame.data.GameApp
+import testgame.data.User
 import java.lang.NullPointerException
 
-class MatchEndDialogFragment : DialogFragment() {
+class MatchEndDialogFragment(val onConfirmFunction: () -> Unit) : DialogFragment() {
     companion object {
         const val TAG = "MatchEndDialogFragment"
         private const val KEY_WINNER = "KEY_TITLE"
 
-        fun newInstance(winner: String): MatchEndDialogFragment {
+        fun newInstance(winner: String, onConfirmFunction: () -> Unit): MatchEndDialogFragment {
             val args = Bundle()
             args.putString(KEY_WINNER, winner)
-            val fragment = MatchEndDialogFragment()
+            val fragment = MatchEndDialogFragment(onConfirmFunction)
             fragment.arguments = args
             return fragment
         }
@@ -37,15 +38,13 @@ class MatchEndDialogFragment : DialogFragment() {
         )
 
         val winner = arguments?.getString(KEY_WINNER) ?: throw NullPointerException("No argument passed to dDialogFragment")
-        if (winner == GameApp().user.username) {
+        if (winner == User.username.value) {
             binding.winnerTextView.text = getString(R.string.match_win_congratulation)
         } else {
             binding.winnerTextView.text = getString(R.string.match_defeat_congratulation)
         }
         binding.confirmButton.setOnClickListener {
-            val intent = Intent(activity, MainActivity::class.java)
-            intent.putExtra(getString(R.string.match_finish_winner_extra_key), winner)
-            startActivity(intent)
+            onConfirmFunction()
             dismiss()
         }
         return binding.root

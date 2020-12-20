@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.testgame.R
 import com.example.testgame.databinding.PageMainShopBuyBinding
 import io.ktor.util.*
-import testgame.ui.main.featuresInventory.InventoryItemListener
-import testgame.ui.main.featuresShop.ShopItem
+import testgame.data.User
+import testgame.network.NetworkService
 import testgame.ui.main.featuresShop.ShopItemListener
 import testgame.ui.main.featuresShop.ShopRecyclerAdapter
 import timber.log.Timber
@@ -33,11 +33,20 @@ class ShopPageFragment: Fragment() {
         binding.lifecycleOwner = this
 
         val adapter = ShopRecyclerAdapter(ShopItemListener { itemId ->
-            Timber.i("Inventory item with $itemId was clicked")
-            viewModel.buyItem(itemId)
+            Timber.i("Shop item with $itemId was clicked")
+            try {
+                viewModel.buyItem(itemId)
+            } catch (e: NetworkService.NetworkException) {
+                Timber.i(e)
+            }
         })
         binding.shopListRecyclerView.adapter = adapter
 
+        try {
+            viewModel.getAllNotOwnedItems()
+        } catch (e: NetworkService.NetworkException) {
+            Timber.i(e)
+        }
         viewModel.shopItems.observe(viewLifecycleOwner, {
             it?.let {
                 adapter.submitList(it)

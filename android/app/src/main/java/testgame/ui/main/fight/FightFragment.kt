@@ -14,10 +14,12 @@ import androidx.activity.addCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainFightRoomBinding
+import com.example.testgame.ui.entrance.register.RegisterFragmentDirections
 import kotlinx.coroutines.*
 import testgame.activities.EntranceActivity
 import testgame.activities.MainActivity
@@ -25,6 +27,7 @@ import testgame.data.FightAction
 import testgame.data.GameApp
 import testgame.data.GameApp.Companion.ATTACK_ANIMATION_PLAY_DELAY
 import testgame.data.Match
+import testgame.data.User
 import testgame.ui.main.ProgressBar
 import testgame.ui.main.featuresInventory.InventoryItemListener
 import testgame.ui.main.featuresInventory.InventoryRecyclerAdapter
@@ -58,7 +61,6 @@ class FightFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         setMusic()
 
         val app: GameApp = this.activity?.application as GameApp
@@ -141,7 +143,6 @@ class FightFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         coroutineScope.cancel()
-        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         viewModel.confirmMatchEscape()
     }
     private fun setMusic() {
@@ -206,7 +207,14 @@ class FightFragment : Fragment() {
                 enemyImageView.bringToFront()
             }
             Match.State.NO_MATCH -> {
-                activity?.supportFragmentManager?.let { MatchEndDialogFragment.newInstance(viewModel.matchWinner).show(it, MatchEndDialogFragment.TAG) }
+                val action = FightFragmentDirections.actionFightFragmentToLocationsFragment()
+                val onConfirmFunction = {
+                    NavHostFragment.findNavController(this).navigate(action)
+                }
+                activity?.supportFragmentManager?.let {
+                    MatchEndDialogFragment.newInstance(viewModel.matchWinner, onConfirmFunction)
+                            .show(it, MatchEndDialogFragment.TAG)
+                }
                 viewModel.confirmMatchRoomExit()
             }
             else -> {
@@ -232,11 +240,9 @@ class FightFragment : Fragment() {
             val adapter = InventoryRecyclerAdapter(InventoryItemListener {
                 itemId -> Timber.i("Inventory item with $itemId was clicked")
             })
-            val manager = GridLayoutManager(activity, 3)
-            binding.inventoryRecyclerView.layoutManager = manager
             binding.inventoryRecyclerView.adapter = adapter
 
-            viewModel.inventoryItems.observe(viewLifecycleOwner, {
+            User.inventory.observe(viewLifecycleOwner, {
                 it?.let {
                     adapter.submitList(it)
                 }

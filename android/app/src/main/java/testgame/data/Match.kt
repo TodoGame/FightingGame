@@ -1,12 +1,13 @@
 package testgame.data
 
 import io.ktor.client.features.websocket.DefaultClientWebSocketSession
+import io.ktor.http.cio.websocket.*
 import match.MatchSnapshot
 import match.PlayerAction
 import java.lang.NullPointerException
 import java.util.concurrent.atomic.AtomicInteger
 
-object Match {
+class Match {
     var player: MatchPlayer? = null
     var enemy: MatchPlayer? = null
     var winner: String? = null
@@ -20,7 +21,7 @@ object Match {
         ENEMY_TURN,
     }
 
-    var webSocketSession: DefaultClientWebSocketSession? = null
+    var webSocketSession: WebSocketSession? = null
 
     fun findPlayerByUsername(username: String) : MatchPlayer {
         try {

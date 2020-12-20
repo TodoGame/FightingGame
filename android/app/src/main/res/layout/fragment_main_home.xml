@@ -8,6 +8,9 @@
         <variable
             name="viewModel"
             type="testgame.ui.main.home.HomeViewModel" />
+        <variable
+            name="user"
+            type="testgame.data.User" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,7 +18,7 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/header_end_guideline"
+            android:id="@+id/headerEndGuideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -26,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/background_home_round_corners"
-            app:layout_constraintBottom_toTopOf="@+id/header_end_guideline"
+            app:layout_constraintBottom_toTopOf="@+id/headerEndGuideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,14 +41,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.16" />
+                app:layout_constraintGuide_percent="0.13" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/bottomHeaderGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.89" />
+                app:layout_constraintGuide_percent="0.88" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/centerHeaderGuideline"
@@ -61,39 +64,46 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.96" />
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/leftHeaderGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.04" />
+
             <ImageView
                 android:id="@+id/avatarViewImage"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:contentDescription="@string/user_avatar"
-                android:src="@drawable/avatar"
+                android:src="@drawable/orange_avatar"
                 app:layout_constraintBottom_toTopOf="@+id/bottomHeaderGuideline"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toStartOf="@+id/centerHeaderGuideline"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/leftHeaderGuideline"
                 app:layout_constraintTop_toTopOf="@+id/topHeaderGuideline" />
 
             <TextView
                 android:id="@+id/usernameTextView"
                 style="@style/textView.Home"
                 android:layout_width="wrap_content"
-                android:layout_height="25dp"
+                android:layout_height="0dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                android:text="@{viewModel.username}"
+                android:text="@{user.username}"
+                app:layout_constraintBottom_toTopOf="@+id/levelHeaderTextView"
                 app:layout_constraintStart_toStartOf="@+id/centerHeaderGuideline"
-                app:layout_constraintTop_toTopOf="@+id/avatarViewImage"
+                app:layout_constraintTop_toTopOf="@+id/topHeaderGuideline"
                 tools:text="@string/username" />
 
             <TextView
                 android:id="@+id/levelHeaderTextView"
                 style="@style/textView.Home"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/level"
+                app:layout_constraintBottom_toTopOf="@+id/facultyHeaderTextView"
                 app:layout_constraintStart_toStartOf="@+id/usernameTextView"
                 app:layout_constraintTop_toBottomOf="@+id/usernameTextView" />
 
@@ -101,12 +111,13 @@
                 android:id="@+id/levelTextView"
                 style="@style/textView.Home"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:text="@{viewModel.level}"
                 app:layout_constraintBottom_toBottomOf="@+id/levelHeaderTextView"
                 app:layout_constraintStart_toEndOf="@+id/levelHeaderTextView"
+                app:layout_constraintTop_toTopOf="@+id/levelHeaderTextView"
                 tools:text="7" />
 
             <testgame.ui.main.ProgressBar
@@ -125,54 +136,65 @@
                 android:id="@+id/facultyHeaderTextView"
                 style="@style/textView.Home"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/faculty"
+                app:layout_constraintBottom_toTopOf="@+id/facultyScoreHeaderTextView"
                 app:layout_constraintStart_toStartOf="@+id/levelHeaderTextView"
                 app:layout_constraintTop_toBottomOf="@+id/levelHeaderTextView" />
 
             <TextView
                 android:id="@+id/facultyTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="76dp"
-                android:layout_marginLeft="76dp"
-                android:background="@drawable/outline_orange"
-                android:padding="3dp"
-                android:text="@{viewModel.faculty}"
                 style="@style/textView.Home"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@drawable/outline_orange"
+                android:text="@{user.faculty.name}"
+                app:autoSizeTextType="uniform"
                 app:layout_constraintBottom_toBottomOf="@+id/facultyHeaderTextView"
+                app:layout_constraintEnd_toStartOf="@+id/rightHeaderGuideline"
                 app:layout_constraintStart_toStartOf="@+id/facultyHeaderTextView"
                 app:layout_constraintTop_toTopOf="@+id/facultyHeaderTextView"
                 tools:text="MatMech" />
 
             <TextView
                 android:id="@+id/facultyScoreHeaderTextView"
+                style="@style/textView.Home"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/faculty_score"
-                style="@style/textView.Home"
+                app:layout_constraintBottom_toTopOf="@+id/bottomHeaderGuideline"
                 app:layout_constraintStart_toStartOf="@+id/facultyHeaderTextView"
                 app:layout_constraintTop_toBottomOf="@+id/facultyHeaderTextView" />
 
             <TextView
                 android:id="@+id/facultyScoreTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:text="@{Integer.toString(viewModel.facultyScore)}"
                 style="@style/textView.Home"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="@{Integer.toString(viewModel.facultyScore)}"
                 app:layout_constraintBottom_toBottomOf="@+id/facultyScoreHeaderTextView"
+                app:layout_constraintEnd_toStartOf="@+id/rightHeaderGuideline"
                 app:layout_constraintStart_toEndOf="@+id/facultyScoreHeaderTextView"
                 app:layout_constraintTop_toTopOf="@+id/facultyScoreHeaderTextView"
                 tools:text="542" />
 
+            <Button
+                android:id="@+id/testButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:onClick="@{() -> viewModel.test()}"
+                android:text="Test"
+                app:layout_constraintBottom_toBottomOf="@+id/usernameTextView"
+                app:layout_constraintEnd_toStartOf="@+id/rightHeaderGuideline"
+                app:layout_constraintStart_toEndOf="@+id/usernameTextView"
+                app:layout_constraintTop_toTopOf="@+id/topHeaderGuideline" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/newsLayout"
+            android:id="@+id/FacultiesInfoLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/background_home_round_corners"
@@ -180,25 +202,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/header_end_guideline"
+            app:layout_constraintTop_toTopOf="@+id/headerEndGuideline"
             app:layout_constraintVertical_bias="1.0">
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/facultiesInfoTopGuideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.15" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/left_border_guideline"
+                android:id="@+id/LeftBorderGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_begin="@dimen/round_border_radius_dp" />
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/right_border_guideline"
+                android:id="@+id/rightBorderGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -211,64 +226,177 @@
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.35" />
 
-            <TextView
-                android:id="@+id/leadingFacultyHeaderTextView"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/facultiesNewsBottomGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/leading_faculty"
-                style="@style/textView.Home"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="@dimen/round_border_radius_dp" />
 
-            <TextView
-                android:id="@+id/leadingFacultyTextView"
-                style="@style/textView.Home"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/facultiesInfoTopGuideline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/leadingFacultyHeaderTextView"
-                tools:text="MatMech" />
-
-            <include
-                android:id="@+id/leadingFacultyInclude"
-                layout="@layout/include_leading_faculty"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/leadingFacultyLayout"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintBottom_toTopOf="@+id/facultiesInfoBottomGuideline"
-                app:layout_constraintEnd_toStartOf="@+id/right_border_guideline"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/left_border_guideline"
-                app:layout_constraintTop_toTopOf="@+id/facultiesInfoTopGuideline"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintEnd_toStartOf="@+id/rightBorderGuideline"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/LeftBorderGuideline"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/newsRecyclerView"
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/RightFacultyImageGuideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.4" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/CenterLeadingFacultyHorizontalGuideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <TextView
+                    android:id="@+id/leadingFacultyHeaderTextView"
+                    style="@style/textView.Home"
+                    android:layout_width="111dp"
+                    android:layout_height="0dp"
+                    android:text="@string/leading_faculty"
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintBottom_toTopOf="@+id/leadingFacultyTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/facultyImageView"
+                    app:layout_constraintStart_toStartOf="@+id/RightFacultyImageGuideline"
+                    app:layout_constraintTop_toTopOf="@+id/facultyImageView" />
+
+                <TextView
+                    android:id="@+id/leadingFacultyTextView"
+                    style="@style/textView.Home"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:maxLines="1"
+                    android:text="@{viewModel.leadingFaculty.name}"
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintBottom_toTopOf="@+id/scoreTextView"
+                    app:layout_constraintEnd_toEndOf="@+id/leadingFacultyHeaderTextView"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/leadingFacultyHeaderTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/leadingFacultyHeaderTextView"
+                    tools:text="MatMech" />
+
+                <ImageView
+                    android:id="@+id/facultyImageView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:contentDescription="@string/shop_item_image"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toStartOf="@+id/RightFacultyImageGuideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/castle_colored" />
+
+                <TextView
+                    android:id="@+id/scoreTextView"
+                    style="@style/textView.Home"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/score"
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintBottom_toBottomOf="@+id/facultyImageView"
+                    app:layout_constraintEnd_toStartOf="@+id/facultyNameTextView"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/facultyImageView"
+                    app:layout_constraintTop_toTopOf="@+id/CenterLeadingFacultyHorizontalGuideline" />
+
+                <TextView
+                    android:id="@+id/facultyNameTextView"
+                    style="@style/textView.Home"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="@{Integer.toString(viewModel.facultyScore)}"
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintBottom_toBottomOf="@+id/scoreTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/scoreTextView"
+                    app:layout_constraintTop_toTopOf="@+id/scoreTextView"
+                    tools:text="50000" />
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toTopOf="@+id/CenterLeadingFacultyHorizontalGuideline"
+                    app:layout_constraintEnd_toStartOf="@+id/leadingFacultyTextView"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/RightFacultyImageGuideline"
+                    app:layout_constraintTop_toBottomOf="@+id/leadingFacultyHeaderTextView"
+                    app:srcCompat="@drawable/yellow_star" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toTopOf="@+id/CenterLeadingFacultyHorizontalGuideline"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/leadingFacultyTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/leadingFacultyHeaderTextView"
+                    app:srcCompat="@drawable/yellow_star" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/newsLayout"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_faculty_news"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/right_border_guideline"
-                app:layout_constraintStart_toStartOf="@+id/left_border_guideline"
-                app:layout_constraintTop_toTopOf="@+id/facultiesInfoBottomGuideline" />
+                app:layout_constraintBottom_toTopOf="@+id/facultiesNewsBottomGuideline"
+                app:layout_constraintEnd_toStartOf="@+id/rightBorderGuideline"
+                app:layout_constraintStart_toStartOf="@+id/LeftBorderGuideline"
+                app:layout_constraintTop_toTopOf="@+id/facultiesInfoBottomGuideline">
 
-            <Button
-                android:id="@+id/testButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Test"
-                android:visibility="gone"
-                android:onClick="@{() -> viewModel.test()}"
-                app:layout_constraintBottom_toTopOf="@+id/facultiesInfoTopGuideline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/leadingFacultyHeaderTextView"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/newsRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:listitem="@layout/item_faculty_news" />
+
+
+                <TextView
+                    android:id="@+id/emptyRecyclerView"
+                    style="@style/textView.Home"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@color/colorWhite"
+                    android:gravity="center"
+                    android:text="@string/there_is_no_news_yet"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

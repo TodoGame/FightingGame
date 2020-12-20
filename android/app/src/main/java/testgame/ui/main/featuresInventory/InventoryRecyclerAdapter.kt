@@ -6,10 +6,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testgame.databinding.ItemInventoryThingBinding
+import item.ItemData
 import testgame.data.GameApp
 
 class InventoryRecyclerAdapter(val clickListener: InventoryItemListener) :
-        ListAdapter<InventoryItem, InventoryRecyclerAdapter.ViewHolder>(InventoryItemDiffCallback()) {
+        ListAdapter<ItemData, InventoryRecyclerAdapter.ViewHolder>(InventoryItemDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position), clickListener)
@@ -22,7 +23,7 @@ class InventoryRecyclerAdapter(val clickListener: InventoryItemListener) :
     class ViewHolder private constructor(val binding: ItemInventoryThingBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
-                item: InventoryItem,
+                item: ItemData,
                 clickListener: InventoryItemListener,
         ) {
             binding.inventoryItem = item
@@ -42,16 +43,16 @@ class InventoryRecyclerAdapter(val clickListener: InventoryItemListener) :
 }
 
 class InventoryItemDiffCallback :
-        DiffUtil.ItemCallback<InventoryItem>() {
-    override fun areItemsTheSame(oldItem: InventoryItem, newItem: InventoryItem): Boolean {
+        DiffUtil.ItemCallback<ItemData>() {
+    override fun areItemsTheSame(oldItem: ItemData, newItem: ItemData): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: InventoryItem, newItem: InventoryItem): Boolean {
+    override fun areContentsTheSame(oldItem: ItemData, newItem: ItemData): Boolean {
         return oldItem == newItem
     }
 }
 
 class InventoryItemListener(val listener: (itemId: Int) -> Unit) {
-    fun onClick(item: InventoryItem) = listener(item.id)
+    fun onClick(item: ItemData) = listener(item.id)
 }

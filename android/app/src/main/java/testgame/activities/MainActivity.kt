@@ -1,5 +1,6 @@
 package testgame.activities
 
+import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.preference.PreferenceManager
 import com.example.testgame.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import testgame.data.GameApp
+import testgame.data.User
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +25,13 @@ class MainActivity : AppCompatActivity() {
     var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.NoActionBarAppTheme)
         super.onCreate(savedInstanceState)
+        if (!isTokenAlive()) {
+            val intent = Intent(this, EntranceActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            startActivity(intent)
+        }
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.insetsController?.hide(WindowInsets.Type.statusBars())
@@ -82,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         super.onRestart()
         Timber.i("On restart")
         val winner = intent.getStringExtra(getString(R.string.match_finish_winner_extra_key))
-        if (winner != null && winner == gameApp.user.username) {
+        if (winner != null && winner == User.username.value) {
             val builder = AlertDialog.Builder(this)
             val dialog = builder.setTitle(R.string.sure_to_leave_fight)
                     .setMessage(R.string.match_win_congratulation)
@@ -97,9 +105,8 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val token = sharedPreferences.getString(getString(R.string.saved_token_key), null)
         val username = sharedPreferences.getString(getString(R.string.saved_username_key), null)
-        val app: GameApp = this.application as GameApp
-        app.user.username = username ?: throw GameApp.NullAppDataException("Null username")
-        app.user.authenticationToken = token ?: throw GameApp.NullAppDataException("Null token")
+        User.username.value = username ?: throw GameApp.NullAppDataException("Null username")
+        User.authenticationToken = token ?: throw GameApp.NullAppDataException("Null token")
     }
 
     private fun setMusic() {
@@ -117,23 +124,9 @@ class MainActivity : AppCompatActivity() {
                 }
     }
 
-    private fun getUserInformation() {
-
-    }
-
-    private fun getFacultiesInformation() {
-
-    }
-
-    private fun openMainWebSocketConnection() {
-
-    }
-
-    private fun sendBoostRequest() {
-
-    }
-
-    fun buyThing(thingId: Int) {
-
+    private fun isTokenAlive(): Boolean {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        return sharedPreferences.contains(getString(R.string.saved_token_key)) &&
+                sharedPreferences.contains(getString(R.string.saved_username_key))
     }
 }

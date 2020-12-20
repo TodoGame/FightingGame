@@ -37,9 +37,12 @@ class ProgressBar(context: Context, private val attrs: AttributeSet) : View(cont
         borderPaint.color = ContextCompat.getColor(context, progressBackgroundColor)
         canvas?.drawRect(0f, 0f, width.toFloat(), height.toFloat(), borderPaint)
 
+        println("Max $maxProgressPoints")
+        println("Cur $currentProgressPoints")
         val healthPointPercentage = if (maxProgressPoints == null || currentProgressPoints == null) {
             1f
         } else {
+            println("Result : ${(currentProgressPoints!! / maxProgressPoints!!).toFloat()}")
             (currentProgressPoints!! / maxProgressPoints!!).toFloat()
         }
         val healthWidth = ((width - margin * 2) * healthPointPercentage)
@@ -50,12 +53,12 @@ class ProgressBar(context: Context, private val attrs: AttributeSet) : View(cont
         canvas?.drawRect(0f + margin, 0f + margin, healthWidth, height - margin * 2, healthPaint)
     }
 
-    fun update(maxPoints: Int, diffPoints: Int) {
+    fun update(maxPoints: Int, points: Int) {
         if (maxProgressPoints == null) {
             maxProgressPoints = maxPoints
             currentProgressPoints = maxPoints
         } else {
-            currentProgressPoints = currentProgressPoints?.minus(diffPoints)
+            currentProgressPoints = points
         }
     }
 }

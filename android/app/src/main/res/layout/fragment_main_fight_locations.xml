@@ -11,24 +11,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/locationsLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/medivalboard">
-
-        <TextView
-            android:id="@+id/textView"
-            style="@style/textView.Primary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="@string/locations"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/rightBackgroundGuideline"
-            app:layout_constraintStart_toStartOf="@+id/leftBackgroundGuideline"
-            app:layout_constraintTop_toTopOf="@+id/topBackgroundGuideline" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/topBackgroundGuideline"
@@ -59,59 +45,115 @@
             app:layout_constraintGuide_percent="0.83" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/locationsInsidePictureLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@color/colorAccent"
             app:layout_constraintBottom_toTopOf="@+id/bottomBackgroundGuideline"
             app:layout_constraintEnd_toStartOf="@+id/rightBackgroundGuideline"
             app:layout_constraintStart_toStartOf="@+id/leftBackgroundGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/textView">
+            app:layout_constraintTop_toTopOf="@+id/topBackgroundGuideline">
 
-            <include
-                android:id="@+id/MatMechLocationButton"
-                layout="@layout/include_faculty_location"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/locationsTextView"
+                style="@style/textView.Locations"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/PmPuLocationButton"
+                android:background="@color/colorAccent"
+                android:text="@string/locations"
+                android:textSize="40sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintVertical_chainStyle="spread"
-                app:viewModel="@{viewModel}"
-                app:locationString="@{@string/match_mech}"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <include
-                android:id="@+id/PmPuLocationButton"
-                layout="@layout/include_faculty_location"
+            <TextView
+                android:id="@+id/locationsHintTextView"
+                style="@style/textView.Locations"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/ChemistryFacultyLocationButton"
-                app:layout_constraintTop_toBottomOf="@+id/MatMechLocationButton"
-                app:layout_constraintStart_toStartOf="@+id/MatMechLocationButton"
-                app:layout_constraintEnd_toEndOf="@+id/MatMechLocationButton"
-                app:locationString="@{@string/pm_pu}"
-                app:viewModel="@{viewModel}" />
+                android:layout_marginStart="24dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginRight="24dp"
+                android:text="@string/location_hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/locationsTextView" />
 
-            <include
-                android:id="@+id/ChemistryFacultyLocationButton"
-                layout="@layout/include_faculty_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/PhysicsFacultyLocationButton"
-                app:layout_constraintTop_toBottomOf="@+id/PmPuLocationButton"
-                app:layout_constraintStart_toStartOf="@+id/PmPuLocationButton"
-                app:viewModel="@{viewModel}"
-                app:locationString="@{@string/chemistry_fuc}"/>
-
-            <include
-                android:id="@+id/PhysicsFacultyLocationButton"
-                layout="@layout/include_faculty_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/facultyButtonsContainerLayout"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ChemistryFacultyLocationButton"
-                app:layout_constraintStart_toStartOf="@+id/ChemistryFacultyLocationButton"
-                app:viewModel="@{viewModel}"
-                app:locationString="@{@string/physics_fac}"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/locationsHintTextView">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/infoHeaderLeftGuideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.61" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    style="@style/textView.Locations"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Numer of players who want to fight"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/infoHeaderLeftGuideline"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <include
+                    android:id="@+id/MatMechLocationButton"
+                    layout="@layout/include_faculty_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/PmPuLocationButton"
+                    app:layout_constraintEnd_toStartOf="@+id/infoHeaderLeftGuideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="spread"
+                    app:locationString="@{@string/match_mech}"
+                    app:viewModel="@{viewModel}" />
+
+                <include
+                    android:id="@+id/PmPuLocationButton"
+                    layout="@layout/include_faculty_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/ChemistryFacultyLocationButton"
+                    app:layout_constraintEnd_toEndOf="@+id/MatMechLocationButton"
+                    app:layout_constraintStart_toStartOf="@+id/MatMechLocationButton"
+                    app:layout_constraintTop_toBottomOf="@+id/MatMechLocationButton"
+                    app:locationString="@{@string/pm_pu}"
+                    app:viewModel="@{viewModel}" />
+
+                <include
+                    android:id="@+id/ChemistryFacultyLocationButton"
+                    layout="@layout/include_faculty_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/PhysicsFacultyLocationButton"
+                    app:layout_constraintStart_toStartOf="@+id/PmPuLocationButton"
+                    app:layout_constraintTop_toBottomOf="@+id/PmPuLocationButton"
+                    app:locationString="@{@string/chemistry_fuc}"
+                    app:viewModel="@{viewModel}" />
+
+                <include
+                    android:id="@+id/PhysicsFacultyLocationButton"
+                    layout="@layout/include_faculty_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/ChemistryFacultyLocationButton"
+                    app:layout_constraintTop_toBottomOf="@+id/ChemistryFacultyLocationButton"
+                    app:locationString="@{@string/physics_fac}"
+                    app:viewModel="@{viewModel}" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

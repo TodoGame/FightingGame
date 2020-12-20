@@ -64,4 +64,6 @@
     <string name="fireball">Огненный шар</string>
     <string name="choose_faculty">Выбрать факультет</string>
     <string name="buy">Купить</string>
+    <string name="news">Новости</string>
+    <string name="there_is_no_news_yet">Пока что новостей нет</string>
 </resources>

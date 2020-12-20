@@ -77,13 +77,13 @@ class LoginViewModel : ViewModel() {
                 )
                 val token = response.headers[NetworkService.AUTHORIZATION_HEADER_NAME]
                 if (token != null) {
-                    _user = NetworkService.jsonFormat.decodeFromString<UserData>(response.readText())
+                    _user = NetworkService.jsonFormat.decodeFromString(response.readText())
                     _token = token
                     _loginCompleted.postValue(true)
                 } else {
                     callError("Wrong token response")
                 }
-            } catch (exception: NetworkService.ConnectionException) {
+            } catch (exception: NetworkService.NetworkException) {
                 exception.message?.let { callError(it) }
             } catch (exception: NullPointerException) {
                 callError("Some data missed")

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.testgame.R
 import com.example.testgame.databinding.PageMainShopInventoryBinding
+import testgame.data.User
 import testgame.ui.main.featuresInventory.InventoryItemListener
 import testgame.ui.main.featuresInventory.InventoryRecyclerAdapter
 import timber.log.Timber
@@ -29,14 +30,12 @@ class InventoryPageFragment: Fragment() {
         binding.lifecycleOwner = this
         viewModel = ViewModelProvider(this).get(ShopViewModel::class.java)
 
-        val manager = GridLayoutManager(activity, 3)
-        binding.inventoryRecyclerView.layoutManager = manager
         val adapter = InventoryRecyclerAdapter(InventoryItemListener {
             itemId -> Timber.i("Inventory item with $itemId was clicked")
         })
         binding.inventoryRecyclerView.adapter = adapter
 
-        viewModel.inventoryItems.observe(viewLifecycleOwner, {
+        User.inventory.observe(viewLifecycleOwner, {
             it?.let {
                 adapter.submitList(it)
             }

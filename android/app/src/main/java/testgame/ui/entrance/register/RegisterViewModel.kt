@@ -85,7 +85,7 @@ class RegisterViewModel : ViewModel() {
                 } else {
                     callError("Wrong token response")
                 }
-            } catch (exception: NetworkService.ConnectionException) {
+            } catch (exception: NetworkService.NetworkException) {
                 exception.message?.let { callError(it) }
             } catch (exception: NullPointerException) {
                 callError("Some data missed")

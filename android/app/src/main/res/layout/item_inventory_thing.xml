@@ -7,7 +7,7 @@
     <data>
         <variable
             name="inventoryItem"
-            type="testgame.ui.main.featuresInventory.InventoryItem" />
+            type="item.ItemData" />
         <variable
             name="clickListener"
             type="testgame.ui.main.featuresInventory.InventoryItemListener"/>

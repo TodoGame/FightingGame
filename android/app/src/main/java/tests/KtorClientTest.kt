@@ -1,5 +1,6 @@
 package tests
 
+import io.ktor.client.statement.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.GlobalScope
@@ -9,65 +10,25 @@ import kotlinx.serialization.encodeToString
 import match.MatchSnapshot
 import match.Message
 import match.PlayerAction
+import security.UserLoginInput
+import security.UserRegisterInput
 import testgame.data.GameApp
 import testgame.data.Match
 import testgame.data.MatchPlayer
-import testgame.network.MatchApi
-import testgame.network.NetworkService
-import testgame.network.SecurityApi
+import testgame.data.User
+import testgame.network.*
+import testgame.network.NetworkService.Companion.AUTHORIZATION_HEADER_NAME
+import kotlin.random.Random
 import kotlin.system.exitProcess
 
-const val AUTHORIZATION_HEADER_NAME = "Authorization"
-val match = Match
+val match = Match()
 lateinit var username: String
+var facultyId = 1
+lateinit var token: String
 
 @KtorExperimentalAPI
 fun main() {
     runBlocking {
-        var globalToken = ""
-//        val myUsername = kotlin.random.Random.nextInt(0, 1000).toString()
-        val myUsername = "TestUsername5"
-        val myFacultyId = 1
-        username = myUsername
-        try {
-//            val userRegisterInput = security.UserRegisterInput(
-//                    myUsername,
-//                    "testPassword",
-//                    "testUsername",
-//                    myFacultyId
-//            )
-//            var response: HttpResponse? = null
-//            try {
-//                response = SecurityApi.register(userRegisterInput)
-//            } catch (e: NetworkService.UnknownNetworkException) {
-//                println(e.message)
-//            }
-            val userLoginInput = security.UserLoginInput(
-                    myUsername, "testPassword"
-            )
-            val response = SecurityApi.login(userLoginInput)
-            val token = response!!.headers[AUTHORIZATION_HEADER_NAME]
-            if (token != null) {
-                globalToken = token
-                println("Token is: $token")
-            } else {
-                println("Wrong token response")
-            }
-        } catch (exception: NullPointerException) {
-            println("Some data missed")
-        }
-
-        val ticket = MatchApi.getWebSocketTicket(globalToken)
-        GlobalScope.launch {
-            MatchApi.connectToMatchWebSocket(
-                    match,
-                    ticket,
-                    ::onMatchStarted,
-                    ::onTurnStarted,
-                    ::onPlayerAction,
-                    ::onMatchEnded
-            )
-        }
         var command: String
         while (true) {
             print("Enter the command: ")
@@ -80,9 +41,101 @@ fun main() {
     }
 }
 
+@KtorExperimentalAPI
 private fun runCommand(command: String) {
-    when (command) {
-        "attack" -> attack()
+    try {
+        when (command) {
+            "register" -> register()
+            "login" -> login()
+            "loginSuper" -> loginSuper()
+            "user" -> getMe()
+            "connectMain" -> connectMain()
+            "subscribeUser" -> subscribeUser()
+            "subscribeFaculty" -> subscribeLeadingFaculty()
+
+            "myFaculty" -> getMyFaculty()
+            "leadingFaculty" -> getLeadingFaculty()
+
+            "shopItems" -> getShopItems()
+            "buyItem" -> buyItem()
+
+            "connectMatch" -> connectMatch()
+            "attack" -> attack()
+            else -> return
+        }
+    } catch (e: Exception) {
+        throw e
+    }
+}
+
+@KtorExperimentalAPI
+private fun getShopItems() {
+    runBlocking {
+        val items = ShopApi.getAllNotOwnedItems(token)
+        println("Items are")
+        items.forEach {
+            println(it)
+        }
+    }
+}
+
+@KtorExperimentalAPI
+private fun buyItem() {
+    print("Enter the itemId: ")
+    val input = readLine() ?: ""
+    runBlocking {
+        try {
+            val user = ShopApi.buyItem(token, input.toInt())
+            println("User: $user")
+        } catch (e: Exception) {
+//            println(e.message)
+            throw e
+        }
+    }
+}
+
+@KtorExperimentalAPI
+private fun connectMain() {
+    runBlocking {
+        val ticket = MainApi.getWebSocketTicket(token)
+        GlobalScope.launch {
+            MainApi.connectToMainWebSocket(
+                    ticket,
+                    ::onUserMoneyUpdate,
+                    ::onLeadingFacultyUpdate,
+                    ::onFacultiesPointsUpdate
+            )
+        }
+    }
+}
+
+@KtorExperimentalAPI
+private fun subscribeUser() {
+    runBlocking {
+        MainApi.subscribeUser(username, true)
+    }
+}
+
+@KtorExperimentalAPI
+private fun subscribeLeadingFaculty() {
+    runBlocking {
+        MainApi.subscribeLeadingFaculty(true)
+    }
+}
+
+@KtorExperimentalAPI
+private fun connectMatch() {
+    runBlocking {
+        val ticket = MatchApi.getWebSocketTicket(token)
+        GlobalScope.launch {
+            MatchApi.connectToMatchWebSocket(
+                    ticket,
+                    ::onMatchStarted,
+                    ::onTurnStarted,
+                    ::onPlayerAction,
+                    ::onMatchEnded
+            )
+        }
     }
 }
 
@@ -93,7 +146,7 @@ private fun attack() {
                 PlayerAction(enemyUsername, match.player!!.username)
         )
         GlobalScope.launch {
-            match.webSocketSession?.send(action)
+            User.matchSession?.send(action)
                     ?: throw GameApp.NullAppDataException("Null match webSocketSession")
         }
     } catch (exception: java.lang.NullPointerException) {
@@ -101,49 +154,85 @@ private fun attack() {
     }
 }
 
-private fun onMatchStarted(players: Set<String>) {
-//    callInfo("Match started")
-}
-
-private fun onTurnStarted(matchSnapshot: MatchSnapshot) {
-    val players = matchSnapshot.players
-    val playerSnapshot = players.find { it.username == username }
-            ?: throw GameApp.NullAppDataException("Null playerSnapshot")
-    val enemySnapshot = players.find { it.username != username }
-            ?: throw GameApp.NullAppDataException("Null enemySnapshot")
-    if (match.player == null || match.enemy == null) {
-        match.player = MatchPlayer(playerSnapshot.username, playerSnapshot.health, playerSnapshot.health)
-        match.enemy = MatchPlayer(enemySnapshot.username, enemySnapshot.health, enemySnapshot.health)
-    } else {
-        match.player?.let { it.currentHealth = playerSnapshot.health }
-        match.enemy?.let { it.currentHealth = enemySnapshot.health }
+@KtorExperimentalAPI
+private fun register(): HttpResponse? {
+    var response: HttpResponse? = null
+    runBlocking {
+        username = "a"
+        facultyId = 2
+        val userRegisterInput = UserRegisterInput(
+                username,
+                "testPassword",
+                "testUsername",
+                facultyId
+        )
+        try {
+            response = SecurityApi.register(userRegisterInput)
+        } catch (e: NetworkService.NetworkException) {
+            println(e.message)
+        }
     }
-    if (playerSnapshot.isActive) {
-        match.state = Match.State.MY_TURN
-    } else {
-        match.state = Match.State.ENEMY_TURN
+    return response
+}
+
+@KtorExperimentalAPI
+private fun login() : HttpResponse? {
+    var response: HttpResponse? = null
+    runBlocking {
+        username = "a"
+        val userLoginInput = UserLoginInput(
+                username, "testPassword"
+        )
+        response = SecurityApi.login(userLoginInput)
+        if (response!!.headers[AUTHORIZATION_HEADER_NAME] != null) {
+            token = response!!.headers[AUTHORIZATION_HEADER_NAME]!!
+            println("Token is: $token")
+        } else {
+            println("Wrong token response")
+        }
+    }
+    return response
+}
+
+@KtorExperimentalAPI
+private fun loginSuper(): HttpResponse? {
+    var response: HttpResponse? = null
+    runBlocking {
+        username = "username"
+        val userLoginInput = UserLoginInput(
+                username, "password"
+        )
+        response = SecurityApi.login(userLoginInput)
+        if (response!!.headers[AUTHORIZATION_HEADER_NAME] != null) {
+            token = response!!.headers[AUTHORIZATION_HEADER_NAME]!!
+            println("Token is: $token")
+        } else {
+            println("Wrong token response")
+        }
+    }
+    return response
+}
+
+@KtorExperimentalAPI
+private fun getMe() {
+    runBlocking {
+        val user = MainApi.getPlayerData(token)
+        println("User: $user")
     }
 }
 
-private fun onPlayerAction(attackerUsername: String, targetUsername: String) {
-    val attacker = match.findPlayerByUsername(attackerUsername)
-    val target = match.findPlayerByUsername(targetUsername)
-    target.currentHealth -= GameApp.PLAYER_ACTION_DAMAGE
-    callInfo("${attacker.username} hit ${target.username} \n " +
-            "Hitted ${GameApp.PLAYER_ACTION_DAMAGE} health")
-}
-
-private fun onMatchEnded(winner: String) {
-    callInfo("Match ended")
-    match.state = Match.State.NO_MATCH
-    GlobalScope.launch {
-        match.webSocketSession?.close()
-                ?: throw GameApp.NullAppDataException("Null match webSocketSession")
+@KtorExperimentalAPI
+private fun getMyFaculty() {
+    runBlocking {
+        val faculty = MainApi.getConcreteFacultyData(token, facultyId)
+        println("MyFaculty: $faculty")
     }
-    match.winner = winner
-    exitProcess(0)
 }
 
-private fun callInfo(info: String) {
-    println(info)
+@KtorExperimentalAPI
+private fun getLeadingFaculty() {
+    runBlocking {
+        val faculty = MainApi.getLeadingFacultyData(token)
+        println("MyFaculty: $faculty")
+    }
 }

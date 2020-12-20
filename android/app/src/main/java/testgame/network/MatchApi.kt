@@ -4,14 +4,14 @@ import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.cio.websocket.Frame
-import io.ktor.http.cio.websocket.readText
+import io.ktor.http.cio.websocket.*
 import io.ktor.util.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import match.*
 import testgame.data.Match
+import testgame.data.User
 import websocket.WebSocketTicket
 import java.io.IOException
 import java.lang.Exception
@@ -33,13 +33,13 @@ object MatchApi : NetworkService() {
 
     @KtorExperimentalAPI
     suspend fun connectToMatchWebSocket(
-            match: Match,
             ticket: WebSocketTicket,
             onMatchStart: (players: Set<String>) -> Unit,
             onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
             onPlayerAction: (attacker: String, target: String) -> Unit,
             onMatchEnd: (winner: String) -> Unit
     ) {
+        lateinit var session: WebSocketSession
         client.ws(
                 method = HttpMethod.Get,
                 request = {
@@ -47,7 +47,7 @@ object MatchApi : NetworkService() {
                     parameter(TICKET_QUERY_PARAM_KEY, Json.encodeToString(ticket))
                 }
         ) {
-            match.webSocketSession = this
+            User.matchSession = this
             for (frame in incoming) {
                 if (frame is Frame.Text) {
                     readMessage(

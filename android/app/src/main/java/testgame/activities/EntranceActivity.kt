@@ -22,15 +22,5 @@ class EntranceActivity : AppCompatActivity() {
                 supportFragmentManager.findFragmentById(R.id.entrance_nav_host_fragment) as NavHostFragment
         val navController: NavController = navHostFragment.navController
         NavigationUI.setupActionBarWithNavController(this, navController)
-        if (isTokenAlive()) {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-    }
-
-    private fun isTokenAlive(): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        return sharedPreferences.contains(getString(R.string.saved_token_key)) &&
-                sharedPreferences.contains(getString(R.string.saved_username_key))
     }
 }

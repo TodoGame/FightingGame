@@ -22,6 +22,7 @@ import io.ktor.util.*
 //import com.example.testgame.ui.entrance.login.LoginFragmentDirections
 import testgame.activities.EntranceActivity
 import testgame.data.GameApp
+import testgame.data.User
 
 class LoginFragment : Fragment() {
 
@@ -133,8 +134,7 @@ class LoginFragment : Fragment() {
             putString(getString(R.string.saved_username_key), username)
             apply()
         }
-        val app: GameApp = activity?.application as GameApp
-        app.user.username = username
-        app.user.authenticationToken = token
+        User.username.postValue(username)
+        User.authenticationToken = token
     }
 }

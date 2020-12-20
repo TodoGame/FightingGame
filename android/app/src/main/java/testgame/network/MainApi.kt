@@ -13,9 +13,8 @@ import io.ktor.util.KtorExperimentalAPI
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import match.*
+import kotlinx.serialization.json.encodeToJsonElement
 import subscription.*
-import testgame.data.Match
 import user.GET_ME_ENDPOINT
 import user.GET_USER_ENDPOINT
 import user.UserData
@@ -25,19 +24,19 @@ import java.lang.IllegalStateException
 
 object MainApi : NetworkService() {
 
-    val session: WebSocketSession? = null
+    private var session: WebSocketSession? = null
 
     @KtorExperimentalAPI
     suspend fun getPlayerData(token: String): UserData {
         val response =  getSuccessfulResponseOrException {
-            client.post() {
+            client.get() {
                 url("${BASE_HTTP_URL}$GET_ME_ENDPOINT")
                 header(AUTHORIZATION_HEADER_NAME, token)
                 contentType(ContentType.Application.Json)
             }
         }
         val stringResponse = response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: ""
-        return Json.decodeFromString(stringResponse)
+        return jsonFormat.decodeFromString(stringResponse)
     }
 
     @KtorExperimentalAPI
@@ -55,7 +54,7 @@ object MainApi : NetworkService() {
     @KtorExperimentalAPI
     suspend fun getLeadingFacultyData(token: String): FacultyData {
         val response =  getSuccessfulResponseOrException {
-            client.post() {
+            client.get() {
                 url("${BASE_HTTP_URL}$GET_LEADING_FACULTY")
                 header(AUTHORIZATION_HEADER_NAME, token)
                 contentType(ContentType.Application.Json)
@@ -68,7 +67,7 @@ object MainApi : NetworkService() {
     @KtorExperimentalAPI
     suspend fun getAllFacultiesData(token: String): List<FacultyData> {
         val response =  getSuccessfulResponseOrException {
-            client.post() {
+            client.get() {
                 url("${BASE_HTTP_URL}$GET_ALL_FACULTIES_ENDPOINT")
                 header(AUTHORIZATION_HEADER_NAME, token)
                 contentType(ContentType.Application.Json)
@@ -81,10 +80,10 @@ object MainApi : NetworkService() {
     @KtorExperimentalAPI
     suspend fun getConcreteFacultyData(token: String, facultyId: Int): FacultyData {
         val response =  getSuccessfulResponseOrException {
-            client.post() {
+            client.get() {
                 url("${BASE_HTTP_URL}$GET_SINGLE_FACULTY_ENDPOINT")
                 header(AUTHORIZATION_HEADER_NAME, token)
-                parameter(FACULTY_QUERY_PARAM_KEY, facultyId.toString())
+                parameter(ID_QUERY_PARAM_KEY, facultyId)
                 contentType(ContentType.Application.Json)
             }
         }
@@ -118,9 +117,10 @@ object MainApi : NetworkService() {
                     parameter(TICKET_QUERY_PARAM_KEY, Json.encodeToString(ticket))
                 }
         ) {
+            session = this
             for (frame in incoming) {
                 if (frame is Frame.Text) {
-                    readMessage(
+                    readSubscriptionUpdateMessage(
                             jsonFormat.decodeFromString(frame.readText()),
                             onUserMoneyUpdate,
                             onLeadingFacultyUpdate,
@@ -131,7 +131,7 @@ object MainApi : NetworkService() {
         }
     }
 
-    private fun readMessage(
+    private fun readSubscriptionUpdateMessage(
             update: SubscriptionUpdate,
             onUserMoneyUpdate: (username: Username, money: Int) -> Unit,
             onLeadingFacultyUpdate: (facultyId: Int, points: Int) -> Unit,
@@ -154,51 +154,27 @@ object MainApi : NetworkService() {
     }
 
     @KtorExperimentalAPI
-    suspend fun subscribeUser(token: String) {
-        if (session == null) {
-            throw NullWebSocketSessionException("You are not connected to the websocket")
-        }
-//        session.send()
-        val response = getSuccessfulResponseOrException {
-            client.get {
-                url("${BASE_HTTP_URL}$SUBSCRIPTION_WEBSOCKET_TICKET_ENDPOINT")
-                header(AUTHORIZATION_HEADER_NAME, token)
-            }
-        }
-        val stringResponse = response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: ""
-        return Json.decodeFromString(stringResponse)
+    suspend fun subscribeUser(username: Username, state: Boolean) {
+        subscribeEvent(UserMoneyUpdateSubscription(username, state))
     }
 
     @KtorExperimentalAPI
-    suspend fun subscribeLeadingFaculty(token: String) {
-        if (session == null) {
-            throw NullWebSocketSessionException("You are not connected to the websocket")
-        }
-//        session.send()
-        val response = getSuccessfulResponseOrException {
-            client.get {
-                url("${BASE_HTTP_URL}$SUBSCRIPTION_WEBSOCKET_TICKET_ENDPOINT")
-                header(AUTHORIZATION_HEADER_NAME, token)
-            }
-        }
-        val stringResponse = response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: ""
-        return Json.decodeFromString(stringResponse)
+    suspend fun subscribeLeadingFaculty(state: Boolean) {
+        subscribeEvent(LeadingFacultySubscription(state))
     }
 
     @KtorExperimentalAPI
-    suspend fun subscribeFacultyPoints(token: String) {
+    suspend fun subscribeFacultyPoints(state: Boolean) {
+        subscribeEvent(AllFacultiesPointsSubscription(state))
+    }
+
+    @KtorExperimentalAPI
+    suspend fun subscribeEvent(subscriptionMessage: SubscriptionMessage) {
         if (session == null) {
-            throw NullWebSocketSessionException("You are not connected to the websocket")
+            throw NullWebSocketSessionException("You are not connected to the webSocket")
         }
-//        session.send()
-        val response = getSuccessfulResponseOrException {
-            client.get {
-                url("${BASE_HTTP_URL}$SUBSCRIPTION_WEBSOCKET_TICKET_ENDPOINT")
-                header(AUTHORIZATION_HEADER_NAME, token)
-            }
-        }
-        val stringResponse = response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: ""
-        return Json.decodeFromString(stringResponse)
+        val message = jsonFormat.encodeToString(subscriptionMessage)
+        session?.send(message)
     }
 
     class NullWebSocketSessionException(message: String) : IllegalStateException(message)

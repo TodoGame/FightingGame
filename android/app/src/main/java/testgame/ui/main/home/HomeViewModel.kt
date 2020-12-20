@@ -1,18 +1,17 @@
 package testgame.ui.main.home
 
-import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import faculty.FacultyData
 import io.ktor.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import testgame.data.GameApp
-import testgame.data.Match
+import testgame.data.User
 import testgame.network.MainApi
-import testgame.network.MatchApi
 import testgame.network.NetworkService
 import testgame.ui.main.featuresNews.NewsItem
 import user.Username
@@ -25,14 +24,15 @@ class HomeViewModel : ViewModel() {
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    private val _facultyScore = MutableLiveData(500)
+    private val _facultyScore = MutableLiveData<Int>()
     val facultyScore: LiveData<Int>
         get() = _facultyScore
 
-    private val _text = MutableLiveData("This is home Fragment")
-    val text: LiveData<String> = _text
+    private val _leadingFaculty = MutableLiveData<FacultyData>()
+    val leadingFaculty: LiveData<FacultyData>
+        get() = _leadingFaculty
 
-    private var _username = MutableLiveData("GeneralBum")
+    private var _username = MutableLiveData<String>()
     val username: LiveData<String>
         get() = _username
 
@@ -40,7 +40,7 @@ class HomeViewModel : ViewModel() {
     val level: LiveData<String>
         get() = _level
 
-    private var _faculty = MutableLiveData("MathMech")
+    private var _faculty = MutableLiveData<String>()
     val faculty: LiveData<String>
         get() = _faculty
 
@@ -48,28 +48,22 @@ class HomeViewModel : ViewModel() {
     val errorString: LiveData<String>
         get() = _errorString
 
-    private var _newsItems = MutableLiveData(listOf(
-            NewsItem(1, "Somebody killed somebody1"),
-            NewsItem(2, "Somebody killed somebody2"),
-            NewsItem(3, "Somebody killed somebody3"),
-            NewsItem(4, "Somebody killed somebody4"),
-            NewsItem(5, "Somebody killed somebody5"),
-    ))
+    private var _newsItems = MutableLiveData<List<NewsItem>>()
     val newsItems: LiveData<List<NewsItem>>
         get() = _newsItems
 
-    private val _testIsCalled = MutableLiveData(false)
-    val testIsCalled: LiveData<Boolean>
-        get() = _testIsCalled
+    private val _testProgress = MutableLiveData(100)
+    val testProgress: LiveData<Int>
+        get() = _testProgress
 
     @KtorExperimentalAPI
     fun getUserData() {
         try {
             coroutineScope.launch {
-                val userData = MainApi.getPlayerData(app.user.authenticationToken)
-                app.user.userData = userData
+                val userData = MainApi.getPlayerData(User.authenticationToken)
+                User.updateFromUserData(userData)
             }
-        } catch (exception: NetworkService.ConnectionException) {
+        } catch (exception: NetworkService.NetworkException) {
             exception.message?.let { _errorString.postValue(it) }
         } catch (exception: NullPointerException) {
             _errorString.postValue("Some data missed")
@@ -80,10 +74,10 @@ class HomeViewModel : ViewModel() {
     fun getLeadingFacultyData() {
         try {
             coroutineScope.launch {
-                val facultyData = MainApi.getLeadingFacultyData(app.user.authenticationToken)
-                TODO()
+                val facultyData = MainApi.getLeadingFacultyData(User.authenticationToken)
+                _leadingFaculty.postValue(facultyData)
             }
-        } catch (exception: NetworkService.ConnectionException) {
+        } catch (exception: NetworkService.NetworkException) {
             exception.message?.let { _errorString.postValue(it) }
         } catch (exception: NullPointerException) {
             _errorString.postValue("Some data missed")
@@ -94,7 +88,7 @@ class HomeViewModel : ViewModel() {
     fun makeSubscriptions() {
         coroutineScope.launch {
             try {
-                val webSocketTicket = MainApi.getWebSocketTicket(app.user.authenticationToken)
+                val webSocketTicket = MainApi.getWebSocketTicket(User.authenticationToken)
                 _errorString.postValue("Got ticket")
                 MainApi.connectToMainWebSocket(
                         webSocketTicket,
@@ -102,10 +96,10 @@ class HomeViewModel : ViewModel() {
                         ::onLeadingFacultyUpdate,
                         ::onFacultiesPointsUpdate,
                 )
-//                MainApi.subscribeUser()
-//                MainApi.subscribeLeadingFaculty()
-//                MainApi.subscribeFacultyPoints()
-            } catch (exception: NetworkService.NoResponseException) {
+                User.username.value?.let { MainApi.subscribeUser(it, true) }
+                MainApi.subscribeLeadingFaculty(true)
+                MainApi.subscribeFacultyPoints(true)
+            } catch (exception: NetworkService.NetworkException) {
                 exception.message?.let { _errorString.postValue(it) }
             } catch (exception: NullPointerException) {
                 _errorString.postValue("Null Pointer exception")
@@ -130,6 +124,6 @@ class HomeViewModel : ViewModel() {
     }
 
     fun test() {
-        _testIsCalled.postValue(true)
+        _testProgress.postValue(_testProgress.value?.minus(20))
     }
 }

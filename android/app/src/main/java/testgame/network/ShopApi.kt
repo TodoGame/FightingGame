@@ -18,7 +18,7 @@ object ShopApi : NetworkService() {
             client.post() {
                 url("${BASE_HTTP_URL}$BUY_ITEM_ENDPOINT")
                 header(AUTHORIZATION_HEADER_NAME, token)
-                parameter(ITEM_ID_QUERY_PARAM_KEY, itemId.toString())
+                body = itemId.toString()
                 contentType(ContentType.Application.Json)
             }
         }
@@ -29,7 +29,7 @@ object ShopApi : NetworkService() {
     @KtorExperimentalAPI
     suspend fun getAllItems(token: String): List<ItemData> {
         val response =  getSuccessfulResponseOrException {
-            client.post() {
+            client.get() {
                 url("${BASE_HTTP_URL}$GET_ALL_ITEMS_ENDPOINT")
                 header(AUTHORIZATION_HEADER_NAME, token)
                 contentType(ContentType.Application.Json)
@@ -42,7 +42,7 @@ object ShopApi : NetworkService() {
     @KtorExperimentalAPI
     suspend fun getAllNotOwnedItems(token: String): List<ItemData> {
         val response =  getSuccessfulResponseOrException {
-            client.post() {
+            client.get() {
                 url("${BASE_HTTP_URL}$GET_NOT_OWNED_ITEMS")
                 header(AUTHORIZATION_HEADER_NAME, token)
                 contentType(ContentType.Application.Json)

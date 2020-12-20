@@ -67,21 +67,6 @@ class SettingsFragment : Fragment() {
             languagesOptionDialog?.show()
         }
 
-//        val warriorImage = binding.warriorImage
-//        val idleWarrior = warriorImage.drawable as AnimationDrawable
-//        idleWarrior.start()
-//
-//        binding.changeAnimationButton.setOnClickListener {
-//            coroutineScope.launch {
-//                idleWarrior.stop()
-//                warriorImage.setImageResource(R.drawable.animation_warrior_attack)
-//                (warriorImage.drawable as AnimationDrawable).start()
-//                delay(GameApp.ATTACK_ANIMATION_PLAY_DELAY)
-//                warriorImage.setImageResource(R.drawable.animation_warrior_idle)
-//                (warriorImage.drawable as AnimationDrawable).start()
-//            }
-//        }
-
         viewModel.isLogOutPressed.observe(viewLifecycleOwner, Observer { isPressed ->
             if (isPressed) {
                 val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
@@ -92,6 +77,7 @@ class SettingsFragment : Fragment() {
                 }
                 viewModel.onLogOutConfirmed()
                 val intent = Intent(activity, EntranceActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                 startActivity(intent)
             }
         })

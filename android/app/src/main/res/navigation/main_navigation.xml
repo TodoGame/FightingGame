@@ -22,7 +22,11 @@
         android:id="@+id/fightFragment"
         android:name="testgame.ui.main.fight.FightFragment"
         android:label="shop_fragment"
-        tools:layout="@layout/fragment_main_shop" />
+        tools:layout="@layout/fragment_main_shop" >
+        <action
+            android:id="@+id/action_fightFragment_to_locationsFragment"
+            app:destination="@id/locationsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="testgame.ui.main.settings.SettingsFragment"
