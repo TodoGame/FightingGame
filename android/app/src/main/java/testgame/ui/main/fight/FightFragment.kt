@@ -98,7 +98,7 @@ class FightFragment : Fragment() {
 
         Match.enemy.observe(viewLifecycleOwner, { enemy ->
             Match.enemyMaxHealth?.let { enemyHealthBar.update(it, enemy.health) } ?: Timber.i("Null max health")
-            playerHealthBar.invalidate()
+            enemyHealthBar.invalidate()
         })
 
         viewModel.playerWantToEscape.observe(viewLifecycleOwner, { wantToEscape ->

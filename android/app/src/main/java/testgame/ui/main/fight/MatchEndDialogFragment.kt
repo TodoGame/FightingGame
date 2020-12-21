@@ -16,15 +16,13 @@ import testgame.data.User
 import timber.log.Timber
 import java.lang.NullPointerException
 
-class MatchEndDialogFragment(val onConfirmFunction: () -> Unit) : DialogFragment() {
+class MatchEndDialogFragment(val winner: String, val onConfirmFunction: () -> Unit) : DialogFragment() {
     companion object {
         const val TAG = "MatchEndDialogFragment"
-        private const val KEY_WINNER = "KEY_TITLE"
 
         fun newInstance(winner: String, onConfirmFunction: () -> Unit): MatchEndDialogFragment {
             val args = Bundle()
-            args.putString(KEY_WINNER, winner)
-            val fragment = MatchEndDialogFragment(onConfirmFunction)
+            val fragment = MatchEndDialogFragment(winner, onConfirmFunction)
             fragment.arguments = args
             return fragment
         }
@@ -38,7 +36,6 @@ class MatchEndDialogFragment(val onConfirmFunction: () -> Unit) : DialogFragment
                 false
         )
 
-        val winner = arguments?.getString(KEY_WINNER) ?: throw NullPointerException("No argument passed to dDialogFragment")
         Timber.i("Winner: $winner")
         Timber.i("Player username: ${User.username.value}")
         if (winner == User.username.value) {
