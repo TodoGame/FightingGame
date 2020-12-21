@@ -24,6 +24,7 @@ import testgame.activities.MainActivity
 import testgame.data.FightAction
 import testgame.data.GameApp.Companion.ATTACK_ANIMATION_PLAY_DELAY
 import testgame.data.Match
+import testgame.data.Match.playerMaxHealth
 import testgame.data.User
 import testgame.ui.main.ProgressBar
 import testgame.ui.main.featuresInventory.InventoryItemListener
@@ -33,7 +34,6 @@ import timber.log.Timber
 class FightFragment : Fragment() {
 
     private lateinit var viewModel: FightViewModel
-    private lateinit var match: Match
     private lateinit var viewModelFactory: FightViewModelFactory
 
     private lateinit var playerWarriorImage: ImageView
@@ -75,9 +75,8 @@ class FightFragment : Fragment() {
         )
 
         setUpViewModel()
-        match = ViewModelProvider(this).get(Match::class.java)
         binding.viewModel = viewModel
-        binding.match = match
+        binding.match = testgame.data.Match
         binding.lifecycleOwner = this
 
         playerHealthBar = binding.myHealthBar
@@ -92,13 +91,13 @@ class FightFragment : Fragment() {
             (enemyWarriorImage.drawable as AnimationDrawable).start()
         }
 
-        match.player.observe(viewLifecycleOwner, { player ->
-            match.playerMaxHealth?.let { playerHealthBar.update(it, player.health) } ?: Timber.i("Null max health")
+        Match.player.observe(viewLifecycleOwner, { player ->
+            Match.playerMaxHealth?.let { playerHealthBar.update(it, player.health) } ?: Timber.i("Null max health")
             playerHealthBar.invalidate()
         })
 
-        match.enemy.observe(viewLifecycleOwner, { enemy ->
-            match.enemyMaxHealth?.let { enemyHealthBar.update(it, enemy.health) } ?: Timber.i("Null max health")
+        Match.enemy.observe(viewLifecycleOwner, { enemy ->
+            Match.enemyMaxHealth?.let { enemyHealthBar.update(it, enemy.health) } ?: Timber.i("Null max health")
             playerHealthBar.invalidate()
         })
 

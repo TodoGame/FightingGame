@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch
 
 class FightViewModel(val token: String) : ViewModel() {
 
-    private val match = Match()
+    private val match = Match
 
     val matchWinner: String
         get() = match.winner.value ?: ""

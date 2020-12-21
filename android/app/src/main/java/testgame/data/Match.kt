@@ -10,7 +10,7 @@ import match.PlayerSnapshot
 import java.lang.NullPointerException
 import java.util.concurrent.atomic.AtomicInteger
 
-class Match : ViewModel() {
+object Match : ViewModel() {
     var player = MutableLiveData<PlayerSnapshot>()
     var playerUsername = MutableLiveData<String>()
     var playerMaxHealth: Int? = null

@@ -18,7 +18,7 @@ import testgame.network.*
 import testgame.network.NetworkService.Companion.AUTHORIZATION_HEADER_NAME
 import kotlin.system.exitProcess
 
-val match = Match()
+val match = Match
 lateinit var username: String
 var facultyId = 1
 lateinit var token: String
