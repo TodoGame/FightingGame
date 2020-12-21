@@ -1,5 +1,6 @@
 package com.somegame
 
+import ID_QUERY_PARAM_KEY
 import com.somegame.responseExceptions.BadRequestException
 import com.somegame.security.JwtConfig
 import com.somegame.user.User
@@ -16,8 +17,8 @@ suspend fun <R> handleReceiveExceptions(func: suspend () -> R) = try {
     throw BadRequestException("Could not deserialize request: $e")
 }
 
-fun ApplicationCall.requiredIdParameter(): Int = request.queryParameters["id"]?.toIntOrNull()
-    ?: throw BadRequestException("Request must contain an `id` query parameter with Int value")
+fun ApplicationCall.requiredIdParameter(): Int = request.queryParameters[ID_QUERY_PARAM_KEY]?.toIntOrNull()
+    ?: throw BadRequestException("Request must contain an `$ID_QUERY_PARAM_KEY` query parameter with Int value")
 
 fun PipelineContext<Unit, ApplicationCall>.addJwtToken(user: User) {
     val token = JwtConfig.makeLoginToken(user)

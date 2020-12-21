@@ -7,6 +7,6 @@ const val matchWebSocketName = "match"
 
 val matchWebSocketEndpoint = getWebSocketEndpoint(matchWebSocketName)
 
-val MATCH_PREFERRED_OPPONENT_FACULTY_ID = "opponentFacultyId"
+const val MATCH_OPPONENT_FACULTY_ID_QUERY_PARAM_KEY = "opponentFacultyId"
 
 val matchWebSocketTicketEndpoint = getWebSocketTicketEndpoint(matchWebSocketName)

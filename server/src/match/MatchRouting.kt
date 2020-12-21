@@ -42,7 +42,7 @@ class MatchRouting : KoinComponent {
                 return@webSocket
             }
 
-            val opponentFacultyId = call.request.queryParameters[MATCH_PREFERRED_OPPONENT_FACULTY_ID]?.toIntOrNull()
+            val opponentFacultyId = call.request.queryParameters[MATCH_OPPONENT_FACULTY_ID_QUERY_PARAM_KEY]?.toIntOrNull()
 
             if (opponentFacultyId != null && !facultyRepository.doesFacultyExist(opponentFacultyId)) {
                 close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Faculty with id=$opponentFacultyId not found"))
