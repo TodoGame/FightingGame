@@ -53,6 +53,6 @@ class InventoryItemDiffCallback :
     }
 }
 
-class InventoryItemListener(val listener: (itemId: Int) -> Unit) {
-    fun onClick(item: ItemData) = listener(item.id)
+class InventoryItemListener(val listener: (item: ItemData) -> Unit) {
+    fun onClick(item: ItemData) = listener(item)
 }

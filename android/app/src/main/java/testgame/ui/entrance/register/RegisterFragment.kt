@@ -12,13 +12,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentEntranceRegisterBinding
-import io.ktor.util.KtorExperimentalAPI
-import testgame.data.FacultyOption
+import faculty.FixedFaculties
+import io.ktor.util.*
 import testgame.ui.entrance.register.RegisterViewModel
 
 class RegisterFragment : Fragment() {
@@ -72,11 +71,11 @@ class RegisterFragment : Fragment() {
         }
 
         val facultyOptionDialogBuilder = activity?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
-        val faculties = FacultyOption.values()
+        val faculties = FixedFaculties.values()
         val facultiesOptionDialog = facultyOptionDialogBuilder?.setTitle("Choose your faculty")
-                ?.setItems(faculties.map { it.facultyString }.toTypedArray()) { dialog, which ->
+                ?.setItems(faculties.map { it.name }.toTypedArray()) { dialog, which ->
                     viewModel.chooseFacultyOption(faculties[which])
-                    binding.facultyOptionButton.text = faculties[which].facultyString
+                    binding.facultyOptionButton.text = faculties[which].name
                     dialog.cancel()
                 }
 

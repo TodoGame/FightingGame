@@ -3,10 +3,12 @@ package tests
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import match.CalculatedPlayerAction
+import match.CalculatedPlayerDecision
+import match.CalculatedSkipTurn
 import match.MatchSnapshot
 import testgame.data.GameApp
 import testgame.data.Match
-import testgame.data.MatchPlayer
 import user.Username
 import kotlin.system.exitProcess
 
@@ -46,13 +48,8 @@ fun onTurnStarted(matchSnapshot: MatchSnapshot) {
             ?: throw GameApp.NullAppDataException("Null playerSnapshot")
     val enemySnapshot = players.find { it.username != username }
             ?: throw GameApp.NullAppDataException("Null enemySnapshot")
-    if (match.player == null || match.enemy == null) {
-        match.player = MatchPlayer(playerSnapshot.username, playerSnapshot.health, playerSnapshot.health)
-        match.enemy = MatchPlayer(enemySnapshot.username, enemySnapshot.health, enemySnapshot.health)
-    } else {
-        match.player?.let { it.currentHealth = playerSnapshot.health }
-        match.enemy?.let { it.currentHealth = enemySnapshot.health }
-    }
+    match.player = playerSnapshot
+    match.enemy = enemySnapshot
     if (playerSnapshot.isActive) {
         match.state = Match.State.MY_TURN
     } else {
@@ -60,13 +57,20 @@ fun onTurnStarted(matchSnapshot: MatchSnapshot) {
     }
 }
 
-fun onPlayerAction(attackerUsername: String, targetUsername: String) {
+fun onPlayerAction(message: CalculatedPlayerDecision) {
     callInfo("PlayerAction")
-    val attacker = match.findPlayerByUsername(attackerUsername)
-    val target = match.findPlayerByUsername(targetUsername)
-    target.currentHealth -= GameApp.PLAYER_ACTION_DAMAGE
-    callInfo("${attacker.username} hit ${target.username} \n " +
-            "Hitted ${GameApp.PLAYER_ACTION_DAMAGE} health")
+    when (message) {
+        is CalculatedPlayerAction -> {
+            val attacker = match.findPlayerByUsername(message.attacker)
+            val target = match.findPlayerByUsername(message.target)
+            target.health -= message.damage
+            callInfo("${attacker.username} hit ${target.username} \n " +
+                    "Hitted ${message.damage} health")
+        }
+        is CalculatedSkipTurn -> {
+
+        }
+    }
 }
 
 fun onMatchEnded(winner: String) {

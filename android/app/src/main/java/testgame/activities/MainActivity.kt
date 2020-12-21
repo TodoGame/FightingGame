@@ -9,6 +9,7 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -17,6 +18,7 @@ import com.example.testgame.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import testgame.data.GameApp
 import testgame.data.User
+import testgame.ui.main.fight.FightFragment
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -29,8 +31,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         if (!isTokenAlive()) {
             val intent = Intent(this, EntranceActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+//            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
             startActivity(intent)
+            finish()
         }
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -86,18 +89,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRestart() {
-        super.onRestart()
-        Timber.i("On restart")
-        val winner = intent.getStringExtra(getString(R.string.match_finish_winner_extra_key))
-        if (winner != null && winner == User.username.value) {
-            val builder = AlertDialog.Builder(this)
-            val dialog = builder.setTitle(R.string.sure_to_leave_fight)
-                    .setMessage(R.string.match_win_congratulation)
-                    .setPositiveButton(R.string.confirm) { dialog, _ ->
-                        dialog.cancel()
-                    }.create()
-            dialog.show()
+    override fun onBackPressed() {
+        val fightFragment = supportFragmentManager.findFragmentById(R.id.fightFragment)
+        if (fightFragment?.isVisible!!) {
+            buildOnEscapeDialog().setPositiveButton(R.string.confirm) { _, _ ->
+                super.onBackPressed()
+            }.create()
+        } else {
+            super.onBackPressed()
         }
     }
 

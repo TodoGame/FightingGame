@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.addCallback
@@ -16,10 +15,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.GridLayoutManager
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainFightRoomBinding
-import com.example.testgame.ui.entrance.register.RegisterFragmentDirections
+import item.ItemType
 import kotlinx.coroutines.*
 import testgame.activities.EntranceActivity
 import testgame.activities.MainActivity
@@ -51,8 +49,14 @@ class FightFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            // Handle the back button event
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            val winner = viewModel.matchWinner
+            if (winner == User.username.value) {
+                val dialog = MainActivity().buildOnEscapeDialog().setPositiveButton(R.string.confirm) { _, _ ->
+                    viewModel.confirmMatchEscape()
+                }.create()
+                dialog.show()
+            }
         }
     }
 
@@ -63,7 +67,6 @@ class FightFragment : Fragment() {
     ): View? {
         setMusic()
 
-        val app: GameApp = this.activity?.application as GameApp
         val binding: FragmentMainFightRoomBinding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_main_fight_room,
@@ -71,11 +74,10 @@ class FightFragment : Fragment() {
                 false
         )
 
-        setUpViewModel(app)
+        setUpViewModel()
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        timeTextView = binding.timeTextView
         myHealthBar = binding.myHealthBar
         enemyHealthBar = binding.enemyHealthBar
         playerWarriorImage = binding.myImageView
@@ -87,14 +89,6 @@ class FightFragment : Fragment() {
             (playerWarriorImage.drawable as AnimationDrawable).start()
             (enemyWarriorImage.drawable as AnimationDrawable).start()
         }
-
-        viewModel.logInfo.observe(viewLifecycleOwner, {
-            Timber.i(viewModel.logInfo.value)
-        })
-
-        viewModel.action.observe(viewLifecycleOwner, { action ->
-            binding.actionTextView.text = action
-        })
 
         viewModel.playerWantToEscape.observe(viewLifecycleOwner, { wantToEscape ->
             if (wantToEscape) {
@@ -116,26 +110,7 @@ class FightFragment : Fragment() {
         })
 
         viewModel.currentFightMenuOption.observe(viewLifecycleOwner, { option ->
-            when (option) {
-                FightViewModel.FightMenuOption.ATTACK -> {
-                    binding.inventoryWindow.visibility = View.GONE
-                    binding.skillsWindow.visibility = View.GONE
-                    binding.attackWindow.visibility = View.VISIBLE
-                }
-                FightViewModel.FightMenuOption.INVENTORY -> {
-                    binding.attackWindow.visibility = View.GONE
-                    binding.skillsWindow.visibility = View.GONE
-                    binding.inventoryWindow.visibility = View.VISIBLE
-                }
-                FightViewModel.FightMenuOption.SKILLS -> {
-                    binding.attackWindow.visibility = View.GONE
-                    binding.inventoryWindow.visibility = View.GONE
-                    binding.skillsWindow.visibility = View.VISIBLE
-                }
-                else -> {
-                    Timber.i("Null enum class of fight menu options")
-                }
-            }
+            handleFightMenuOptionChange(binding, option)
         })
         return binding.root
     }
@@ -189,7 +164,6 @@ class FightFragment : Fragment() {
                     (enemyWarriorImage.drawable as AnimationDrawable).start()
                 }
             }
-
         }
     }
 
@@ -211,11 +185,12 @@ class FightFragment : Fragment() {
                 val onConfirmFunction = {
                     NavHostFragment.findNavController(this).navigate(action)
                 }
-                activity?.supportFragmentManager?.let {
-                    MatchEndDialogFragment.newInstance(viewModel.matchWinner, onConfirmFunction)
-                            .show(it, MatchEndDialogFragment.TAG)
-                }
-                viewModel.confirmMatchRoomExit()
+//                activity?.supportFragmentManager?.let {
+//                    MatchEndDialogFragment.newInstance(viewModel.matchWinner, onConfirmFunction)
+//                            .show(it, MatchEndDialogFragment.TAG)
+//                }
+                onConfirmFunction()
+                viewModel.confirmMatchEscape()
             }
             else -> {
                 Timber.i(state.toString())
@@ -223,14 +198,34 @@ class FightFragment : Fragment() {
         }
     }
 
-    private fun setUpViewModel(app: GameApp) {
+    private fun handleFightMenuOptionChange(binding: FragmentMainFightRoomBinding, option: FightViewModel.FightMenuOption) {
+        when (option) {
+            FightViewModel.FightMenuOption.ATTACK -> {
+                binding.inventoryWindow.visibility = View.GONE
+                binding.skillsWindow.visibility = View.GONE
+                binding.attackWindow.visibility = View.VISIBLE
+            }
+            FightViewModel.FightMenuOption.INVENTORY -> {
+                binding.attackWindow.visibility = View.GONE
+                binding.skillsWindow.visibility = View.GONE
+                binding.inventoryWindow.visibility = View.VISIBLE
+            }
+            FightViewModel.FightMenuOption.SKILLS -> {
+                binding.attackWindow.visibility = View.GONE
+                binding.inventoryWindow.visibility = View.GONE
+                binding.skillsWindow.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun setUpViewModel() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         val token = sharedPreferences.getString(getString(R.string.saved_token_key), null)
         if (token == null) {
             val intent = Intent(activity, EntranceActivity::class.java)
             startActivity(intent)
         } else {
-            viewModelFactory = FightViewModelFactory(app, token)
+            viewModelFactory = FightViewModelFactory(token)
             viewModel = ViewModelProvider(requireActivity(), viewModelFactory).get(FightViewModel::class.java)
         }
     }
@@ -238,13 +233,16 @@ class FightFragment : Fragment() {
     private fun setUpInventory(binding: FragmentMainFightRoomBinding) {
         try {
             val adapter = InventoryRecyclerAdapter(InventoryItemListener {
-                itemId -> Timber.i("Inventory item with $itemId was clicked")
+                viewModel.attack(it.id)
+                Timber.i("Inventory item with ${it.id} was clicked")
             })
             binding.inventoryRecyclerView.adapter = adapter
 
             User.inventory.observe(viewLifecycleOwner, {
-                it?.let {
-                    adapter.submitList(it)
+                it?.let { list ->
+                    adapter.submitList(list.filter { item ->
+                        item.type != ItemType.MainWeapon
+                    })
                 }
             })
         } catch (exception: IllegalStateException) {

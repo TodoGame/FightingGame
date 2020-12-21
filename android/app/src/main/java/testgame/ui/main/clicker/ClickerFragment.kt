@@ -55,7 +55,9 @@ class ClickerFragment : Fragment() {
             try {
                 if (isClicked && gameApp.isInternetAvailable(context)) {
                     val intent = Intent(activity, MainActivity::class.java)
+//                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                     startActivity(intent)
+                    activity?.finish()
                 } else {
                     Toast.makeText(this.activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }

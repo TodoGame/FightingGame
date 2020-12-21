@@ -6,8 +6,7 @@
     <color name="colorPrimaryDark">#ffad60</color>
     <color name="colorAccent">#726255</color>
     <color name="colorAccentSecond">#372e29</color>
+    <color name="activityBackground">#372e2970</color>
     <color name="black">#000000</color>
 
-    <color name="green">#65ce2f</color>
-    <color name="greyGreen">#92b281</color>
 </resources>

@@ -7,18 +7,15 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
-import match.MatchSnapshot
 import match.Message
 import match.PlayerAction
 import security.UserLoginInput
 import security.UserRegisterInput
 import testgame.data.GameApp
 import testgame.data.Match
-import testgame.data.MatchPlayer
 import testgame.data.User
 import testgame.network.*
 import testgame.network.NetworkService.Companion.AUTHORIZATION_HEADER_NAME
-import kotlin.random.Random
 import kotlin.system.exitProcess
 
 val match = Match()

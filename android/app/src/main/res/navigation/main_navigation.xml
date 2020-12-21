@@ -25,12 +25,14 @@
         tools:layout="@layout/fragment_main_shop" >
         <action
             android:id="@+id/action_fightFragment_to_locationsFragment"
-            app:destination="@id/locationsFragment" />
+            app:destination="@id/locationsFragment"
+            app:popUpTo="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="testgame.ui.main.settings.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_main_settings"/>
     <fragment
         android:id="@+id/shopFragment"
         android:name="com.example.testgame.ui.main.shop.ShopFragment"

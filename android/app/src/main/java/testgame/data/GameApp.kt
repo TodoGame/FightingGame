@@ -14,7 +14,6 @@ import kotlin.IllegalArgumentException
 class GameApp : MultiDexApplication() {
 
     companion object {
-        const val PLAYER_ACTION_DAMAGE = 5
         const val ATTACK_ANIMATION_PLAY_DELAY: Long = 1200 // see animation resource
     }
 

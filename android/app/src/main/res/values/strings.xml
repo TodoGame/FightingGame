@@ -66,4 +66,5 @@
     <string name="news">News</string>
     <string name="there_is_no_news_yet">There is no news yet</string>
     <string name="location_hint">Choose the faculty you want to fight with</string>
+    <string name="defend">defend</string>
 </resources>

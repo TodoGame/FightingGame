@@ -66,4 +66,6 @@
     <string name="buy">Купить</string>
     <string name="news">Новости</string>
     <string name="there_is_no_news_yet">Пока что новостей нет</string>
+    <string name="location_hint">Выберите локацию, с которой хотите подраться</string>
+    <string name="defend">Защита</string>
 </resources>

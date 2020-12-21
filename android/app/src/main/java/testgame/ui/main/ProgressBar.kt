@@ -43,7 +43,7 @@ class ProgressBar(context: Context, private val attrs: AttributeSet) : View(cont
             1f
         } else {
             println("Result : ${(currentProgressPoints!! / maxProgressPoints!!).toFloat()}")
-            (currentProgressPoints!! / maxProgressPoints!!).toFloat()
+            (currentProgressPoints!! / maxProgressPoints!!.toFloat())
         }
         val healthWidth = ((width - margin * 2) * healthPointPercentage)
 

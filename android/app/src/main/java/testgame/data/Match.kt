@@ -4,12 +4,13 @@ import io.ktor.client.features.websocket.DefaultClientWebSocketSession
 import io.ktor.http.cio.websocket.*
 import match.MatchSnapshot
 import match.PlayerAction
+import match.PlayerSnapshot
 import java.lang.NullPointerException
 import java.util.concurrent.atomic.AtomicInteger
 
 class Match {
-    var player: MatchPlayer? = null
-    var enemy: MatchPlayer? = null
+    var player: PlayerSnapshot? = null
+    var enemy: PlayerSnapshot? = null
     var winner: String? = null
     var state = State.NO_MATCH
 
@@ -23,7 +24,7 @@ class Match {
 
     var webSocketSession: WebSocketSession? = null
 
-    fun findPlayerByUsername(username: String) : MatchPlayer {
+    fun findPlayerByUsername(username: String) : PlayerSnapshot {
         try {
             if (username == player!!.username) {
                 return player!!

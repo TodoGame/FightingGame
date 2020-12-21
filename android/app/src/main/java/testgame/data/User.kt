@@ -13,6 +13,7 @@ object User : ViewModel() {
     var name = MutableLiveData<String>()
     var faculty =  MutableLiveData<FacultyData>()
     var inventory = MutableLiveData<List<ItemData>>()
+    var primaryWeapon = MutableLiveData<ItemData>()
     var money = MutableLiveData<Int>()
     lateinit var authenticationToken: String
     var matchSession: WebSocketSession? = null

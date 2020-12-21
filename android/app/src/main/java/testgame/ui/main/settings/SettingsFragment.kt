@@ -67,7 +67,7 @@ class SettingsFragment : Fragment() {
             languagesOptionDialog?.show()
         }
 
-        viewModel.isLogOutPressed.observe(viewLifecycleOwner, Observer { isPressed ->
+        viewModel.isLogOutPressed.observe(viewLifecycleOwner, { isPressed ->
             if (isPressed) {
                 val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
                 with(sharedPreferences.edit()) {
@@ -77,8 +77,9 @@ class SettingsFragment : Fragment() {
                 }
                 viewModel.onLogOutConfirmed()
                 val intent = Intent(activity, EntranceActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+//                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                 startActivity(intent)
+                activity?.finish()
             }
         })
 

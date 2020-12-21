@@ -11,9 +11,7 @@
         tools:layout="@layout/fragment_entrance_login">
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
-            app:destination="@id/registerFragment"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="false" />
+            app:destination="@id/registerFragment" />
         <argument
             android:name="username"
             app:argType="string"

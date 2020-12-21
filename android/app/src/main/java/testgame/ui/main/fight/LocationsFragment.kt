@@ -42,17 +42,13 @@ class LocationsFragment : Fragment() {
             val intent = Intent(activity, EntranceActivity::class.java)
             startActivity(intent)
         } else {
-            val app: GameApp = this.activity?.application as GameApp
-            viewModelFactory = FightViewModelFactory(app, token)
+            viewModelFactory = FightViewModelFactory(token)
             viewModel = ViewModelProvider(requireActivity(), viewModelFactory).get(FightViewModel::class.java)
 
             binding.viewModel = viewModel
 
             binding.lifecycleOwner = this
 
-            viewModel.logInfo.observe(viewLifecycleOwner,  Observer {
-                Timber.i(viewModel.logInfo.value)
-            })
             viewModel.chosenLocation.observe(viewLifecycleOwner, { location ->
                 if (location != null) {
                     val locationModule = binding.MatMechLocationButton.progressBar

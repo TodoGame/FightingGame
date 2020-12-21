@@ -3,4 +3,4 @@ package match
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PlayerSnapshot(val username: String, val isActive: Boolean, val health: Int)
+data class PlayerSnapshot(val username: String, val isActive: Boolean, var health: Int)

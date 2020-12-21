@@ -4,10 +4,10 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import faculty.FixedFaculties
 import testgame.network.SecurityApi
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
-import testgame.data.FacultyOption
 import testgame.network.NetworkService
 import java.lang.NullPointerException
 
@@ -40,15 +40,15 @@ class RegisterViewModel : ViewModel() {
     val userInputErrorHint: LiveData<String>
         get() = _userInputErrorHint
 
-    private val _facultyOption = MutableLiveData<FacultyOption>()
-    val facultyOption: LiveData<FacultyOption>
+    private val _facultyOption = MutableLiveData<FixedFaculties>()
+    val facultyOption: LiveData<FixedFaculties>
         get() = _facultyOption
 
     private val _signUpCompleted = MutableLiveData(false)
     val signUpCompleted: LiveData<Boolean>
         get() = _signUpCompleted
 
-    fun chooseFacultyOption(option: FacultyOption) {
+    fun chooseFacultyOption(option: FixedFaculties) {
         _facultyOption.value = option
     }
 
@@ -76,7 +76,7 @@ class RegisterViewModel : ViewModel() {
                                 username.get()!!,
                                 password.get()!!,
                                 user.get()!!,
-                                facultyOption.value?.faultyId!!
+                                facultyOption.value?.id!!
                         )
                 )
                 val token = response.headers[NetworkService.AUTHORIZATION_HEADER_NAME]

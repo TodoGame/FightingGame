@@ -21,6 +21,7 @@ import io.ktor.util.*
 //import com.example.testgame.ui.entrance.login.LoginFragmentArgs
 //import com.example.testgame.ui.entrance.login.LoginFragmentDirections
 import testgame.activities.EntranceActivity
+import testgame.activities.MainActivity
 import testgame.data.GameApp
 import testgame.data.User
 
@@ -105,8 +106,8 @@ class LoginFragment : Fragment() {
                 if (isCompleted) {
                     viewModel.onLoginConfirm()
                     setUpAppData()
-                    val intent = Intent(activity, EntranceActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+                    val intent = Intent(activity, MainActivity::class.java)
+//                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                     startActivity(intent)
                     activity?.finish()
                 }
@@ -127,7 +128,7 @@ class LoginFragment : Fragment() {
 
     private fun setUpAppData() {
         val token = viewModel.token
-        val username = viewModel.user.name
+        val username = viewModel.user.username
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         with(sharedPreferences.edit()) {
             putString(getString(R.string.saved_token_key), token)

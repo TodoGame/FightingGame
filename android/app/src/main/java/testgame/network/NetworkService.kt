@@ -9,6 +9,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.*
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import java.io.IOException
 import java.lang.Exception
 import java.lang.IllegalStateException
@@ -56,6 +57,7 @@ abstract class NetworkService {
         } catch (exception: UnknownHostException) {
             throw NetworkException("Enable to connect ot server")
         } catch (exception: IOException) {
+            Timber.i("Something wrong with server connection")
             throw NetworkException("Check your Internet connection and try again")
         } catch (e: Exception) {
             throw e

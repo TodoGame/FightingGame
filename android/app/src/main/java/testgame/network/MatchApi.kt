@@ -36,10 +36,9 @@ object MatchApi : NetworkService() {
             ticket: WebSocketTicket,
             onMatchStart: (players: Set<String>) -> Unit,
             onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
-            onPlayerAction: (attacker: String, target: String) -> Unit,
+            onPlayerAction: (message : CalculatedPlayerDecision) -> Unit,
             onMatchEnd: (winner: String) -> Unit
     ) {
-        lateinit var session: WebSocketSession
         client.ws(
                 method = HttpMethod.Get,
                 request = {
@@ -66,7 +65,7 @@ object MatchApi : NetworkService() {
             message: Message,
             onMatchStart: (players: Set<String>) -> Unit,
             onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
-            onPlayerAction: (attacker: String, target: String) -> Unit,
+            onPlayerAction: (message : CalculatedPlayerDecision) -> Unit,
             onMatchEnd: (winner: String) -> Unit
     ) {
         when (message) {
@@ -78,9 +77,9 @@ object MatchApi : NetworkService() {
                 println("TurnStarted")
                 onTurnStart(message.matchSnapshot)
             }
-            is PlayerAction -> {
+            is CalculatedPlayerDecision -> {
                 println("PlayerAction")
-                onPlayerAction(message.attacker, message.target)
+                onPlayerAction(message)
             }
             is MatchEnded -> {
                 println("MatchEnded")
