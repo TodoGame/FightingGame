@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import faculty.FacultyData
+import faculty.FixedFaculties
 import io.ktor.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,7 @@ import testgame.data.User
 import testgame.network.MainApi
 import testgame.network.NetworkService
 import testgame.ui.main.featuresNews.NewsItem
+import timber.log.Timber
 import user.Username
 import java.lang.NullPointerException
 import java.net.SocketTimeoutException
@@ -44,12 +46,8 @@ class HomeViewModel : ViewModel() {
     val faculty: LiveData<String>
         get() = _faculty
 
-    private var _errorString = MutableLiveData<String>()
-    val errorString: LiveData<String>
-        get() = _errorString
-
-    private var _newsItems = MutableLiveData<List<NewsItem>>()
-    val newsItems: LiveData<List<NewsItem>>
+    private var _newsItems = MutableLiveData(mutableListOf<NewsItem>())
+    val newsItems: LiveData<MutableList<NewsItem>>
         get() = _newsItems
 
     private val _testProgress = MutableLiveData(100)
@@ -64,9 +62,9 @@ class HomeViewModel : ViewModel() {
                 User.updateFromUserData(userData)
             }
         } catch (exception: NetworkService.NetworkException) {
-            exception.message?.let { _errorString.postValue(it) }
+            exception.message?.let { Timber.i(it) }
         } catch (exception: NullPointerException) {
-            _errorString.postValue("Some data missed")
+            Timber.i("Some data missed")
         }
     }
 
@@ -78,9 +76,9 @@ class HomeViewModel : ViewModel() {
                 _leadingFaculty.postValue(facultyData)
             }
         } catch (exception: NetworkService.NetworkException) {
-            exception.message?.let { _errorString.postValue(it) }
+            exception.message?.let { Timber.i(it) }
         } catch (exception: NullPointerException) {
-            _errorString.postValue("Some data missed")
+            Timber.i("Some data missed")
         }
     }
 
@@ -89,7 +87,7 @@ class HomeViewModel : ViewModel() {
         coroutineScope.launch {
             try {
                 val webSocketTicket = MainApi.getWebSocketTicket(User.authenticationToken)
-                _errorString.postValue("Got ticket")
+                Timber.i("Got ticket")
                 MainApi.connectToMainWebSocket(
                         webSocketTicket,
                         ::onUserMoneyUpdate,
@@ -100,13 +98,13 @@ class HomeViewModel : ViewModel() {
                 MainApi.subscribeLeadingFaculty(true)
                 MainApi.subscribeFacultyPoints(true)
             } catch (exception: NetworkService.NetworkException) {
-                exception.message?.let { _errorString.postValue(it) }
+                exception.message?.let { Timber.i(it) }
             } catch (exception: NullPointerException) {
-                _errorString.postValue("Null Pointer exception")
+                Timber.i("Null Pointer exception")
             } catch (exception: MainApi.NullWebSocketSessionException) {
-                _errorString.postValue(exception.message)
+                Timber.i(exception)
             } catch (exception: SocketTimeoutException) {
-                exception.message?.let { _errorString.postValue(it) }
+                exception.message?.let { Timber.i(it) }
             }
         }
     }
@@ -120,7 +118,8 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun onFacultiesPointsUpdate(facultyId: Int, points: Int, winnerUsername: String) {
-
+        val faculty = FixedFaculties.values().find { it.id == facultyId }
+        _newsItems.value?.add(NewsItem(facultyId, "$winnerUsername won $points for $faculty faculty"))
     }
 
     fun test() {

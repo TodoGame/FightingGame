@@ -24,7 +24,7 @@ class FightViewModel(val token: String) : ViewModel() {
     private val match = Match()
 
     val matchWinner: String
-        get() = match.winner ?: ""
+        get() = match.winner.value ?: ""
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -77,8 +77,7 @@ class FightViewModel(val token: String) : ViewModel() {
                 ?: throw GameApp.NullAppDataException("Null playerSnapshot. Players: $players. Username: ${User.username.value}")
         val enemySnapshot = players.find { it.username != User.username.value }
                 ?: throw GameApp.NullAppDataException("Null enemySnapshot")
-        match.player = playerSnapshot
-        match.enemy = enemySnapshot
+        match.updateDataFromSnapshots(playerSnapshot, enemySnapshot)
         if (playerSnapshot.isActive) {
             _matchState.value = Match.State.MY_TURN
         } else {
@@ -91,7 +90,7 @@ class FightViewModel(val token: String) : ViewModel() {
             is CalculatedPlayerAction -> {
                 val attacker = match.findPlayerByUsername(message.attacker)
                 val target = match.findPlayerByUsername(message.target)
-                if (message.attacker == match.player?.username) {
+                if (message.attacker == match.player.value?.username) {
                     _fightAction.value = FightAction.PLAYER_ATTACK
                 } else {
                     _fightAction.value = FightAction.ENEMY_ATTACK
@@ -101,14 +100,14 @@ class FightViewModel(val token: String) : ViewModel() {
                         "${message.damage} health")
             }
             is CalculatedSkipTurn -> {
-
+                _action.postValue("${message.username} skipped the turn" + if (message.isDefenced) "Defending" else "")
             }
         }
     }
 
     private fun onMatchEnd(winner: String) {
         _matchState.value = Match.State.NO_MATCH
-        match.winner = winner
+        match.winner.value = winner
         Timber.i("Match ended. Winner : $winner")
     }
 
@@ -204,7 +203,7 @@ class FightViewModel(val token: String) : ViewModel() {
 
     fun attack(itemId: Int? = null) {
         try {
-            val enemyUsername = match.enemy!!.username
+            val enemyUsername = match.enemy.value!!.username
             User.username.value!!.let {
                 val action = NetworkService.jsonFormat.encodeToString<Message>(
                         PlayerAction(enemyUsername, it, itemId)
@@ -273,11 +272,11 @@ class FightViewModel(val token: String) : ViewModel() {
             User.matchSession?.close()
             User.matchSession = null
         }
-        match.winner = null
+        match.winner.value = null
         if (_matchState.value != Match.State.NO_MATCH) {
             _matchState.value = Match.State.NO_MATCH
         }
-        match.enemy = null
-        match.player = null
+        match.enemy.value = null
+        match.player.value = null
     }
 }

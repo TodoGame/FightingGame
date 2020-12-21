@@ -22,7 +22,6 @@ import kotlinx.coroutines.*
 import testgame.activities.EntranceActivity
 import testgame.activities.MainActivity
 import testgame.data.FightAction
-import testgame.data.GameApp
 import testgame.data.GameApp.Companion.ATTACK_ANIMATION_PLAY_DELAY
 import testgame.data.Match
 import testgame.data.User
@@ -34,12 +33,13 @@ import timber.log.Timber
 class FightFragment : Fragment() {
 
     private lateinit var viewModel: FightViewModel
+    private lateinit var match: Match
     private lateinit var viewModelFactory: FightViewModelFactory
 
     private lateinit var playerWarriorImage: ImageView
     private lateinit var enemyWarriorImage: ImageView
     private lateinit var timeTextView: TextView
-    private lateinit var myHealthBar: ProgressBar
+    private lateinit var playerHealthBar: ProgressBar
     private lateinit var enemyHealthBar: ProgressBar
 
     var mediaPlayer: MediaPlayer? = null
@@ -75,10 +75,12 @@ class FightFragment : Fragment() {
         )
 
         setUpViewModel()
+        match = ViewModelProvider(this).get(Match::class.java)
         binding.viewModel = viewModel
+        binding.match = match
         binding.lifecycleOwner = this
 
-        myHealthBar = binding.myHealthBar
+        playerHealthBar = binding.myHealthBar
         enemyHealthBar = binding.enemyHealthBar
         playerWarriorImage = binding.myImageView
         enemyWarriorImage = binding.enemyImageView
@@ -89,6 +91,16 @@ class FightFragment : Fragment() {
             (playerWarriorImage.drawable as AnimationDrawable).start()
             (enemyWarriorImage.drawable as AnimationDrawable).start()
         }
+
+        match.player.observe(viewLifecycleOwner, { player ->
+            match.playerMaxHealth?.let { playerHealthBar.update(it, player.health) }
+            playerHealthBar.invalidate()
+        })
+
+        match.enemy.observe(viewLifecycleOwner, { enemy ->
+            match.enemyMaxHealth?.let { enemyHealthBar.update(it, enemy.health) }
+            playerHealthBar.invalidate()
+        })
 
         viewModel.playerWantToEscape.observe(viewLifecycleOwner, { wantToEscape ->
             if (wantToEscape) {
@@ -185,11 +197,11 @@ class FightFragment : Fragment() {
                 val onConfirmFunction = {
                     NavHostFragment.findNavController(this).navigate(action)
                 }
-//                activity?.supportFragmentManager?.let {
-//                    MatchEndDialogFragment.newInstance(viewModel.matchWinner, onConfirmFunction)
-//                            .show(it, MatchEndDialogFragment.TAG)
-//                }
-                onConfirmFunction()
+                activity?.supportFragmentManager?.let {
+                    MatchEndDialogFragment.newInstance(viewModel.matchWinner, onConfirmFunction)
+                            .show(it, MatchEndDialogFragment.TAG)
+                }
+//                onConfirmFunction()
                 viewModel.confirmMatchEscape()
             }
             else -> {

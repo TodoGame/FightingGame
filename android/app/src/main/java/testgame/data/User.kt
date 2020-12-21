@@ -19,7 +19,8 @@ object User : ViewModel() {
     var matchSession: WebSocketSession? = null
 
     fun updateFromUserData(data: user.UserData) {
-        this.inventory.postValue(data.inventory)
-        this.money.postValue(data.money)
+        faculty.postValue(data.faculty)
+        inventory.postValue(data.inventory)
+        money.postValue(data.money)
     }
 }

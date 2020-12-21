@@ -36,20 +36,19 @@ fun onFacultiesPointsUpdate(facultyId: Int, points: Int, winnerUsername: String)
 /**
  * Match
  */
-fun onMatchStarted(players: Set<String>) {
+suspend fun onMatchStarted(players: Set<String>) {
     callInfo("Match started")
     callInfo("Players are: $players")
 }
 
-fun onTurnStarted(matchSnapshot: MatchSnapshot) {
+suspend fun onTurnStarted(matchSnapshot: MatchSnapshot) {
     callInfo("TurnStarted")
     val players = matchSnapshot.players
     val playerSnapshot = players.find { it.username == username }
             ?: throw GameApp.NullAppDataException("Null playerSnapshot")
     val enemySnapshot = players.find { it.username != username }
             ?: throw GameApp.NullAppDataException("Null enemySnapshot")
-    match.player = playerSnapshot
-    match.enemy = enemySnapshot
+    match.updateDataFromSnapshots(playerSnapshot, enemySnapshot)
     if (playerSnapshot.isActive) {
         match.state = Match.State.MY_TURN
     } else {
@@ -57,7 +56,7 @@ fun onTurnStarted(matchSnapshot: MatchSnapshot) {
     }
 }
 
-fun onPlayerAction(message: CalculatedPlayerDecision) {
+suspend fun onPlayerAction(message: CalculatedPlayerDecision) {
     callInfo("PlayerAction")
     when (message) {
         is CalculatedPlayerAction -> {
@@ -73,13 +72,13 @@ fun onPlayerAction(message: CalculatedPlayerDecision) {
     }
 }
 
-fun onMatchEnded(winner: String) {
+suspend fun onMatchEnded(winner: String) {
     callInfo("Match ended")
     match.state = Match.State.NO_MATCH
     GlobalScope.launch {
         match.webSocketSession?.close()
                 ?: throw GameApp.NullAppDataException("Null match webSocketSession")
     }
-    match.winner = winner
+    match.winner.value = winner
     exitProcess(0)
 }

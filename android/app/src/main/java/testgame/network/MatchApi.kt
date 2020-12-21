@@ -34,10 +34,10 @@ object MatchApi : NetworkService() {
     @KtorExperimentalAPI
     suspend fun connectToMatchWebSocket(
             ticket: WebSocketTicket,
-            onMatchStart: (players: Set<String>) -> Unit,
-            onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
-            onPlayerAction: (message : CalculatedPlayerDecision) -> Unit,
-            onMatchEnd: (winner: String) -> Unit
+            onMatchStart: suspend (players: Set<String>) -> Unit,
+            onTurnStart: suspend (matchSnapshot: MatchSnapshot) -> Unit,
+            onPlayerAction: suspend (message : CalculatedPlayerDecision) -> Unit,
+            onMatchEnd: suspend (winner: String) -> Unit
     ) {
         client.ws(
                 method = HttpMethod.Get,
@@ -61,29 +61,28 @@ object MatchApi : NetworkService() {
         }
     }
 
-    private fun readMessage(
+    private suspend fun readMessage(
             message: Message,
-            onMatchStart: (players: Set<String>) -> Unit,
-            onTurnStart: (matchSnapshot: MatchSnapshot) -> Unit,
-            onPlayerAction: (message : CalculatedPlayerDecision) -> Unit,
-            onMatchEnd: (winner: String) -> Unit
+            onMatchStart: suspend (players: Set<String>) -> Unit,
+            onTurnStart: suspend (matchSnapshot: MatchSnapshot) -> Unit,
+            onPlayerAction: suspend (message : CalculatedPlayerDecision) -> Unit,
+            onMatchEnd: suspend (winner: String) -> Unit
     ) {
         when (message) {
             is MatchStarted -> {
-                println("MatchStarted")
                 onMatchStart(message.players)
             }
             is TurnStarted -> {
-                println("TurnStarted")
                 onTurnStart(message.matchSnapshot)
             }
             is CalculatedPlayerDecision -> {
-                println("PlayerAction")
                 onPlayerAction(message)
             }
             is MatchEnded -> {
-                println("MatchEnded")
                 onMatchEnd(message.winner)
+            }
+            else -> {
+                println(message)
             }
         }
     }

@@ -138,9 +138,9 @@ private fun connectMatch() {
 
 private fun attack() {
     try {
-        val enemyUsername = match.enemy!!.username
+        val enemyUsername = match.enemy.value!!.username
         val action = NetworkService.jsonFormat.encodeToString<Message>(
-                PlayerAction(enemyUsername, match.player!!.username)
+                PlayerAction(enemyUsername, match.player.value!!.username)
         )
         GlobalScope.launch {
             User.matchSession?.send(action)

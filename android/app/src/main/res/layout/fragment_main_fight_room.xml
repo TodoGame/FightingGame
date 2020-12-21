@@ -10,6 +10,9 @@
         <variable
             name="viewModel"
             type="testgame.ui.main.fight.FightViewModel" />
+        <variable
+            name="match"
+            type="testgame.data.Match" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,11 +39,12 @@
             app:layout_constraintVertical_bias="0.678">
 
             <TextView
-                android:id="@+id/myHealthTextView"
+                android:id="@+id/playerUsernameTextView"
                 style="@style/textView.FightHeader"
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
-                android:text="@string/player_health"
+                android:text="@{match.player.username}"
+                tools:text="TestUsername"
                 app:layout_constraintStart_toStartOf="@+id/myImageView"
                 app:layout_constraintTop_toTopOf="@+id/timeHeaderTextView" />
 
@@ -49,10 +53,10 @@
                 android:layout_width="0dp"
                 android:layout_height="18dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/myHealthTextView"
+                app:layout_constraintEnd_toEndOf="@+id/playerUsernameTextView"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/myHealthTextView"
-                app:layout_constraintTop_toBottomOf="@+id/myHealthTextView" />
+                app:layout_constraintStart_toStartOf="@+id/playerUsernameTextView"
+                app:layout_constraintTop_toBottomOf="@+id/playerHealthPointsTextView" />
 
             <ImageView
                 android:id="@+id/myImageView"
@@ -69,12 +73,13 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/enemyHealthTextView"
+                android:id="@+id/enemyUsernameTextView"
                 style="@style/textView.FightHeader"
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@string/enemy_health"
+                android:text="@{match.enemy.username}"
+                tools:text="@string/enemy_health"
                 app:layout_constraintEnd_toEndOf="@+id/enemyImageView"
                 app:layout_constraintTop_toTopOf="@+id/timeHeaderTextView" />
 
@@ -83,9 +88,10 @@
                 android:layout_width="0dp"
                 android:layout_height="16dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/enemyHealthTextView"
-                app:layout_constraintStart_toStartOf="@+id/enemyHealthTextView"
-                app:layout_constraintTop_toBottomOf="@+id/enemyHealthTextView" />
+                app:layout_constraintEnd_toEndOf="@+id/enemyUsernameTextView"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/enemyUsernameTextView"
+                app:layout_constraintTop_toBottomOf="@+id/enemyHealthPointsTextView" />
 
             <ImageView
                 android:id="@+id/enemyImageView"
@@ -119,8 +125,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/time"
-                app:layout_constraintEnd_toStartOf="@+id/enemyHealthTextView"
-                app:layout_constraintStart_toEndOf="@+id/myHealthTextView"
+                app:layout_constraintEnd_toStartOf="@+id/enemyUsernameTextView"
+                app:layout_constraintStart_toEndOf="@+id/playerUsernameTextView"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -134,6 +140,26 @@
                 app:layout_constraintStart_toStartOf="@+id/timeHeaderTextView"
                 app:layout_constraintTop_toBottomOf="@+id/timeHeaderTextView"
                 tools:text="0:35" />
+
+            <TextView
+                android:id="@+id/playerHealthPointsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{match.playerHealthPrettyString}"
+                tools:text="34/50"
+                app:layout_constraintStart_toStartOf="@+id/playerUsernameTextView"
+                app:layout_constraintTop_toBottomOf="@+id/playerUsernameTextView" />
+
+            <TextView
+                android:id="@+id/enemyHealthPointsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{match.enemyHealthPrettyString}"
+                tools:text="13/50"
+                app:layout_constraintEnd_toEndOf="@+id/enemyUsernameTextView"
+                app:layout_constraintTop_toBottomOf="@+id/enemyUsernameTextView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

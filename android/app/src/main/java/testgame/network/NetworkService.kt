@@ -58,6 +58,7 @@ abstract class NetworkService {
             throw NetworkException("Enable to connect ot server")
         } catch (exception: IOException) {
             Timber.i("Something wrong with server connection")
+            Timber.i(exception)
             throw NetworkException("Check your Internet connection and try again")
         } catch (e: Exception) {
             throw e

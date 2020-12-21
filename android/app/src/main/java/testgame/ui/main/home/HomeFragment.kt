@@ -11,6 +11,7 @@ import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainHomeBinding
 import io.ktor.util.*
 import kotlinx.coroutines.*
+import testgame.data.User
 import testgame.ui.main.featuresNews.NewsItemListener
 import testgame.ui.main.featuresNews.NewsRecyclerAdapter
 import timber.log.Timber
@@ -37,14 +38,14 @@ class HomeFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         binding.viewModel = viewModel
+        binding.user = User
 
         binding.lifecycleOwner = this
 
-        coroutineScope.launch {
-            viewModel.getUserData()
-            viewModel.getLeadingFacultyData()
-            viewModel.makeSubscriptions()
-        }
+        User.faculty.observe(viewLifecycleOwner, { facultyData ->
+            binding.facultyNameTextView.text = facultyData.name
+            binding.facultyScoreTextView.text = facultyData.points.toString()
+        })
 
         viewModel.testProgress.observe(viewLifecycleOwner, { progress ->
             val progressBar = binding.experienceProgressBar
@@ -68,5 +69,15 @@ class HomeFragment : Fragment() {
         })
 
         return binding.root
+    }
+
+    @KtorExperimentalAPI
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        coroutineScope.launch {
+            viewModel.getUserData()
+            viewModel.getLeadingFacultyData()
+            viewModel.makeSubscriptions()
+        }
     }
 }
