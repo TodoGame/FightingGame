@@ -93,12 +93,12 @@ class FightFragment : Fragment() {
         }
 
         match.player.observe(viewLifecycleOwner, { player ->
-            match.playerMaxHealth?.let { playerHealthBar.update(it, player.health) }
+            match.playerMaxHealth?.let { playerHealthBar.update(it, player.health) } ?: Timber.i("Null max health")
             playerHealthBar.invalidate()
         })
 
         match.enemy.observe(viewLifecycleOwner, { enemy ->
-            match.enemyMaxHealth?.let { enemyHealthBar.update(it, enemy.health) }
+            match.enemyMaxHealth?.let { enemyHealthBar.update(it, enemy.health) } ?: Timber.i("Null max health")
             playerHealthBar.invalidate()
         })
 

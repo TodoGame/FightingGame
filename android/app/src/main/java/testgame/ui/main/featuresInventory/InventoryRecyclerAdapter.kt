@@ -28,7 +28,7 @@ class InventoryRecyclerAdapter(val clickListener: InventoryItemListener) :
         ) {
             binding.inventoryItem = item
             binding.clickListener = clickListener
-            binding.inventoryItemImageView.setImageResource(GameApp().getItemImageIdFromItemId(item.id))
+            binding.inventoryItemImageView.setImageResource(GameApp().getItemImageIdByItemId(item.id))
             binding.executePendingBindings()
         }
 

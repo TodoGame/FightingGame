@@ -43,7 +43,7 @@
                 style="@style/textView.FightHeader"
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
-                android:text="@{match.player.username}"
+                android:text="@{match.playerUsername}"
                 tools:text="TestUsername"
                 app:layout_constraintStart_toStartOf="@+id/myImageView"
                 app:layout_constraintTop_toTopOf="@+id/timeHeaderTextView" />
@@ -78,7 +78,7 @@
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{match.enemy.username}"
+                android:text="@{match.enemyUsername}"
                 tools:text="@string/enemy_health"
                 app:layout_constraintEnd_toEndOf="@+id/enemyImageView"
                 app:layout_constraintTop_toTopOf="@+id/timeHeaderTextView" />

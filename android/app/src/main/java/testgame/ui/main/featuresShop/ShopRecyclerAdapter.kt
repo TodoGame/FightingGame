@@ -28,7 +28,7 @@ class ShopRecyclerAdapter(private val clickListener: ShopItemListener) :
         ) {
             binding.shopItem = item
             binding.clickListener = clickListener
-            binding.facultyImageView.setImageResource(GameApp().getItemImageIdFromItemId(item.id))
+            binding.facultyImageView.setImageResource(GameApp().getItemImageIdByItemId(item.id))
             binding.executePendingBindings()
         }
 

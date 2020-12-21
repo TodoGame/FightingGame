@@ -55,13 +55,23 @@ class GameApp : MultiDexApplication() {
         return result
     }
 
-    fun getItemImageIdFromItemId(id: Int) : Int {
+    fun getItemImageIdByItemId(id: Int) : Int {
         return when (id) {
             1 -> R.drawable.club
             2 -> R.drawable.sword
             3 -> R.drawable.banana
             4 -> R.drawable.dice
             else -> 0
+        }
+    }
+
+    fun getItemNameById(id: Int): String {
+        return when (id) {
+            1 -> "Club"
+            2 -> "Sword"
+            3 -> "Banana"
+            4 -> "Dice"
+            else -> "SOMETHING"
         }
     }
 

@@ -32,7 +32,7 @@
             app:srcCompat="@drawable/sword" />
 
         <TextView
-            android:id="@+id/facultyNameTextView"
+            android:id="@+id/leadingFacultyScoreTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="16dp"
@@ -55,7 +55,7 @@
             app:layout_constraintEnd_toStartOf="@+id/button"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/facultyImageView"
-            app:layout_constraintTop_toBottomOf="@+id/facultyNameTextView"
+            app:layout_constraintTop_toBottomOf="@+id/leadingFacultyScoreTextView"
             tools:text="500" />
 
         <Button

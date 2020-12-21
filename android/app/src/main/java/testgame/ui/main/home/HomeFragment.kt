@@ -43,7 +43,7 @@ class HomeFragment : Fragment() {
         binding.lifecycleOwner = this
 
         User.faculty.observe(viewLifecycleOwner, { facultyData ->
-            binding.facultyNameTextView.text = facultyData.name
+            binding.leadingFacultyTextView.text = facultyData.name
             binding.facultyScoreTextView.text = facultyData.points.toString()
         })
 

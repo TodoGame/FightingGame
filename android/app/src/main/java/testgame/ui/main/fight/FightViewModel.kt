@@ -88,6 +88,7 @@ class FightViewModel(val token: String) : ViewModel() {
     private fun onPlayerAction(message: CalculatedPlayerDecision) {
         when (message) {
             is CalculatedPlayerAction -> {
+                val weapon = message.itemId?.let { GameApp().getItemNameById(it) }
                 val attacker = match.findPlayerByUsername(message.attacker)
                 val target = match.findPlayerByUsername(message.target)
                 if (message.attacker == match.player.value?.username) {
@@ -96,8 +97,13 @@ class FightViewModel(val token: String) : ViewModel() {
                     _fightAction.value = FightAction.ENEMY_ATTACK
                 }
                 target.health -= message.damage
-                _action.postValue("${attacker.username} hit ${target.username} \n " +
-                        "${message.damage} health")
+                if (target == attacker) {
+                    _action.postValue("${attacker.username} healed himself \n " +
+                            "${-message.damage} health with banana")
+                } else {
+                    _action.postValue("${attacker.username} hit ${target.username} \n " +
+                            "${message.damage} health with $weapon")
+                }
             }
             is CalculatedSkipTurn -> {
                 _action.postValue("${message.username} skipped the turn" + if (message.isDefenced) "Defending" else "")
@@ -203,7 +209,7 @@ class FightViewModel(val token: String) : ViewModel() {
 
     fun attack(itemId: Int? = null) {
         try {
-            val enemyUsername = match.enemy.value!!.username
+            val enemyUsername = if (itemId == 3) User.username.value!! else match.enemy.value!!.username
             User.username.value!!.let {
                 val action = NetworkService.jsonFormat.encodeToString<Message>(
                         PlayerAction(enemyUsername, it, itemId)

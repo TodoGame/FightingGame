@@ -180,17 +180,6 @@
                 app:layout_constraintTop_toTopOf="@+id/facultyScoreHeaderTextView"
                 tools:text="542" />
 
-<!--            <Button-->
-<!--                android:id="@+id/testButton"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="0dp"-->
-<!--                android:onClick="@{() -> viewModel.test()}"-->
-<!--                android:text="Test"-->
-<!--                app:layout_constraintBottom_toBottomOf="@+id/usernameTextView"-->
-<!--                app:layout_constraintEnd_toStartOf="@+id/rightHeaderGuideline"-->
-<!--                app:layout_constraintStart_toEndOf="@+id/usernameTextView"-->
-<!--                app:layout_constraintTop_toTopOf="@+id/topHeaderGuideline" />-->
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -314,13 +303,13 @@
                     android:text="@string/score"
                     app:autoSizeTextType="uniform"
                     app:layout_constraintBottom_toBottomOf="@+id/facultyImageView"
-                    app:layout_constraintEnd_toStartOf="@+id/facultyNameTextView"
+                    app:layout_constraintEnd_toStartOf="@+id/leadingFacultyScoreTextView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/facultyImageView"
                     app:layout_constraintTop_toTopOf="@+id/CenterLeadingFacultyHorizontalGuideline" />
 
                 <TextView
-                    android:id="@+id/facultyNameTextView"
+                    android:id="@+id/leadingFacultyScoreTextView"
                     style="@style/textView.Home"
                     android:layout_width="0dp"
                     android:layout_height="0dp"

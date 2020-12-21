@@ -13,6 +13,7 @@ import com.example.testgame.databinding.FragmentMainFightEndDialogBinding
 import testgame.activities.MainActivity
 import testgame.data.GameApp
 import testgame.data.User
+import timber.log.Timber
 import java.lang.NullPointerException
 
 class MatchEndDialogFragment(val onConfirmFunction: () -> Unit) : DialogFragment() {
@@ -38,6 +39,8 @@ class MatchEndDialogFragment(val onConfirmFunction: () -> Unit) : DialogFragment
         )
 
         val winner = arguments?.getString(KEY_WINNER) ?: throw NullPointerException("No argument passed to dDialogFragment")
+        Timber.i("Winner: $winner")
+        Timber.i("Player username: ${User.username.value}")
         if (winner == User.username.value) {
             binding.winnerTextView.text = getString(R.string.match_win_congratulation)
         } else {

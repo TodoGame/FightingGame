@@ -22,7 +22,7 @@ abstract class NetworkService {
             ignoreUnknownKeys = true
             isLenient = true
         }
-        const val RESPONSE_CONTENT_READ_LIMIT = 300
+        const val RESPONSE_CONTENT_READ_LIMIT = 500
 
         const val BASE_HTTP_URL = "https://fighting-game-server.herokuapp.com"
         const val BASE_WS_URL = "ws://fighting-game-server.herokuapp.com"

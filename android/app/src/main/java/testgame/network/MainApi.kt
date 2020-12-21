@@ -10,11 +10,13 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.util.KtorExperimentalAPI
+import io.ktor.utils.io.charsets.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import subscription.*
+import timber.log.Timber
 import user.GET_ME_ENDPOINT
 import user.GET_USER_ENDPOINT
 import user.UserData
@@ -35,8 +37,13 @@ object MainApi : NetworkService() {
                 contentType(ContentType.Application.Json)
             }
         }
-        val stringResponse = response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: ""
-        return jsonFormat.decodeFromString(stringResponse)
+        try {
+            val stringResponse = response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: ""
+            return jsonFormat.decodeFromString(stringResponse)
+        } catch (e: TooLongLineException) {
+            Timber.i(response.content.readUTF8Line(RESPONSE_CONTENT_READ_LIMIT) ?: "")
+            throw e
+        }
     }
 
     @KtorExperimentalAPI
