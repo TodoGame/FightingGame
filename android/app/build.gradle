@@ -1,10 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-//apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "org.jetbrains.kotlin.plugin.serialization"
-//apply plugin: "org.jlleitschuh.gradle.ktlint"
 
 android {
     compileSdkVersion 30
@@ -21,14 +19,12 @@ android {
         versionCode 1
         versionName "1.0"
 
-//        multiDexEnabled true
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-//    dexOptions {
-//        jumboMode true
-//        javaMaxHeapSize "4g"
-//    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -52,6 +48,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation(project(":shared"))
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$version_kotlin"
 
     implementation 'androidx.core:core-ktx:1.3.2'
@@ -61,32 +58,35 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0"
+    //multidex
+    implementation "androidx.multidex:multidex:$version_multidex"
 
-    // Implementations for multidex
-    implementation 'androidx.multidex:multidex:2.0.1'
+    //logging
+    implementation "com.jakewharton.timber:timber:$version_timber"
 
-    // Implementations block for using preferences (for data storage)
+    // serialization
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
+
+    // preferences (for data storage)
     implementation 'androidx.preference:preference-ktx:1.1.1'
 
-    // Implementations block for design
-//    implementation "com.google.android.materiale:material:$version_material"
+    // design
+    implementation "androidx.fragment:fragment-ktx:1.2.5"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
 
-    // Implementations block for entrance_navigation
+    // navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.1'
 
-    // Implementations block for testing
+    // testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
 
-    // Implementations block for Ktor
+    // Ktor
     implementation "io.ktor:ktor-client-core:$version_ktor"
     implementation "io.ktor:ktor-client-android:$version_ktor"
     implementation "io.ktor:ktor-client-websockets:$version_ktor"
-    implementation("io.ktor:ktor-client-okhttp:$version_ktor")
+    implementation "io.ktor:ktor-client-json-jvm:$version_ktor"
+    implementation "io.ktor:ktor-client-gson:$version_ktor"
+    implementation "io.ktor:ktor-client-okhttp:$version_ktor"
 }
-
-//ktlint {
-//    disabledRules = ["no-wildcard-imports"]
-//}
