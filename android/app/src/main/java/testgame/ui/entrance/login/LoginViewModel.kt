@@ -1,25 +1,28 @@
-package com.example.testgame.ui.entrance.login
+package testgame.ui.entrance.login
 
-import android.util.Log
 import androidx.databinding.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.testgame.network.securityService.LoginData
-import com.example.testgame.network.securityService.SecurityApi
-import com.example.testgame.network.securityService.UserProperty
+import testgame.network.SecurityApi
 import io.ktor.client.statement.*
-import io.ktor.http.*
-import kotlinx.coroutines.GlobalScope
+import io.ktor.util.KtorExperimentalAPI
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import testgame.network.NetworkService
+import user.UserData
 import java.lang.NullPointerException
 
 class LoginViewModel : ViewModel() {
 
-    val username = ObservableField<String>("")
-    val password = ObservableField<String>("")
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
+    val username = ObservableField("")
+    val password = ObservableField("")
 
     private val _usernameInputErrorHint = MutableLiveData<String>()
     val usernameInputErrorHint: LiveData<String>
@@ -33,8 +36,8 @@ class LoginViewModel : ViewModel() {
     val token: String
         get() = _token
 
-    private lateinit var _user: UserProperty
-    val user: UserProperty
+    private lateinit var _user: UserData
+    val user: UserData
         get() = _user
 
     private val _loginCompleted = MutableLiveData<Boolean>(false)
@@ -53,40 +56,35 @@ class LoginViewModel : ViewModel() {
     val errorIsCalled: LiveData<Boolean>
         get() = _errorIsCalled
 
+    @KtorExperimentalAPI
     fun logIn() {
         if (username.get() == "" || password.get() == "") {
             if (username.get() == "") {
-                println("Empty username called")
                 _usernameInputErrorHint.value = "Please enter the username"
             }
             if (password.get() == "") {
-                println("Empty password called")
                 _passwordInputErrorHint.value = "Please enter the password"
             }
             return
         }
-        GlobalScope.launch {
+        coroutineScope.launch {
             try {
                 val response = SecurityApi.login(
-                    LoginData(
-                        username.get()!!,
-                        password.get()!!
-                    )
+                        security.UserLoginInput(
+                                username.get()!!,
+                                password.get()!!
+                        )
                 )
-                if (SecurityApi.responseIsSuccessful(response)) {
-                    val token = response.headers[SecurityApi.AUTHORIZATION_HEADER_NAME]
-                    if (token != null) {
-                        _user = Json.decodeFromString<UserProperty>(response.readText())
-                        _token = token
-                        _loginCompleted.value = true
-                    } else {
-                        callError("Wrong token response")
-                    }
-                } else if (response.status == HttpStatusCode.BadRequest) {
-                    callError("Bad request")
-                } else if (response.status == HttpStatusCode.Unauthorized) {
-                    callError("Unauthorized")
+                val token = response.headers[NetworkService.AUTHORIZATION_HEADER_NAME]
+                if (token != null) {
+                    _user = NetworkService.jsonFormat.decodeFromString(response.readText())
+                    _token = token
+                    _loginCompleted.postValue(true)
+                } else {
+                    callError("Wrong token response")
                 }
+            } catch (exception: NetworkService.NetworkException) {
+                exception.message?.let { callError(it) }
             } catch (exception: NullPointerException) {
                 callError("Some data missed")
             }
@@ -99,7 +97,7 @@ class LoginViewModel : ViewModel() {
 
     private fun callError(message: String) {
         _errorString = message
-        _errorIsCalled.value = true
+        _errorIsCalled.postValue(true)
     }
 
     fun onSignUpConfirm() {
@@ -112,10 +110,5 @@ class LoginViewModel : ViewModel() {
 
     fun onErrorDisplayed() {
         _errorIsCalled.value = false
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.i("LoginVModel", "View model destroyed")
     }
 }

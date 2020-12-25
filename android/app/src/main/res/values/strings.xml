@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">TestGame</string>
+    <string name="app_name">Fight</string>
     <string name="saved_token_key">com.example.testgame.PREFERENCE_TOKEN_KEY</string>
     <string name="saved_username_key">com.example.testgame.PREFERENCE_USERNAME_KEY</string>
+    <string name="match_finish_winner_extra_key">com.example.testgame.MATCH_WINNER_KEY</string>
 
     <string name="sign_up">Sign up</string>
     <string name="log_in">Log in</string>
@@ -14,27 +15,56 @@
     <string name="health">Health</string>
     <string name="user">User</string>
     <string name="title_activity_main">Fight</string>
+    <string name="title_activity_fight">FightActivity</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="shop">Shop</string>
     <string name="fight">Fight</string>
     <string name="settings">Settings</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
-    <string name="mm">MM</string>
+    <string name="match_mech">MathMech</string>
+    <string name="pm_pu">PmPu</string>
+    <string name="chemistry_fuc">ChemFac</string>
+    <string name="physics_fac">PhysFac</string>
+    <string name="biology_fac">BioFac</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="you_will_lose_progress">You will lose your fight progress</string>
+    <string name="sure_to_leave_fight">Do you want to leave fight?</string>
+    <string name="clicker_image">ClickerImage</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="inventory">Inventory</string>
+    <string name="score">Score:</string>
+    <string name="log_out">Log out</string>
+    <string name="entrance_activity_name">Entrance</string>
+    <string name="fight_activity_name">Fight</string>
+    <string name="main_activity_name">Main</string>
+    <string name="user_avatar">User_Avatar</string>
+    <string name="experience">Experience</string>
+    <string name="level">Level</string>
+    <string name="faculty">Faculty</string>
+    <string name="leading_faculty">Leading faculty</string>
+    <string name="tap_on_a_donkey_to_earn_some_scores">Tap on a donkey to earn some scores</string>
+    <string name="try_to_open_game">Try to open game</string>
+    <string name="locations">Locations</string>
+    <string name="primary_weapon">Primary weapon</string>
+    <string name="skills">Skills</string>
+    <string name="time">Time</string>
+    <string name="image_of_enemy">ImageOfEnemy</string>
+    <string name="enemy_health">EnemyHealth</string>
+    <string name="image_of_player">ImageOfMe</string>
+    <string name="player_health">MyHealth</string>
+    <string name="change_language">Change language</string>
+    <string name="shop_item_image">ShopItemImage</string>
+    <string name="faculty_score">Faculty score</string>
+    <string name="match_win_congratulation">You won! Congratulations!</string>
+    <string name="match_defeat_congratulation">You loose! Congratulations!</string>
+    <string name="confirm">Confirm</string>
+    <string name="fireball">Fireball</string>
+    <string name="choose_faculty">Choose faculty</string>
+    <string name="buy">Buy</string>
+    <string name="news">News</string>
+    <string name="there_is_no_news_yet">There is no news yet</string>
+    <string name="location_hint">Choose the faculty you want to fight with</string>
+    <string name="defend">defend</string>
 </resources>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="newsItem"
+            type="testgame.ui.main.featuresNews.NewsItem" />
+        <variable
+            name="clickListener"
+            type="testgame.ui.main.featuresNews.NewsItemListener"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_news"
+        android:onClick="@{() -> clickListener.onClick(newsItem)}">
+
+        <ImageView
+            android:id="@+id/newsImageView"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:scaleType="fitCenter"
+            android:scaleX="2"
+            android:scaleY="2"
+            android:contentDescription="@string/shop_item_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/newsItemTextView"
+            app:srcCompat="@drawable/scroll" />
+
+        <TextView
+            android:id="@+id/newsItemTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:gravity="center"
+            android:text="@{newsItem.text}"
+            android:textColor="@color/colorPrimary"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/newsImageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/newsImageView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="News text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

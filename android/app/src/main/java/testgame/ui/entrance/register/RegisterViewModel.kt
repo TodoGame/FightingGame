@@ -1,22 +1,32 @@
-package com.example.testgame.ui.entrance.register
+package testgame.ui.entrance.register
 
-import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.testgame.network.securityService.RegisterData
-import com.example.testgame.network.securityService.SecurityApi
-import com.example.testgame.network.securityService.UserProperty
-import io.ktor.http.*
+import faculty.FixedFaculties
+import testgame.network.SecurityApi
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
+import testgame.network.NetworkService
 import java.lang.NullPointerException
 
 class RegisterViewModel : ViewModel() {
 
-    val username = ObservableField<String>("")
-    val password = ObservableField<String>("")
-    val user = ObservableField<String>("")
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
+
+    val username = ObservableField("")
+    val password = ObservableField("")
+    val user = ObservableField("")
+
+    private var _errorString = String()
+    val errorString: String
+        get() = _errorString
+
+    private val _errorIsCalled = MutableLiveData<Boolean>(false)
+    val errorIsCalled: LiveData<Boolean>
+        get() = _errorIsCalled
 
     private val _usernameInputErrorHint = MutableLiveData<String>()
     val usernameInputErrorHint: LiveData<String>
@@ -30,24 +40,21 @@ class RegisterViewModel : ViewModel() {
     val userInputErrorHint: LiveData<String>
         get() = _userInputErrorHint
 
-    private val _signUpCompleted = MutableLiveData<Boolean>(false)
+    private val _facultyOption = MutableLiveData<FixedFaculties>()
+    val facultyOption: LiveData<FixedFaculties>
+        get() = _facultyOption
+
+    private val _signUpCompleted = MutableLiveData(false)
     val signUpCompleted: LiveData<Boolean>
         get() = _signUpCompleted
 
-    private lateinit var _userResponseString: UserProperty
-    val userResponseString: UserProperty
-        get() = _userResponseString
+    fun chooseFacultyOption(option: FixedFaculties) {
+        _facultyOption.value = option
+    }
 
-    private var _errorString = String()
-    val errorString: String
-        get() = _errorString
-
-    private val _errorIsCalled = MutableLiveData<Boolean>(false)
-    val errorIsCalled: LiveData<Boolean>
-        get() = _errorIsCalled
-
+    @KtorExperimentalAPI
     fun signUp() {
-        if (username.get() == "" || password.get() == "" || user.get() == "") {
+        if (username.get() == "" || password.get() == "" || user.get() == "" || _facultyOption.value == null) {
             if (username.get() == "") {
                 _usernameInputErrorHint.value = "Please enter the username"
             }
@@ -57,29 +64,29 @@ class RegisterViewModel : ViewModel() {
             if (user.get() == "") {
                 _userInputErrorHint.value = "Please enter the user"
             }
+            if (_facultyOption.value == null) {
+                callError("Choose your faculty")
+            }
             return
         }
-        GlobalScope.launch {
+        coroutineScope.launch {
             try {
                 val response = SecurityApi.register(
-                    RegisterData(
-                        username.get()!!,
-                        password.get()!!,
-                        user.get()!!
-                    )
+                        security.UserRegisterInput(
+                                username.get()!!,
+                                password.get()!!,
+                                user.get()!!,
+                                facultyOption.value?.id!!
+                        )
                 )
-                if (SecurityApi.responseIsSuccessful(response)) {
-                    val token = response.headers[SecurityApi.AUTHORIZATION_HEADER_NAME]
-                    if (token != null) {
-                        _signUpCompleted.value = true
-                    } else {
-                        callError("Wrong token response")
-                    }
-                } else if (response.status == HttpStatusCode.BadRequest) {
-                    callError("Bad request")
-                } else if (response.status == HttpStatusCode.Unauthorized) {
-                    callError("Unauthorized")
+                val token = response.headers[NetworkService.AUTHORIZATION_HEADER_NAME]
+                if (token != null) {
+                    _signUpCompleted.postValue(true)
+                } else {
+                    callError("Wrong token response")
                 }
+            } catch (exception: NetworkService.NetworkException) {
+                exception.message?.let { callError(it) }
             } catch (exception: NullPointerException) {
                 callError("Some data missed")
             }
@@ -92,11 +99,6 @@ class RegisterViewModel : ViewModel() {
 
     private fun callError(message: String) {
         _errorString = message
-        _errorIsCalled.value = true
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.i("UserCreateVModel", "View model destroyed")
+        _errorIsCalled.postValue(true)
     }
 }
