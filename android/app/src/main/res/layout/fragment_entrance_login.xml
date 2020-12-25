@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.testgame.ui.entrance.login.LoginViewModel" />
+            type="testgame.ui.entrance.login.LoginViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,10 +28,13 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/usernameInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:hint="@string/username"
                 android:text="@={viewModel.username}"
-                android:textSize="18sp"
+                style="@style/textView.Entrance"
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -55,7 +58,10 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
                 android:text="@={viewModel.password}"
-                android:textSize="18sp"
+                style="@style/textView.Entrance"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -68,6 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="@string/log_in"
+            style="@style/button.Entrance"
             app:layout_constraintStart_toStartOf="@+id/passwordInputLayout"
             app:layout_constraintTop_toBottomOf="@+id/passwordInputLayout"
             android:onClick="@{() -> viewModel.logIn()}"/>
@@ -77,17 +84,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sign_up"
+            style="@style/button.Entrance"
+            tools:text="Регистрация"
             app:layout_constraintBaseline_toBaselineOf="@+id/logInButton"
             app:layout_constraintEnd_toEndOf="@+id/passwordInputLayout"
             android:onClick="@{() -> viewModel.signUp()}"/>
-
-        <Button
-            android:id="@+id/testButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

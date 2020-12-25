@@ -7,7 +7,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.testgame.ui.entrance.register.RegisterViewModel" />
+            type="testgame.ui.entrance.register.RegisterViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +30,10 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/username"
                 android:text="@={viewModel.username}"
-                android:textSize="18sp"
+                style="@style/textView.Entrance"
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -54,7 +57,10 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
                 android:text="@={viewModel.password}"
-                android:textSize="18sp"
+                style="@style/textView.Entrance"
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -76,7 +82,10 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/user"
                 android:text="@={viewModel.user}"
-                android:textSize="18sp"
+                style="@style/textView.Entrance"
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 app:layout_constraintBottom_toTopOf="@+id/usernameInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/usernameInputLayout"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -84,15 +93,29 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
+            android:id="@+id/facultyOptionButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/choose_faculty"
+            tools:text="Choose faculty"
+            style="@style/button.Entrance"
+            app:layout_constraintEnd_toEndOf="@+id/userInputLayout"
+            app:layout_constraintStart_toStartOf="@+id/userInputLayout"
+            app:layout_constraintTop_toBottomOf="@+id/userInputLayout" />
+
+        <Button
             android:id="@+id/signUpButton"
+            style="@style/button.Entrance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
+            android:onClick="@{() -> viewModel.signUp()}"
             android:text="@string/sign_up"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/userInputLayout"
-            android:onClick="@{() -> viewModel.signUp()}"/>
+            app:layout_constraintTop_toBottomOf="@+id/facultyOptionButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

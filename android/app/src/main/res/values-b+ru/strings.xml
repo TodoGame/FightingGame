@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Сражение</string>
+    <string name="saved_token_key">com.example.testgame.PREFERENCE_TOKEN_KEY</string>
+    <string name="saved_username_key">com.example.testgame.PREFERENCE_USERNAME_KEY</string>
+    <string name="match_finish_winner_extra_key">com.example.testgame.MATCH_WINNER_KEY</string>
+
+    <string name="sign_up">Регистрация</string>
+    <string name="log_in">Войти</string>
+    <string name="password">Пароль</string>
+    <string name="username">Имя пользователя</string>
+    <string name="attack">Атака</string>
+    <string name="guard">Защита</string>
+    <string name="skill">Умение</string>
+    <string name="escape">Сбежать</string>
+    <string name="health">Здоровье</string>
+    <string name="user">Пользователь</string>
+    <string name="title_activity_main">Сражение</string>
+    <string name="title_activity_fight">Сражение</string>
+    <string name="title_home">Дом</string>
+    <string name="shop">Магазин</string>
+    <string name="fight">Сражение</string>
+    <string name="settings">Настройки</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <string name="match_mech">МатМех</string>
+    <string name="pm_pu">Пм-Пу</string>
+    <string name="chemistry_fuc">ХимФак</string>
+    <string name="physics_fac">ФизФак</string>
+    <string name="biology_fac">БиоФак</string>
+
+    <string name="you_will_lose_progress">Вы потеряете игровой прогресс</string>
+    <string name="sure_to_leave_fight">Вы хотите покинуть бой?</string>
+    <string name="clicker_image">Изображение кликера</string>
+    <string name="no_internet_connection">Нет интернета</string>
+    <string name="inventory">Инвентарь</string>
+    <string name="score">Очки</string>
+    <string name="log_out">Выйти</string>
+    <string name="entrance_activity_name">Вход</string>
+    <string name="fight_activity_name">Сражение</string>
+    <string name="main_activity_name">Главная</string>
+    <string name="user_avatar">Аватар</string>
+    <string name="experience">Опыт</string>
+    <string name="level">Уровень</string>
+    <string name="faculty">Факультет</string>
+    <string name="leading_faculty">Лидирующий факультет</string>
+    <string name="tap_on_a_donkey_to_earn_some_scores">Нажмите на ослика, чтобы заработать очки</string>
+    <string name="try_to_open_game">Попробовать открыть</string>
+    <string name="locations">Локации</string>
+    <string name="primary_weapon">Главное оружие</string>
+    <string name="skills">Умения</string>
+    <string name="time">Время</string>
+    <string name="image_of_enemy">Картинка врага</string>
+    <string name="enemy_health">Здоровье врага</string>
+    <string name="image_of_player">Картинка игрока</string>
+    <string name="player_health">Здоровье игрока</string>
+    <string name="change_language">Сменить язык</string>
+    <string name="shop_item_image">Предмет инвенатря</string>
+    <string name="faculty_score">Очки факультета</string>
+    <string name="match_win_congratulation">Вы победили! Поздравляем!</string>
+    <string name="match_defeat_congratulation">Вы проиграли! Поздравляем!</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="fireball">Огненный шар</string>
+    <string name="choose_faculty">Выбрать факультет</string>
+    <string name="buy">Купить</string>
+    <string name="news">Новости</string>
+    <string name="there_is_no_news_yet">Пока что новостей нет</string>
+    <string name="location_hint">Выберите локацию, с которой хотите подраться</string>
+    <string name="defend">Защита</string>
+</resources>
