@@ -1,6 +1,5 @@
 package testgame.data
 
-import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import faculty.FacultyData

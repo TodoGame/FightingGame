@@ -8,12 +8,14 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.example.testgame.databinding.ActivityEntranceBinding
+import testgame.data.GameApp
 
 class EntranceActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+        GameApp().setLanguage(this)
         DataBindingUtil.setContentView<ActivityEntranceBinding>(this, R.layout.activity_entrance)
         val navHostFragment =
                 supportFragmentManager.findFragmentById(R.id.entrance_nav_host_fragment) as NavHostFragment

@@ -12,13 +12,13 @@ import java.util.concurrent.atomic.AtomicInteger
 
 object Match : ViewModel() {
     var player = MutableLiveData<PlayerSnapshot>()
-    var playerUsername = MutableLiveData<String>()
     var playerMaxHealth: Int? = null
     var playerHealthPrettyString = MutableLiveData<String>()
+
     var enemy = MutableLiveData<PlayerSnapshot>()
-    var enemyUsername = MutableLiveData<String>()
     var enemyMaxHealth: Int? = null
     var enemyHealthPrettyString = MutableLiveData<String>()
+
     var winner = MutableLiveData<String>()
     var state = State.NO_MATCH
 
@@ -51,9 +51,7 @@ object Match : ViewModel() {
             enemyMaxHealth = enemySnapshot.health
         }
         player.value = (playerSnapshot)
-        playerUsername.value = playerSnapshot.username
         enemy.value = (enemySnapshot)
-        enemyUsername.value = enemySnapshot.username
         updatePlayerPrettyHealthPoints()
         updateEnemyPrettyHealthPoints()
     }

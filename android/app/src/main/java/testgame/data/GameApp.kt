@@ -1,20 +1,31 @@
 package testgame.data
 
 import android.content.Context
+import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.multidex.MultiDexApplication
+import androidx.preference.PreferenceManager
 import com.example.testgame.R
-import io.ktor.client.features.websocket.DefaultClientWebSocketSession
-import kotlinx.serialization.json.Json
+import item.ItemData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withContext
+import testgame.network.MainApi
+import testgame.network.NetworkService
 import timber.log.Timber
-import kotlin.IllegalArgumentException
+import java.net.SocketException
+import java.net.SocketTimeoutException
+import java.util.*
 
 class GameApp : MultiDexApplication() {
 
     companion object {
         const val ATTACK_ANIMATION_PLAY_DELAY: Long = 1200 // see animation resource
+//        val inventoryItemsMap = mapOf(1 to Pair(ItemData()))
     }
 
     override fun onCreate() {
@@ -53,6 +64,67 @@ class GameApp : MultiDexApplication() {
             }
         }
         return result
+    }
+
+    fun showToast(activity: FragmentActivity, message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    suspend fun executeSafeNetworkCall(functionBody: suspend () -> Unit, scope: CoroutineScope, userExceptionHandler: MutableLiveData<String>? = null) {
+        try {
+            withContext(scope.coroutineContext) {
+                functionBody()
+            }
+        } catch (e: NetworkService.UserNetworkException) {
+            userExceptionHandler?.postValue(e.message) ?: Timber.e(java.lang.IllegalArgumentException("No message handler was passed"))
+        } catch (e: NetworkService.NetworkException) {
+            Timber.e(e)
+        } catch (exception: java.lang.NullPointerException) {
+            Timber.e("Null Pointer exception")
+        } catch (exception: MainApi.NullWebSocketSessionException) {
+            Timber.e(exception)
+        } catch (exception: SocketTimeoutException) {
+            Timber.e(exception)
+        } catch (exception: SocketException) {
+            Timber.e(exception)
+        }
+    }
+
+    fun changeLanguage(context: Context?, language: Language) {
+        setLanguage(context, language)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        with(sharedPreferences.edit()) {
+            putString(context?.getString(R.string.saved_language_key), language.name)
+            apply()
+        }
+    }
+
+    fun setLanguage(context: Context?, language: Language? = null) {
+        var chosenLanguage = language
+        if (chosenLanguage == null) {
+            try {
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+                val languageName = sharedPreferences.getString(getString(R.string.saved_language_key), null)!!
+                chosenLanguage = Language.valueOf(languageName)
+            } catch (e: java.lang.IllegalArgumentException) {
+                chosenLanguage = Language.ENGLISH
+            } catch (e: NullPointerException) {
+                chosenLanguage = Language.ENGLISH
+            }
+        }
+        when (chosenLanguage) {
+            Language.RUSSIAN -> {
+                val configuration = Configuration(context?.resources?.configuration)
+                configuration.locale = Locale("ru")
+                context?.resources?.updateConfiguration(configuration, context.resources.displayMetrics)
+            }
+            Language.ENGLISH -> {
+                val configuration = Configuration(context?.resources?.configuration)
+                configuration.locale = Locale.ENGLISH
+                context?.resources?.updateConfiguration(configuration, context.resources.displayMetrics)
+            }
+        }
+        Timber.i("Set language: ${chosenLanguage?.name}")
     }
 
     fun getItemImageIdByItemId(id: Int) : Int {

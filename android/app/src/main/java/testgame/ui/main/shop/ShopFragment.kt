@@ -36,7 +36,7 @@ class ShopFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
-        shopPagerAdapter = ShopPagerAdapter(childFragmentManager)
+        shopPagerAdapter = ShopPagerAdapter(listOf(getString(R.string.shop), getString(R.string.inventory)), childFragmentManager)
         viewPager = binding.viewPager
         viewPager.adapter = shopPagerAdapter
 
@@ -46,9 +46,4 @@ class ShopFragment : Fragment() {
 
         return binding.root
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-    }
-
 }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import match.*
 import testgame.data.*
+import testgame.network.MainApi
 import testgame.network.NetworkService
 import testgame.network.MatchApi
 import timber.log.Timber
@@ -29,6 +30,8 @@ class FightViewModel(val token: String) : ViewModel() {
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
+    val userMessage = MutableLiveData<String>()
+
     private val _matchState = MutableLiveData(Match.State.SEARCHING)
     val matchState: LiveData<Match.State>
         get() = _matchState
@@ -43,26 +46,41 @@ class FightViewModel(val token: String) : ViewModel() {
     @KtorExperimentalAPI
     fun findMatch(location: String) {
         _chosenLocation.postValue(location)
-        coroutineScope.launch {
-            try {
-                val webSocketTicket = MatchApi.getWebSocketTicket(User.authenticationToken)
-                Timber.i("Got ticket")
-                _matchState.postValue(Match.State.SEARCHING)
-                MatchApi.connectToMatchWebSocket(
-                        webSocketTicket,
-                        ::onMatchStart,
-                        ::onTurnStart,
-                        ::onPlayerAction,
-                        ::onMatchEnd
-                )
-            } catch (exception: NetworkService.NetworkException) {
-                exception.message?.let { Timber.i(it) }
-            } catch (exception: NullPointerException) {
-                Timber.i("Null Pointer exception")
-            } catch (exception: SocketTimeoutException) {
-                exception.message?.let { Timber.i(it) }
-            }
+        val networkFunction: suspend () -> Unit = {
+            val webSocketTicket = MatchApi.getWebSocketTicket(User.authenticationToken)
+            Timber.i("Got ticket")
+            _matchState.postValue(Match.State.SEARCHING)
+            MatchApi.connectToMatchWebSocket(
+                    webSocketTicket,
+                    ::onMatchStart,
+                    ::onTurnStart,
+                    ::onPlayerAction,
+                    ::onMatchEnd
+            )
         }
+        coroutineScope.launch {
+            GameApp().executeSafeNetworkCall(networkFunction, coroutineScope, userMessage)
+        }
+//        coroutineScope.launch {
+//            try {
+//                val webSocketTicket = MatchApi.getWebSocketTicket(User.authenticationToken)
+//                Timber.i("Got ticket")
+//                _matchState.postValue(Match.State.SEARCHING)
+//                MatchApi.connectToMatchWebSocket(
+//                        webSocketTicket,
+//                        ::onMatchStart,
+//                        ::onTurnStart,
+//                        ::onPlayerAction,
+//                        ::onMatchEnd
+//                )
+//            } catch (exception: NetworkService.NetworkException) {
+//                Timber.e(exception)
+//            } catch (exception: NullPointerException) {
+//                Timber.e("Null Pointer exception")
+//            } catch (exception: SocketTimeoutException) {
+//                Timber.e(exception)
+//            }
+//        }
     }
 
     private fun onMatchStart(players: Set<String>) {

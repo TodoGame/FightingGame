@@ -14,12 +14,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.32" />
+
         <Button
             android:id="@+id/logOutButton"
             style="@style/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:onClick="@{() -> viewModel.logOut()}"
             android:text="@string/log_out"
             app:layout_constraintEnd_toEndOf="parent"
@@ -29,15 +40,121 @@
         <Button
             android:id="@+id/changeLanguageButton"
             style="@style/button"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:onClick="@{() -> viewModel.logOut()}"
             android:text="@string/change_language"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/logOutButton"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/logOutButton"
             app:layout_constraintTop_toBottomOf="@+id/logOutButton" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/outline_grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline"
+            app:layout_constraintVertical_bias="1.0">
+
+            <TextView
+                android:id="@+id/developersHeader"
+                style="@style/textView.Settings"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="@string/developers_header"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/artistTextViewHeader"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/artistTextViewHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/artist"
+                style="@style/textView.Settings"
+                app:layout_constraintBottom_toTopOf="@+id/appTextViewHeader"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/artistLinkTextView"
+                style="@style/textView.Settings.Link"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="@string/artist_developer_link"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/artistTextViewHeader"
+                app:layout_constraintTop_toTopOf="@+id/artistTextViewHeader" />
+
+            <TextView
+                android:id="@+id/appTextViewHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/app"
+                style="@style/textView.Settings"
+                app:layout_constraintBottom_toTopOf="@+id/serverTextViewHeader"
+                app:layout_constraintStart_toStartOf="@+id/artistTextViewHeader"
+                app:layout_constraintTop_toBottomOf="@+id/artistTextViewHeader" />
+
+            <TextView
+                android:id="@+id/appTextViewLink"
+                style="@style/textView.Settings.Link"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="@string/appDeveloperLink"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/appTextViewHeader"
+                app:layout_constraintTop_toTopOf="@+id/appTextViewHeader" />
+
+            <TextView
+                android:id="@+id/serverTextViewHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/server"
+                style="@style/textView.Settings"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/appTextViewHeader"
+                app:layout_constraintTop_toBottomOf="@+id/appTextViewHeader" />
+
+            <TextView
+                android:id="@+id/serverLinkTextView"
+                style="@style/textView.Settings.Link"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="@string/server_developer_link"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/serverTextViewHeader"
+                app:layout_constraintTop_toTopOf="@+id/serverTextViewHeader" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

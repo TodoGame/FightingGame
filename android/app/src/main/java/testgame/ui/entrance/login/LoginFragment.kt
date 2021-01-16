@@ -95,7 +95,8 @@ class LoginFragment : Fragment() {
             viewLifecycleOwner, { isCalled ->
                 if (isCalled) {
                     val errorString = viewModel.errorString
-                    Toast.makeText(this.activity, errorString, Toast.LENGTH_SHORT).show()
+                    GameApp().showToast(requireActivity(), errorString)
+//                    Toast.makeText(this.activity, errorString, Toast.LENGTH_SHORT).show()
                     viewModel.onErrorDisplayed()
                 }
             }
@@ -107,7 +108,6 @@ class LoginFragment : Fragment() {
                     viewModel.onLoginConfirm()
                     setUpAppData()
                     val intent = Intent(activity, MainActivity::class.java)
-//                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                     startActivity(intent)
                     activity?.finish()
                 }

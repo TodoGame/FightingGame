@@ -11,6 +11,7 @@ import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainHomeBinding
 import io.ktor.util.*
 import kotlinx.coroutines.*
+import testgame.data.GameApp
 import testgame.data.User
 import testgame.ui.main.featuresNews.NewsItemListener
 import testgame.ui.main.featuresNews.NewsRecyclerAdapter
@@ -45,6 +46,10 @@ class HomeFragment : Fragment() {
         User.faculty.observe(viewLifecycleOwner, { facultyData ->
             binding.leadingFacultyTextView.text = facultyData.name
             binding.facultyScoreTextView.text = facultyData.points.toString()
+        })
+
+        viewModel.userMessage.observe(viewLifecycleOwner, { message ->
+            GameApp().showToast(requireActivity(), message)
         })
 
         viewModel.testProgress.observe(viewLifecycleOwner, { progress ->

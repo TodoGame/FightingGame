@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.testgame.R
 import com.example.testgame.databinding.PageMainShopBuyBinding
 import io.ktor.util.*
+import testgame.data.GameApp
 import testgame.data.User
 import testgame.network.NetworkService
 import testgame.ui.main.featuresShop.ShopItemListener
@@ -47,6 +48,11 @@ class ShopPageFragment: Fragment() {
         } catch (e: NetworkService.NetworkException) {
             Timber.i(e)
         }
+
+        viewModel.userMessage.observe(viewLifecycleOwner, { message ->
+            GameApp().showToast(requireActivity(), message)
+        })
+
         viewModel.shopItems.observe(viewLifecycleOwner, {
             it?.let {
                 adapter.submitList(it)

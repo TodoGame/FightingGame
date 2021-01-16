@@ -51,14 +51,14 @@ abstract class NetworkService {
                 responseIsSuccessful(response) -> return response
                 response.status == HttpStatusCode.Unauthorized -> throw NetworkException("Unauthorized")
                 else -> {
-                    throw NetworkException(response.content.readUTF8Line(400) ?: "Unknown exception")
+                    throw UserNetworkException(response.content.readUTF8Line(400) ?: "Unknown exception")
                 }
             }
         } catch (exception: UnknownHostException) {
             throw NetworkException("Enable to connect ot server")
         } catch (exception: IOException) {
-            Timber.i("Something wrong with server connection")
-            Timber.i(exception)
+            Timber.e("Something wrong with server connection")
+            Timber.e(exception)
             throw NetworkException("Check your Internet connection and try again")
         } catch (e: Exception) {
             throw e
@@ -69,5 +69,6 @@ abstract class NetworkService {
         return httpResponse.status.value in 200..299
     }
 
-    class NetworkException(message: String) : IllegalArgumentException(message)
+    open class NetworkException(message: String) : IllegalArgumentException(message)
+    class UserNetworkException(message: String) : NetworkException(message)
 }

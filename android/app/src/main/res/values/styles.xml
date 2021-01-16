@@ -13,7 +13,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-<!--        <item name="android:windowBackground">@color/activityBackground</item>-->
+<!--        <item name="android:background">@color/activityBackground</item>-->
     </style>
 
 
@@ -48,6 +48,15 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="textView.Settings">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="textView.Settings.Link">
+        <item name="android:textSize">20sp</item>
+        <item name="android:autoLink">web</item>
     </style>
 
     <style name="textView.Entrance">

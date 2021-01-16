@@ -8,10 +8,12 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.testgame.R
 import com.example.testgame.databinding.PageMainShopInventoryBinding
 import item.ItemType
+import testgame.data.GameApp
 import testgame.data.User
 import testgame.ui.main.featuresInventory.InventoryItemListener
 import testgame.ui.main.featuresInventory.InventoryRecyclerAdapter
@@ -36,10 +38,20 @@ class InventoryPageFragment: Fragment() {
             Timber.i("Inventory item with ${item.id} was clicked")
             if (item.type == ItemType.MainWeapon) {
                 User.primaryWeapon.value = item
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
+                with(sharedPreferences.edit()) {
+                    putString(getString(R.string.saved_token_key), item)
+                    putString(getString(R.string.saved_username_key), username)
+                    apply()
+                }
                 Toast.makeText(this.activity, "Now ${item.name} is your primary weapon", Toast.LENGTH_SHORT).show()
             }
         })
         binding.inventoryRecyclerView.adapter = adapter
+
+        viewModel.userMessage.observe(viewLifecycleOwner, { message ->
+            GameApp().showToast(requireActivity(), message)
+        })
 
         User.inventory.observe(viewLifecycleOwner, {
             it?.let {

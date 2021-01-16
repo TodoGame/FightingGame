@@ -12,11 +12,26 @@
             android:id="@+id/inventoryRecyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="invisible"
             tools:listitem="@layout/item_inventory_thing"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <TextView
+            android:id="@+id/emptyShopRecyclerView"
+            style="@style/textView.Home"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/colorWhite"
+            android:gravity="center"
+            android:text="@string/there_is_no_items_in_inventory_yet"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

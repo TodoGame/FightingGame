@@ -1,41 +1,73 @@
 package tests
 
+import androidx.lifecycle.MutableLiveData
 import io.ktor.client.statement.*
 import io.ktor.http.cio.websocket.*
-import io.ktor.util.KtorExperimentalAPI
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import io.ktor.util.*
+import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import match.Message
 import match.PlayerAction
 import security.UserLoginInput
 import security.UserRegisterInput
 import testgame.data.GameApp
-import testgame.data.Match
 import testgame.data.User
 import testgame.network.*
 import testgame.network.NetworkService.Companion.AUTHORIZATION_HEADER_NAME
-import kotlin.system.exitProcess
+import timber.log.Timber
 
-val match = Match
+//val match = Match
+lateinit var enemyUsername: String
 lateinit var username: String
 var facultyId = 1
 lateinit var token: String
 
+suspend fun executeSafeNetworkCall(functionBody: suspend () -> Unit, scope: CoroutineScope, userExceptionHandler: MutableLiveData<String>? = null) {
+    try {
+        withContext(scope.coroutineContext) {
+            functionBody()
+        }
+    } catch (e: NetworkService.UserNetworkException) {
+        userExceptionHandler?.postValue(e.message) ?: throw java.lang.IllegalArgumentException("No message handler was passed")
+    } catch (e: NetworkService.NetworkException) {
+        println(e)
+    }
+}
+
 @KtorExperimentalAPI
 fun main() {
     runBlocking {
-        var command: String
-        while (true) {
-            print("Enter the command: ")
-            command = readLine() ?: ""
-            when (command) {
-                "exit" -> exitProcess(0)
-                else -> runCommand(command)
-            }
-        }
+//        var command: String
+//        while (true) {
+//            print("Enter the command: ")
+//            command = readLine() ?: ""
+//            when (command) {
+//                "exit" -> exitProcess(0)
+//                else -> runCommand(command)
+//            }
+//        }
     }
+
+    val job: Job = Job()
+    val scope = CoroutineScope(Dispatchers.Default + job)
+    runBlocking {
+        executeSafeNetworkCall(::doSmth, scope)
+    }
+//    try {
+//        runBlocking {
+//            withContext(scope.coroutineContext) {
+//                doSmth()
+//            }
+//        }
+//        Thread.sleep(1000)
+//    } catch (e: NetworkService.NetworkException) {
+//        println("CAUGHT EXCEPTION")
+//    }
+}
+
+suspend fun doSmth() {
+    println("Test")
+    throw NetworkService.NetworkException("TEST")
 }
 
 @KtorExperimentalAPI
@@ -138,9 +170,8 @@ private fun connectMatch() {
 
 private fun attack() {
     try {
-        val enemyUsername = match.enemy.value!!.username
         val action = NetworkService.jsonFormat.encodeToString<Message>(
-                PlayerAction(enemyUsername, match.player.value!!.username)
+                PlayerAction(enemyUsername, username)
         )
         GlobalScope.launch {
             User.matchSession?.send(action)

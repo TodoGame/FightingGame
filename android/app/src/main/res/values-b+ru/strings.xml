@@ -3,6 +3,7 @@
     <string name="app_name">Сражение</string>
     <string name="saved_token_key">com.example.testgame.PREFERENCE_TOKEN_KEY</string>
     <string name="saved_username_key">com.example.testgame.PREFERENCE_USERNAME_KEY</string>
+    <string name="saved_language_key">com.example.testgame.PREFERENCE_LANGUAGE_KEY</string>
     <string name="match_finish_winner_extra_key">com.example.testgame.MATCH_WINNER_KEY</string>
 
     <string name="sign_up">Регистрация</string>
@@ -39,7 +40,7 @@
     <string name="log_out">Выйти</string>
     <string name="entrance_activity_name">Вход</string>
     <string name="fight_activity_name">Сражение</string>
-    <string name="main_activity_name">Главная</string>
+    <string name="main_activity_name">Схватка СПбГУ</string>
     <string name="user_avatar">Аватар</string>
     <string name="experience">Опыт</string>
     <string name="level">Уровень</string>
@@ -68,4 +69,13 @@
     <string name="there_is_no_news_yet">Пока что новостей нет</string>
     <string name="location_hint">Выберите локацию, с которой хотите подраться</string>
     <string name="defend">Защита</string>
+    <string name="developers_header">За разработку этого ужасного приложения ответствены следующие люди:</string>
+    <string name="artist">Божественная художница:</string>
+    <string name="app">Убогое приложение:</string>
+    <string name="server">Чуть менее убогий сервер:</string>
+    <string name="appDeveloperLink">https://vk.com/general_bum</string>
+    <string name="server_developer_link">https://vk.com/ifurnameisdaniilucaneatadaek</string>
+    <string name="artist_developer_link">https://vk.com/sunflower_in_the_rain</string>
+    <string name="your_money">Your money:</string>
+    <string name="there_is_no_items_to_buy_yet">There is no items to buy in shop yet</string>
 </resources>

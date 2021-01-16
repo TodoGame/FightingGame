@@ -4,19 +4,98 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container">
 
+    <data>
+        <variable
+            name="viewModel"
+            type="testgame.ui.main.shop.ShopViewModel" />
+        <variable
+            name="user"
+            type="testgame.data.User" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/userMoneyHeaderTextView"
+            style="@style/textView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/your_money"
+            app:layout_constraintBottom_toTopOf="@+id/shopListRecyclerView"
+            app:layout_constraintEnd_toStartOf="@+id/imageView3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="40dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/coins"
+            app:layout_constraintBottom_toTopOf="@+id/shopListRecyclerView"
+            app:layout_constraintEnd_toStartOf="@+id/userMoneyTextView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/userMoneyHeaderTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/coins" />
+
+
+        <TextView
+            android:id="@+id/userMoneyTextView"
+            style="@style/textView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:text="@{Integer.toString(user.money)}"
+            app:layout_constraintEnd_toStartOf="@+id/imageView4"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageView3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="540" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="40dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:contentDescription="@string/coins"
+            app:layout_constraintBottom_toTopOf="@+id/shopListRecyclerView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/userMoneyTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/coins" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/shopListRecyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            tools:listitem="@layout/item_shop_product"
+            android:visibility="invisible"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            app:layout_constraintTop_toBottomOf="@+id/userMoneyTextView"
+            tools:listitem="@layout/item_shop_product" />
+
+        <TextView
+            android:id="@+id/emptyShopRecyclerView"
+            style="@style/textView.Home"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/colorWhite"
+            android:gravity="center"
+            android:text="@string/there_is_no_items_to_buy_yet"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userMoneyTextView" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

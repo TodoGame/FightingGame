@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModel
 import faculty.FacultyData
 import faculty.FixedFaculties
 import io.ktor.util.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import testgame.data.GameApp
 import testgame.data.User
 import testgame.network.MainApi
@@ -18,13 +15,15 @@ import testgame.ui.main.featuresNews.NewsItem
 import timber.log.Timber
 import user.Username
 import java.lang.NullPointerException
+import java.net.SocketException
 import java.net.SocketTimeoutException
 
 class HomeViewModel : ViewModel() {
 
-    val app = GameApp()
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
+    val userMessage = MutableLiveData<String>()
 
     private val _facultyScore = MutableLiveData<Int>()
     val facultyScore: LiveData<Int>
@@ -56,73 +55,73 @@ class HomeViewModel : ViewModel() {
 
     @KtorExperimentalAPI
     fun getUserData() {
-        try {
-            coroutineScope.launch {
-                val userData = MainApi.getPlayerData(User.authenticationToken)
-                User.updateFromUserData(userData)
-            }
-        } catch (exception: NetworkService.NetworkException) {
-            exception.message?.let { Timber.i(it) }
-        } catch (exception: NullPointerException) {
-            Timber.i("Some data missed")
+        val networkFunction: suspend () -> Unit = {
+            val userData = MainApi.getPlayerData(User.authenticationToken)
+            User.updateFromUserData(userData)
+        }
+        coroutineScope.launch {
+            GameApp().executeSafeNetworkCall(networkFunction, coroutineScope, userMessage)
         }
     }
 
     @KtorExperimentalAPI
     fun getLeadingFacultyData() {
-        try {
-            coroutineScope.launch {
-                val facultyData = MainApi.getLeadingFacultyData(User.authenticationToken)
-                _leadingFaculty.postValue(facultyData)
-            }
-        } catch (exception: NetworkService.NetworkException) {
-            exception.message?.let { Timber.i(it) }
-        } catch (exception: NullPointerException) {
-            Timber.i("Some data missed")
+        val networkFunction: suspend () -> Unit = {
+            val facultyData = MainApi.getLeadingFacultyData(User.authenticationToken)
+            _leadingFaculty.postValue(facultyData)
         }
+        coroutineScope.launch {
+            GameApp().executeSafeNetworkCall(networkFunction, coroutineScope, userMessage)
+        }
+//        try {
+//            coroutineScope.launch {
+//                val facultyData = MainApi.getLeadingFacultyData(User.authenticationToken)
+//                _leadingFaculty.postValue(facultyData)
+//            }
+//        } catch (exception: NetworkService.NetworkException) {
+//            Timber.i(exception)
+//        } catch (exception: NullPointerException) {
+//            Timber.i("Some data missed")
+//        }
     }
 
     @KtorExperimentalAPI
     fun makeSubscriptions() {
+        val networkFunction: suspend () -> Unit = {
+            val webSocketTicket = MainApi.getWebSocketTicket(User.authenticationToken)
+            Timber.i("Got ticket")
+            MainApi.connectToMainWebSocket(
+                    webSocketTicket,
+                    ::onUserMoneyUpdate,
+                    ::onLeadingFacultyUpdate,
+                    ::onFacultiesPointsUpdate,
+            )
+            User.username.value?.let { MainApi.subscribeUser(it, true) }
+            MainApi.subscribeLeadingFaculty(true)
+            MainApi.subscribeFacultyPoints(true)
+        }
         coroutineScope.launch {
-            try {
-                val webSocketTicket = MainApi.getWebSocketTicket(User.authenticationToken)
-                Timber.i("Got ticket")
-                MainApi.connectToMainWebSocket(
-                        webSocketTicket,
-                        ::onUserMoneyUpdate,
-                        ::onLeadingFacultyUpdate,
-                        ::onFacultiesPointsUpdate,
-                )
-                User.username.value?.let { MainApi.subscribeUser(it, true) }
-                MainApi.subscribeLeadingFaculty(true)
-                MainApi.subscribeFacultyPoints(true)
-            } catch (exception: NetworkService.NetworkException) {
-                exception.message?.let { Timber.i(it) }
-            } catch (exception: NullPointerException) {
-                Timber.i("Null Pointer exception")
-            } catch (exception: MainApi.NullWebSocketSessionException) {
-                Timber.i(exception)
-            } catch (exception: SocketTimeoutException) {
-                exception.message?.let { Timber.i(it) }
-            }
+            GameApp().executeSafeNetworkCall(networkFunction, coroutineScope, userMessage)
         }
     }
 
     private fun onUserMoneyUpdate(username: Username, money: Int) {
-
+        if (username == User.username.value) {
+            User.money.value = money
+        }
     }
 
     private fun onLeadingFacultyUpdate(facultyId: Int, points: Int) {
-
+        try {
+            val leadingFaculty = FixedFaculties.values().find { it.id == facultyId }!!
+            _leadingFaculty.value = FacultyData(facultyId, leadingFaculty.facultyName, points)
+        } catch (e: NullPointerException) {
+            Timber.i("Unknown faculty id")
+        }
     }
 
     private fun onFacultiesPointsUpdate(facultyId: Int, points: Int, winnerUsername: String) {
         val faculty = FixedFaculties.values().find { it.id == facultyId }
         _newsItems.value?.add(NewsItem(facultyId, "$winnerUsername won $points for $faculty faculty"))
-    }
-
-    fun test() {
-        _testProgress.postValue(_testProgress.value?.minus(20))
     }
 }

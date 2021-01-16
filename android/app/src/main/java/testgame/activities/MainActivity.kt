@@ -29,9 +29,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.NoActionBarAppTheme)
         super.onCreate(savedInstanceState)
+        GameApp().setLanguage(this)
         if (!isTokenAlive()) {
             val intent = Intent(this, EntranceActivity::class.java)
-//            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
             startActivity(intent)
             finish()
         }

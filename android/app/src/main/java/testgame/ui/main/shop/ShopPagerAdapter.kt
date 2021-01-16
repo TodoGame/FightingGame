@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
-class ShopPagerAdapter(fragmentManager: FragmentManager) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class ShopPagerAdapter(val titlesList: List<String>, fragmentManager: FragmentManager) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     override fun getCount(): Int  = 2
 
     override fun getItem(i: Int): Fragment {
@@ -18,10 +18,10 @@ class ShopPagerAdapter(fragmentManager: FragmentManager) : FragmentPagerAdapter(
     override fun getPageTitle(position: Int): CharSequence {
         return when (position) {
             0 -> {
-                "shop"
+                titlesList[0]
             }
             1 -> {
-                "inventory"
+                titlesList[1]
             }
             else -> {
                 "error"

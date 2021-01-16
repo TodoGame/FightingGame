@@ -19,6 +19,8 @@ import kotlinx.coroutines.*
 import testgame.activities.EntranceActivity
 import testgame.data.GameApp
 import testgame.data.Language
+import timber.log.Timber
+import java.lang.NullPointerException
 import java.util.*
 
 class SettingsFragment : Fragment() {
@@ -49,18 +51,8 @@ class SettingsFragment : Fragment() {
         val languages = Language.values()
         val languagesOptionDialog = languageOptionDialogBuilder?.setTitle("Choose your faculty")
                 ?.setItems(languages.map { it.languageName }.toTypedArray()) { dialog, which ->
-                    when (languages[which]) {
-                        Language.RUSSIAN -> {
-                            val configuration = Configuration(context?.resources?.configuration)
-                            configuration.locale = Locale("ru")
-                            context?.resources?.updateConfiguration(configuration, requireContext().resources.displayMetrics)
-                        }
-                        Language.ENGLISH -> {
-                            val configuration = Configuration(context?.resources?.configuration)
-                            configuration.locale = Locale.ENGLISH
-                            context?.resources?.updateConfiguration(configuration, requireContext().resources.displayMetrics)
-                        }
-                    }
+                    GameApp().changeLanguage(context, languages[which])
+                    restartFragment()
                     dialog.cancel()
                 }
         binding.changeLanguageButton.setOnClickListener {
@@ -77,7 +69,6 @@ class SettingsFragment : Fragment() {
                 }
                 viewModel.onLogOutConfirmed()
                 val intent = Intent(activity, EntranceActivity::class.java)
-//                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                 startActivity(intent)
                 activity?.finish()
             }
@@ -89,5 +80,17 @@ class SettingsFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         coroutineScope.cancel()
+    }
+
+    private fun restartFragment() {
+        try {
+            val currentFragment = requireActivity().supportFragmentManager.findFragmentById(R.id.settingsFragment)!!
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.detach(currentFragment)
+            transaction.attach(currentFragment)
+            transaction.commit()
+        } catch (e: NullPointerException) {
+            Timber.i("Can not restart SettingsFragment")
+        }
     }
 }

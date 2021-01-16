@@ -22,6 +22,7 @@ import kotlinx.coroutines.*
 import testgame.activities.EntranceActivity
 import testgame.activities.MainActivity
 import testgame.data.FightAction
+import testgame.data.GameApp
 import testgame.data.GameApp.Companion.ATTACK_ANIMATION_PLAY_DELAY
 import testgame.data.Match
 import testgame.data.Match.playerMaxHealth
@@ -90,6 +91,10 @@ class FightFragment : Fragment() {
             (playerWarriorImage.drawable as AnimationDrawable).start()
             (enemyWarriorImage.drawable as AnimationDrawable).start()
         }
+
+        viewModel.userMessage.observe(viewLifecycleOwner, { message ->
+            GameApp().showToast(requireActivity(), message)
+        })
 
         Match.player.observe(viewLifecycleOwner, { player ->
             Match.playerMaxHealth?.let { playerHealthBar.update(it, player.health) } ?: Timber.i("Null max health")
