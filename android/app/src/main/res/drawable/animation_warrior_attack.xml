@@ -2,8 +2,8 @@
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:drawable="@drawable/attack_1"
-        android:duration="400"/>
+        android:duration="@dimen/warrior_fast_animation_duration"/>
     <item
         android:drawable="@drawable/attack_2"
-        android:duration="800" />
+        android:duration="@dimen/warrior_medium_animation_duration" />
 </animation-list>

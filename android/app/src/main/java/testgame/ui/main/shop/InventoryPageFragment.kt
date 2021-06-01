@@ -40,8 +40,7 @@ class InventoryPageFragment: Fragment() {
                 User.primaryWeapon.value = item
                 val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
                 with(sharedPreferences.edit()) {
-                    putString(getString(R.string.saved_token_key), item)
-                    putString(getString(R.string.saved_username_key), username)
+                    putInt(getString(R.string.saved_primary_weapon_key), item.id)
                     apply()
                 }
                 Toast.makeText(this.activity, "Now ${item.name} is your primary weapon", Toast.LENGTH_SHORT).show()

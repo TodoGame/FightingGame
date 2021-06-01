@@ -106,7 +106,7 @@ class FightViewModel(val token: String) : ViewModel() {
     private fun onPlayerAction(message: CalculatedPlayerDecision) {
         when (message) {
             is CalculatedPlayerAction -> {
-                val weapon = message.itemId?.let { GameApp().getItemNameById(it) }
+                val weapon = message.itemId?.let { GameApp().getItemById(it).name }
                 val attacker = match.findPlayerByUsername(message.attacker)
                 val target = match.findPlayerByUsername(message.target)
                 if (message.attacker == match.player.value?.username) {

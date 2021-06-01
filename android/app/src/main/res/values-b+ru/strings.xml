@@ -4,6 +4,7 @@
     <string name="saved_token_key">com.example.testgame.PREFERENCE_TOKEN_KEY</string>
     <string name="saved_username_key">com.example.testgame.PREFERENCE_USERNAME_KEY</string>
     <string name="saved_language_key">com.example.testgame.PREFERENCE_LANGUAGE_KEY</string>
+    <string name="saved_primary_weapon_key">com.example.testgame.PREFERENCE_PRIMARY_WEAPON_KEY</string>
     <string name="match_finish_winner_extra_key">com.example.testgame.MATCH_WINNER_KEY</string>
 
     <string name="sign_up">Регистрация</string>
@@ -77,5 +78,7 @@
     <string name="server_developer_link">https://vk.com/ifurnameisdaniilucaneatadaek</string>
     <string name="artist_developer_link">https://vk.com/sunflower_in_the_rain</string>
     <string name="your_money">Your money:</string>
-    <string name="there_is_no_items_to_buy_yet">There is no items to buy in shop yet</string>
+    <string name="there_is_no_items_to_buy_yet">В магазине пока что нет вещей для покупки</string>
+    <string name="there_is_no_items_in_inventory_yet">В инвентаре пока нет вещей</string>
+    <string name="coins">Монетки</string>
 </resources>

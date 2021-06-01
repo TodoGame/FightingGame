@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.example.testgame.R
 import com.example.testgame.databinding.FragmentMainHomeBinding
 import io.ktor.util.*
@@ -79,6 +80,9 @@ class HomeFragment : Fragment() {
     @KtorExperimentalAPI
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireActivity())
+        val primaryWeaponId = sharedPreferences.getInt(getString(R.string.saved_primary_weapon_key), 0)
+        User.primaryWeapon = GameApp().getItemById(primaryWeaponId)
         coroutineScope.launch {
             viewModel.getUserData()
             viewModel.getLeadingFacultyData()
