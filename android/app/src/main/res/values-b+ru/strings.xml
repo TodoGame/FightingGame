@@ -78,5 +78,7 @@
     <string name="server_developer_link">https://vk.com/ifurnameisdaniilucaneatadaek</string>
     <string name="artist_developer_link">https://vk.com/sunflower_in_the_rain</string>
     <string name="your_money">Your money:</string>
-    <string name="there_is_no_items_to_buy_yet">There is no items to buy in shop yet</string>
+    <string name="there_is_no_items_to_buy_yet">В магазине пока что нет вещей для покупки</string>
+    <string name="there_is_no_items_in_inventory_yet">В инвентаре пока нет вещей</string>
+    <string name="coins">Монетки</string>
 </resources>

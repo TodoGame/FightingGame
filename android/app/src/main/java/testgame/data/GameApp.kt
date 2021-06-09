@@ -12,6 +12,7 @@ import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
 import com.example.testgame.R
 import item.ItemData
+import item.ItemType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import testgame.network.MainApi
@@ -25,7 +26,13 @@ class GameApp : MultiDexApplication() {
 
     companion object {
         const val ATTACK_ANIMATION_PLAY_DELAY: Long = 1200 // see animation resource
-//        val inventoryItemsMap = mapOf(1 to Pair(ItemData()))
+        val itemsList = listOf(
+                InventoryItem(0, ItemType.MainWeapon, "Hands", 5, 0),
+                InventoryItem(1, ItemType.MainWeapon, "Club", 30, 20, R.drawable.club),
+                InventoryItem(2, ItemType.MainWeapon, "Sword", 100, 40, R.drawable.sword),
+                InventoryItem(3, ItemType.Additional, "Banana", 10, -40, R.drawable.banana),
+                InventoryItem(4, ItemType.Additional, "Dice", 150, 1000, R.drawable.dice)
+        )
     }
 
     override fun onCreate() {
@@ -129,23 +136,19 @@ class GameApp : MultiDexApplication() {
 
     fun getItemImageIdByItemId(id: Int) : Int {
         return when (id) {
-            1 -> R.drawable.club
-            2 -> R.drawable.sword
-            3 -> R.drawable.banana
-            4 -> R.drawable.dice
+
             else -> 0
         }
     }
 
-    fun getItemNameById(id: Int): String {
-        return when (id) {
-            1 -> "Club"
-            2 -> "Sword"
-            3 -> "Banana"
-            4 -> "Dice"
-            else -> "SOMETHING"
+    fun getItemById(id: Int): InventoryItem {
+        try {
+            return itemsList[id]
+        } catch (e: ArrayIndexOutOfBoundsException) {
+            throw ItemsArrayIndexOutOfBoundsException("There is no such thing in inventory")
         }
     }
 
     class NullAppDataException(message: String) : IllegalStateException(message)
+    class ItemsArrayIndexOutOfBoundsException(message: String) : ArrayIndexOutOfBoundsException(message)
 }

@@ -27,7 +27,7 @@ fun Routing.shop() {
         call.respond(items)
     }
 
-    get(ShopEndpoints.GET_ITEM_ENDPOINT) {
+    get(ShopEndpoints.GифеET_ITEM_ENDPOINT) {
         val itemId = call.requiredIdParameter()
         val item = itemRepository.getItemById(itemId) ?: throw NotFoundException("Item with id=$itemId not found")
         call.respond(item.publicData())
