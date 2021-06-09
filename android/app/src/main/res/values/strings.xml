@@ -3,6 +3,7 @@
     <string name="saved_token_key">com.example.testgame.PREFERENCE_TOKEN_KEY</string>
     <string name="saved_username_key">com.example.testgame.PREFERENCE_USERNAME_KEY</string>
     <string name="saved_language_key">com.example.testgame.PREFERENCE_LANGUAGE_KEY</string>
+    <string name="saved_main_weapon_key">com.example.testgame.PREFERENCE_MAIN_WEAPON_KEY</string>
     <string name="match_finish_winner_extra_key">com.example.testgame.MATCH_WINNER_KEY</string>
 
     <string name="sign_up">Sign up</string>

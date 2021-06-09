@@ -19,12 +19,14 @@ import testgame.ui.main.featuresInventory.InventoryItemListener
 import testgame.ui.main.featuresInventory.InventoryRecyclerAdapter
 import timber.log.Timber
 
-class InventoryPageFragment: Fragment() {
+class InventoryPageFragment : Fragment() {
     private lateinit var viewModel: ShopViewModel
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val binding: PageMainShopInventoryBinding = DataBindingUtil.inflate(
             inflater,
             R.layout.page_main_shop_inventory,
@@ -40,11 +42,14 @@ class InventoryPageFragment: Fragment() {
                 User.primaryWeapon.value = item
                 val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
                 with(sharedPreferences.edit()) {
-                    putString(getString(R.string.saved_token_key), item)
-                    putString(getString(R.string.saved_username_key), username)
+                    putString(getString(R.string.saved_main_weapon_key), item.name)
                     apply()
                 }
-                Toast.makeText(this.activity, "Now ${item.name} is your primary weapon", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this.activity,
+                    "Now ${item.name} is your primary weapon",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
         binding.inventoryRecyclerView.adapter = adapter
